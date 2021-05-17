@@ -3,20 +3,29 @@ BUILD_DIR = build
 
 SOURCE_CPP_LIST = \
 source/WebVTTParser.cpp \
-source/main.cpp
+source/main.cpp \
+source/bufferImpl/Semaphore.cpp \
+source/bufferImpl/SyncBuffer.cpp
 
-INCLUDE_C_LIST = \
--Iinclude
+
+INCLUDE_CPP_LIST = \
+-Iinclude -Iinclude/bufferImpl
 
 OBJECTS_LIST = 
 OBJECTS_LIST += $(addprefix $(BUILD_DIR)/, $(notdir $(SOURCE_CPP_LIST:.cpp=.o)))
 
-vpath %.cpp $(sort $(dir $(SOURCE_CPP_LIST)))
 
-CC = g++ -c
+vpath %.cpp  source source/bufferImpl 
+
+
+
+$(info $(sort $(dir $(SOURCE_CPP_LIST))) ) 
+
+
+CC = g++ -c --std=c++17
 LD = g++
 
-FLAGS_CC = -MD -MP  $(INCLUDE_C_LIST)
+FLAGS_CC = -MD -MP  $(INCLUDE_CPP_LIST)
 
 FLAGS_LD= 
 

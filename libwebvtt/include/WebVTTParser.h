@@ -1,38 +1,22 @@
+#include "SyncBuffer.h"
 #include <string>
 #include <array>
+#include <vector>
+#include <memory.h>
 
-
-namespace WebVTT{
-
-class WebVTTParser {
-   
-
-private:
-   static constexpr uint8_t NUM_BYTES = 3;
-   
-   void decodeToUTF8(std::string& input);
-   std::array<uint8_t,NUM_BYTES > peekInputStream(std::string input);
-
-
-
-void readUtf8UnicodeFile(const char* filename)
+namespace WebVTT
 {
-    std::ifstream wif(filename);
-    std::locale loc(std::locale::classic(), new std::codecvt_utf8<wchar_t>);
-    wif.imbue(loc);
-    string sLine;
-    int nCount =1;
- 
-    do
-    {
-        getline(wif, sLine);
-        cout << "\nLine line-"<<nCount<<" is:" << sLine;
-        nCount++;
-    }while(!wif.eof());
- 
-    wif.close();
-}
 
-};
+   class WebVTTParser
+   {
+
+   public:
+      WebVTTParser(std::shared_ptr<SyncBuffer> syncBuffer) : inputBuffer(syncBuffer){};
+      void parserRun();
+
+   private:
+      std::vector<uint32_t> decodeUTF8ToUTF32(std::string &input);
+      std::shared_ptr<SyncBuffer> inputBuffer;
+   };
 
 }

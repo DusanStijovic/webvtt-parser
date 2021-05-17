@@ -1,5 +1,5 @@
-build/WebVTTParser.o: source/WebVTTParser.cpp /usr/include/stdc-predef.h \
- include/WebVTTParser.h include/bufferImpl/SyncBuffer.h \
+build/SyncBuffer.o: source/bufferImpl/SyncBuffer.cpp \
+ /usr/include/stdc-predef.h include/bufferImpl/SyncBuffer.h \
  include/bufferImpl/Semaphore.h /usr/include/c++/10/mutex \
  /usr/include/c++/10/tuple /usr/include/c++/10/utility \
  /usr/include/x86_64-linux-gnu/c++/10/bits/c++config.h \
@@ -148,10 +148,8 @@ build/WebVTTParser.o: source/WebVTTParser.cpp /usr/include/stdc-predef.h \
  /usr/include/c++/10/bits/stl_uninitialized.h \
  /usr/include/c++/10/bits/stl_vector.h \
  /usr/include/c++/10/bits/stl_bvector.h \
- /usr/include/c++/10/bits/vector.tcc /usr/include/memory.h \
- /usr/include/string.h /usr/include/strings.h
+ /usr/include/c++/10/bits/vector.tcc
 /usr/include/stdc-predef.h:
-include/WebVTTParser.h:
 include/bufferImpl/SyncBuffer.h:
 include/bufferImpl/Semaphore.h:
 /usr/include/c++/10/mutex:
@@ -337,6 +335,3 @@ include/bufferImpl/Semaphore.h:
 /usr/include/c++/10/bits/stl_vector.h:
 /usr/include/c++/10/bits/stl_bvector.h:
 /usr/include/c++/10/bits/vector.tcc:
-/usr/include/memory.h:
-/usr/include/string.h:
-/usr/include/strings.h:
