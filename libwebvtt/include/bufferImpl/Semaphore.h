@@ -1,3 +1,6 @@
+#ifndef SEMAPHORE_H
+#define SEMAPHORE_H
+
 #include <mutex>
 #include <condition_variable>
 
@@ -14,3 +17,5 @@ private:
     std::mutex mutex;
     std::condition_variable cv;
 };
+
+#endif

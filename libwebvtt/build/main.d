@@ -148,7 +148,10 @@ build/main.o: source/main.cpp /usr/include/stdc-predef.h \
  /usr/include/c++/10/bits/stl_uninitialized.h \
  /usr/include/c++/10/bits/stl_vector.h \
  /usr/include/c++/10/bits/stl_bvector.h \
- /usr/include/c++/10/bits/vector.tcc /usr/include/memory.h \
+ /usr/include/c++/10/bits/vector.tcc /usr/include/c++/10/optional \
+ /usr/include/c++/10/bits/enable_special_members.h \
+ /usr/include/c++/10/list /usr/include/c++/10/bits/stl_list.h \
+ /usr/include/c++/10/bits/list.tcc /usr/include/memory.h \
  /usr/include/string.h /usr/include/strings.h /usr/include/c++/10/fstream \
  /usr/include/c++/10/istream /usr/include/c++/10/ios \
  /usr/include/c++/10/bits/ios_base.h \
@@ -167,7 +170,17 @@ build/main.o: source/main.cpp /usr/include/stdc-predef.h \
  /usr/include/c++/10/bits/istream.tcc /usr/include/c++/10/bits/codecvt.h \
  /usr/include/x86_64-linux-gnu/c++/10/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/10/bits/c++io.h \
- /usr/include/c++/10/bits/fstream.tcc /usr/include/c++/10/iostream
+ /usr/include/c++/10/bits/fstream.tcc /usr/include/c++/10/iostream \
+ /usr/include/c++/10/thread /usr/include/c++/10/memory \
+ /usr/include/c++/10/bits/stl_tempbuf.h \
+ /usr/include/c++/10/bits/stl_raw_storage_iter.h \
+ /usr/include/c++/10/bits/ranges_uninitialized.h \
+ /usr/include/c++/10/bits/shared_ptr_atomic.h \
+ /usr/include/c++/10/bits/atomic_base.h \
+ /usr/include/c++/10/bits/atomic_lockfree_defines.h \
+ /usr/include/c++/10/backward/auto_ptr.h \
+ /usr/include/c++/10/pstl/glue_memory_defs.h \
+ /usr/include/c++/10/pstl/execution_defs.h
 /usr/include/stdc-predef.h:
 include/WebVTTParser.h:
 include/bufferImpl/SyncBuffer.h:
@@ -355,6 +368,11 @@ include/bufferImpl/Semaphore.h:
 /usr/include/c++/10/bits/stl_vector.h:
 /usr/include/c++/10/bits/stl_bvector.h:
 /usr/include/c++/10/bits/vector.tcc:
+/usr/include/c++/10/optional:
+/usr/include/c++/10/bits/enable_special_members.h:
+/usr/include/c++/10/list:
+/usr/include/c++/10/bits/stl_list.h:
+/usr/include/c++/10/bits/list.tcc:
 /usr/include/memory.h:
 /usr/include/string.h:
 /usr/include/strings.h:
@@ -384,3 +402,14 @@ include/bufferImpl/Semaphore.h:
 /usr/include/x86_64-linux-gnu/c++/10/bits/c++io.h:
 /usr/include/c++/10/bits/fstream.tcc:
 /usr/include/c++/10/iostream:
+/usr/include/c++/10/thread:
+/usr/include/c++/10/memory:
+/usr/include/c++/10/bits/stl_tempbuf.h:
+/usr/include/c++/10/bits/stl_raw_storage_iter.h:
+/usr/include/c++/10/bits/ranges_uninitialized.h:
+/usr/include/c++/10/bits/shared_ptr_atomic.h:
+/usr/include/c++/10/bits/atomic_base.h:
+/usr/include/c++/10/bits/atomic_lockfree_defines.h:
+/usr/include/c++/10/backward/auto_ptr.h:
+/usr/include/c++/10/pstl/glue_memory_defs.h:
+/usr/include/c++/10/pstl/execution_defs.h:

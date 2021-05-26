@@ -148,8 +148,45 @@ build/WebVTTParser.o: source/WebVTTParser.cpp /usr/include/stdc-predef.h \
  /usr/include/c++/10/bits/stl_uninitialized.h \
  /usr/include/c++/10/bits/stl_vector.h \
  /usr/include/c++/10/bits/stl_bvector.h \
- /usr/include/c++/10/bits/vector.tcc /usr/include/memory.h \
- /usr/include/string.h /usr/include/strings.h
+ /usr/include/c++/10/bits/vector.tcc /usr/include/c++/10/optional \
+ /usr/include/c++/10/bits/enable_special_members.h \
+ /usr/include/c++/10/list /usr/include/c++/10/bits/stl_list.h \
+ /usr/include/c++/10/bits/list.tcc /usr/include/memory.h \
+ /usr/include/string.h /usr/include/strings.h include/logger/Logger.h \
+ /usr/include/c++/10/iostream /usr/include/c++/10/ostream \
+ /usr/include/c++/10/ios /usr/include/c++/10/bits/ios_base.h \
+ /usr/include/c++/10/bits/locale_classes.h \
+ /usr/include/c++/10/bits/locale_classes.tcc \
+ /usr/include/c++/10/streambuf /usr/include/c++/10/bits/streambuf.tcc \
+ /usr/include/c++/10/bits/basic_ios.h \
+ /usr/include/c++/10/bits/locale_facets.h /usr/include/c++/10/cwctype \
+ /usr/include/wctype.h /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h \
+ /usr/include/x86_64-linux-gnu/c++/10/bits/ctype_base.h \
+ /usr/include/c++/10/bits/streambuf_iterator.h \
+ /usr/include/x86_64-linux-gnu/c++/10/bits/ctype_inline.h \
+ /usr/include/c++/10/bits/locale_facets.tcc \
+ /usr/include/c++/10/bits/basic_ios.tcc \
+ /usr/include/c++/10/bits/ostream.tcc /usr/include/c++/10/istream \
+ /usr/include/c++/10/bits/istream.tcc /usr/include/c++/10/fstream \
+ /usr/include/c++/10/bits/codecvt.h \
+ /usr/include/x86_64-linux-gnu/c++/10/bits/basic_file.h \
+ /usr/include/x86_64-linux-gnu/c++/10/bits/c++io.h \
+ /usr/include/c++/10/bits/fstream.tcc /usr/include/c++/10/sstream \
+ /usr/include/c++/10/bits/sstream.tcc include/utfcpp/source/utf8.h \
+ include/utfcpp/source/utf8/checked.h include/utfcpp/source/utf8/core.h \
+ /usr/include/c++/10/iterator /usr/include/c++/10/bits/stream_iterator.h \
+ include/utfcpp/source/utf8/cpp17.h include/utfcpp/source/utf8/checked.h \
+ include/utfcpp/source/utf8/cpp11.h \
+ include/utfcpp/source/utf8/unchecked.h /usr/include/c++/10/thread \
+ /usr/include/c++/10/memory /usr/include/c++/10/bits/stl_tempbuf.h \
+ /usr/include/c++/10/bits/stl_raw_storage_iter.h \
+ /usr/include/c++/10/bits/ranges_uninitialized.h \
+ /usr/include/c++/10/bits/shared_ptr_atomic.h \
+ /usr/include/c++/10/bits/atomic_base.h \
+ /usr/include/c++/10/bits/atomic_lockfree_defines.h \
+ /usr/include/c++/10/backward/auto_ptr.h \
+ /usr/include/c++/10/pstl/glue_memory_defs.h \
+ /usr/include/c++/10/pstl/execution_defs.h
 /usr/include/stdc-predef.h:
 include/WebVTTParser.h:
 include/bufferImpl/SyncBuffer.h:
@@ -337,6 +374,60 @@ include/bufferImpl/Semaphore.h:
 /usr/include/c++/10/bits/stl_vector.h:
 /usr/include/c++/10/bits/stl_bvector.h:
 /usr/include/c++/10/bits/vector.tcc:
+/usr/include/c++/10/optional:
+/usr/include/c++/10/bits/enable_special_members.h:
+/usr/include/c++/10/list:
+/usr/include/c++/10/bits/stl_list.h:
+/usr/include/c++/10/bits/list.tcc:
 /usr/include/memory.h:
 /usr/include/string.h:
 /usr/include/strings.h:
+include/logger/Logger.h:
+/usr/include/c++/10/iostream:
+/usr/include/c++/10/ostream:
+/usr/include/c++/10/ios:
+/usr/include/c++/10/bits/ios_base.h:
+/usr/include/c++/10/bits/locale_classes.h:
+/usr/include/c++/10/bits/locale_classes.tcc:
+/usr/include/c++/10/streambuf:
+/usr/include/c++/10/bits/streambuf.tcc:
+/usr/include/c++/10/bits/basic_ios.h:
+/usr/include/c++/10/bits/locale_facets.h:
+/usr/include/c++/10/cwctype:
+/usr/include/wctype.h:
+/usr/include/x86_64-linux-gnu/bits/wctype-wchar.h:
+/usr/include/x86_64-linux-gnu/c++/10/bits/ctype_base.h:
+/usr/include/c++/10/bits/streambuf_iterator.h:
+/usr/include/x86_64-linux-gnu/c++/10/bits/ctype_inline.h:
+/usr/include/c++/10/bits/locale_facets.tcc:
+/usr/include/c++/10/bits/basic_ios.tcc:
+/usr/include/c++/10/bits/ostream.tcc:
+/usr/include/c++/10/istream:
+/usr/include/c++/10/bits/istream.tcc:
+/usr/include/c++/10/fstream:
+/usr/include/c++/10/bits/codecvt.h:
+/usr/include/x86_64-linux-gnu/c++/10/bits/basic_file.h:
+/usr/include/x86_64-linux-gnu/c++/10/bits/c++io.h:
+/usr/include/c++/10/bits/fstream.tcc:
+/usr/include/c++/10/sstream:
+/usr/include/c++/10/bits/sstream.tcc:
+include/utfcpp/source/utf8.h:
+include/utfcpp/source/utf8/checked.h:
+include/utfcpp/source/utf8/core.h:
+/usr/include/c++/10/iterator:
+/usr/include/c++/10/bits/stream_iterator.h:
+include/utfcpp/source/utf8/cpp17.h:
+include/utfcpp/source/utf8/checked.h:
+include/utfcpp/source/utf8/cpp11.h:
+include/utfcpp/source/utf8/unchecked.h:
+/usr/include/c++/10/thread:
+/usr/include/c++/10/memory:
+/usr/include/c++/10/bits/stl_tempbuf.h:
+/usr/include/c++/10/bits/stl_raw_storage_iter.h:
+/usr/include/c++/10/bits/ranges_uninitialized.h:
+/usr/include/c++/10/bits/shared_ptr_atomic.h:
+/usr/include/c++/10/bits/atomic_base.h:
+/usr/include/c++/10/bits/atomic_lockfree_defines.h:
+/usr/include/c++/10/backward/auto_ptr.h:
+/usr/include/c++/10/pstl/glue_memory_defs.h:
+/usr/include/c++/10/pstl/execution_defs.h:
