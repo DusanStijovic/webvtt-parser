@@ -6,11 +6,12 @@ source/WebVTTParser.cpp \
 source/main.cpp \
 source/bufferImpl/Semaphore.cpp \
 source/bufferImpl/SyncBuffer.cpp \
-source/logger/Logger.cpp
+source/logger/Logger.cpp \
+source/decoder/UTF8ToUTF32StreamDecoder.cpp
 
 
 INCLUDE_CPP_LIST = \
--Iinclude -Iinclude/bufferImpl -Iinclude/utfcpp/source -Iinclude/logger
+-Iinclude -Iinclude/bufferImpl -Iinclude/utfcpp/source -Iinclude/logger -Iinclude/decoder
 
 LIB_CPP_LIST = \
 -lpthread

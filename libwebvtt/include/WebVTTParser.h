@@ -16,7 +16,7 @@ namespace WebVTT
    {
 
    public:
-      WebVTTParser(std::shared_ptr<SyncBuffer<std::string, u_int8_t>> inputBuffer);
+      WebVTTParser(std::shared_ptr<SyncBuffer<std::u32string, uint32_t>> inputStream);
       void parserRun();
       enum SPECIAL_CHARACTER
       {
@@ -33,15 +33,13 @@ namespace WebVTT
    private:
       constexpr static int DEFAULT_READ_NUMBER = 1;
       bool lastReadCR = false;
-      std::shared_ptr<SyncBuffer<std::string, uint8_t>> inputBuffer;
-      std::shared_ptr<SyncBuffer<std::u32string, uint32_t>> decodedBuffer;
+      std::shared_ptr<SyncBuffer<std::u32string, uint32_t>> inputStream;
+      std::shared_ptr<SyncBuffer<std::u32string, uint32_t>> preprocessedStream;
 
       Logger parserLogger{"parserLog.txt"};
 
-      std::u32string decodeReadBytes(std::string &readBytes);
-      void cleanDecodedBytes(std::u32string &input);
-
-      void decodeInputStream();
+      void cleanDecodedData(std::u32string &input);
+      void preProcessDecodedStream();
 
       std::u32string collectWebVTTBlock(bool inHeader);
 

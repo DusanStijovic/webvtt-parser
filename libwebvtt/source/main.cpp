@@ -1,5 +1,6 @@
 #include "WebVTTParser.h"
 #include "SyncBuffer.h"
+#include "UTF8ToUTF32StreamDecoder.h"
 #include <string>
 #include <fstream>
 #include <streambuf>
@@ -26,13 +27,18 @@ int main(int argc, char *argv[])
 {
     std::ifstream t("sample.vtt", std::ios_base::in);
     std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
-    //std::cout << str << std::flush;
 
     auto buffer = std::make_shared<SyncBuffer<std::string, uint8_t>>();
-    auto parser = WebVTTParser(buffer);
+
+    auto decoder = UTF8ToUTF32StreamDecoder(buffer);
+    decoder.startDecoding();
+
+    auto parser = WebVTTParser(decoder.getDecodedStream().value());
     auto streamThread = std::thread(writeToBuffer, buffer, str);
 
     parser.parserRun();
 
     streamThread.join();
+    while (1)
+        ;
 }

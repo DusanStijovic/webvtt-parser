@@ -9,7 +9,6 @@
 #include <string>
 #include <string_view>
 #include <thread>
-
 #include "Logger.h"
 
 using namespace WebVTT;
@@ -23,13 +22,13 @@ using namespace std::chrono_literals;
  * @return
  */
 
-WebVTTParser::WebVTTParser(std::shared_ptr<SyncBuffer<std::string, u_int8_t>> inputBuffer) : inputBuffer(inputBuffer)
+WebVTTParser::WebVTTParser(std::shared_ptr<SyncBuffer<std::u32string, uint32_t>> inputStream) : inputStream(inputStream)
 {
-    decodedBuffer = std::make_shared<SyncBuffer<std::u32string, uint32_t>>();
+    preprocessedStream = std::make_shared<SyncBuffer<std::u32string, uint32_t>>();
     parserLogger.updateLogType(LogType::CONSOLE);
 };
 
-void WebVTTParser::cleanDecodedBytes(std::u32string &input)
+void WebVTTParser::cleanDecodedData(std::u32string &input)
 {
     if (input.size() == 0)
         return;
@@ -73,45 +72,23 @@ void WebVTTParser::cleanDecodedBytes(std::u32string &input)
     }
 }
 
-std::u32string WebVTTParser::decodeReadBytes(std::string &readBytes)
-{
-    auto positionInvalid = utf8::find_invalid(readBytes);
-
-    std::string_view validUTF8 = std::string_view(readBytes);
-    std::u32string utf_32;
-
-    if (positionInvalid == std::string::npos)
-    {
-        utf_32 = utf8::utf8to32(validUTF8);
-        readBytes.clear();
-    }
-    else
-    {
-        utf_32 = utf8::utf8to32(validUTF8.substr(0, positionInvalid));
-        readBytes.erase(readBytes.begin(), readBytes.begin() + positionInvalid);
-    }
-    return utf_32;
-}
-
-void WebVTTParser::decodeInputStream()
+void WebVTTParser::preProcessDecodedStream()
 {
     std::string buffer;
-    std::string bytes;
+    std::u32string decodedData;
     while (true)
     {
-        bytes = inputBuffer.get()->readMultiple(DEFAULT_READ_NUMBER);
+        decodedData = inputStream.get()->readMultiple(DEFAULT_READ_NUMBER);
 
-        if (bytes.length() == 0)
+        if (decodedData.length() == 0)
         {
             break;
         }
-        buffer.append(bytes);
-        std::u32string decodedBytes = decodeReadBytes(buffer);
+        cleanDecodedData(decodedData);
 
-        cleanDecodedBytes(decodedBytes);
-        decodedBuffer.get()->writeMultiple(decodedBytes);
+        preprocessedStream.get()->writeMultiple(decodedData);
     }
-    decodedBuffer.get()->setInputEnded();
+    preprocessedStream.get()->setInputEnded();
 };
 
 bool WebVTTParser::checkIfStringContainsArrow(std::u32string input)
@@ -162,13 +139,13 @@ std::u32string WebVTTParser::collectWebVTTBlock(bool inHeader)
 
     while (true)
     {
-        auto readData = decodedBuffer.get()->readUntilSpecificData(LF_C);
+        auto readData = preprocessedStream.get()->readUntilSpecificData(LF_C);
         if (readData.size() != 0)
             line = readData;
 
         lineCount++;
 
-        if (decodedBuffer.get()->chechIfDoneAndAdvancedIfNot())
+        if (preprocessedStream.get()->chechIfDoneAndAdvancedIfNot())
             seenEOF = true;
 
         if (line.size() == 0)
@@ -202,7 +179,7 @@ std::u32string WebVTTParser::collectWebVTTBlock(bool inHeader)
 
 void WebVTTParser::parserRun()
 {
-    auto one = std::thread(&WebVTTParser::decodeInputStream, this);
+    auto one = std::thread(&WebVTTParser::preProcessDecodedStream, this);
 
     uint32_t position = 0;
     bool seenCue = false;
@@ -215,14 +192,14 @@ void WebVTTParser::parserRun()
 
     while (true)
     {
-        auto readData = decodedBuffer.get()->readMultiple(EXTENSION_NAME_LENGTH);
+        auto readData = preprocessedStream.get()->readMultiple(EXTENSION_NAME_LENGTH);
         if (readData != EXTENSION_NAME)
         {
             fileIsOK = false;
             break;
         }
 
-        readOneDataOptional = decodedBuffer.get()->chechIfDoneAndAdvancedIfNot();
+        readOneDataOptional = preprocessedStream.get()->chechIfDoneAndAdvancedIfNot();
         if (!readOneDataOptional.has_value())
         {
             fileIsOK = false;
@@ -236,15 +213,15 @@ void WebVTTParser::parserRun()
             break;
         }
 
-        decodedBuffer.get()->readUntilSpecificData(LF_C);
+        preprocessedStream.get()->readUntilSpecificData(LF_C);
 
-        readOneDataOptional = decodedBuffer.get()->chechIfDoneAndAdvancedIfNot();
+        readOneDataOptional = preprocessedStream.get()->chechIfDoneAndAdvancedIfNot();
         if (!readOneDataOptional.has_value())
         {
             break;
         }
 
-        readOneDataOptional = decodedBuffer.get()->chechIfDoneAndAdvancedIfNot();
+        readOneDataOptional = preprocessedStream.get()->chechIfDoneAndAdvancedIfNot();
         if (readOneDataOptional.has_value())
         {
             break;
@@ -255,12 +232,12 @@ void WebVTTParser::parserRun()
         }
         else
         {
-            readOneDataOptional = decodedBuffer.get()->readFrom();
+            readOneDataOptional = preprocessedStream.get()->readFrom();
         }
-        decodedBuffer.get()->readUntilSpecificData(LF_C);
+        preprocessedStream.get()->readUntilSpecificData(LF_C);
         //Regions
 
-            break;
+        break;
     }
     if (!fileIsOK)
     {
