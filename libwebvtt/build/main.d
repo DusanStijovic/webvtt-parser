@@ -152,9 +152,9 @@ build/main.o: source/main.cpp /usr/include/stdc-predef.h \
  /usr/include/c++/10/bits/enable_special_members.h \
  /usr/include/c++/10/list /usr/include/c++/10/bits/stl_list.h \
  /usr/include/c++/10/bits/list.tcc /usr/include/memory.h \
- /usr/include/string.h /usr/include/strings.h /usr/include/c++/10/fstream \
- /usr/include/c++/10/istream /usr/include/c++/10/ios \
- /usr/include/c++/10/bits/ios_base.h \
+ /usr/include/string.h /usr/include/strings.h include/logger/Logger.h \
+ /usr/include/c++/10/iostream /usr/include/c++/10/ostream \
+ /usr/include/c++/10/ios /usr/include/c++/10/bits/ios_base.h \
  /usr/include/c++/10/bits/locale_classes.h \
  /usr/include/c++/10/bits/locale_classes.tcc \
  /usr/include/c++/10/streambuf /usr/include/c++/10/bits/streambuf.tcc \
@@ -165,13 +165,14 @@ build/main.o: source/main.cpp /usr/include/stdc-predef.h \
  /usr/include/c++/10/bits/streambuf_iterator.h \
  /usr/include/x86_64-linux-gnu/c++/10/bits/ctype_inline.h \
  /usr/include/c++/10/bits/locale_facets.tcc \
- /usr/include/c++/10/bits/basic_ios.tcc /usr/include/c++/10/ostream \
- /usr/include/c++/10/bits/ostream.tcc \
- /usr/include/c++/10/bits/istream.tcc /usr/include/c++/10/bits/codecvt.h \
+ /usr/include/c++/10/bits/basic_ios.tcc \
+ /usr/include/c++/10/bits/ostream.tcc /usr/include/c++/10/istream \
+ /usr/include/c++/10/bits/istream.tcc /usr/include/c++/10/fstream \
+ /usr/include/c++/10/bits/codecvt.h \
  /usr/include/x86_64-linux-gnu/c++/10/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/10/bits/c++io.h \
- /usr/include/c++/10/bits/fstream.tcc /usr/include/c++/10/iostream \
- /usr/include/c++/10/thread /usr/include/c++/10/memory \
+ /usr/include/c++/10/bits/fstream.tcc /usr/include/c++/10/sstream \
+ /usr/include/c++/10/bits/sstream.tcc /usr/include/c++/10/memory \
  /usr/include/c++/10/bits/stl_tempbuf.h \
  /usr/include/c++/10/bits/stl_raw_storage_iter.h \
  /usr/include/c++/10/bits/ranges_uninitialized.h \
@@ -180,7 +181,7 @@ build/main.o: source/main.cpp /usr/include/stdc-predef.h \
  /usr/include/c++/10/bits/atomic_lockfree_defines.h \
  /usr/include/c++/10/backward/auto_ptr.h \
  /usr/include/c++/10/pstl/glue_memory_defs.h \
- /usr/include/c++/10/pstl/execution_defs.h
+ /usr/include/c++/10/pstl/execution_defs.h /usr/include/c++/10/thread
 /usr/include/stdc-predef.h:
 include/WebVTTParser.h:
 include/bufferImpl/SyncBuffer.h:
@@ -376,8 +377,9 @@ include/bufferImpl/Semaphore.h:
 /usr/include/memory.h:
 /usr/include/string.h:
 /usr/include/strings.h:
-/usr/include/c++/10/fstream:
-/usr/include/c++/10/istream:
+include/logger/Logger.h:
+/usr/include/c++/10/iostream:
+/usr/include/c++/10/ostream:
 /usr/include/c++/10/ios:
 /usr/include/c++/10/bits/ios_base.h:
 /usr/include/c++/10/bits/locale_classes.h:
@@ -394,15 +396,16 @@ include/bufferImpl/Semaphore.h:
 /usr/include/x86_64-linux-gnu/c++/10/bits/ctype_inline.h:
 /usr/include/c++/10/bits/locale_facets.tcc:
 /usr/include/c++/10/bits/basic_ios.tcc:
-/usr/include/c++/10/ostream:
 /usr/include/c++/10/bits/ostream.tcc:
+/usr/include/c++/10/istream:
 /usr/include/c++/10/bits/istream.tcc:
+/usr/include/c++/10/fstream:
 /usr/include/c++/10/bits/codecvt.h:
 /usr/include/x86_64-linux-gnu/c++/10/bits/basic_file.h:
 /usr/include/x86_64-linux-gnu/c++/10/bits/c++io.h:
 /usr/include/c++/10/bits/fstream.tcc:
-/usr/include/c++/10/iostream:
-/usr/include/c++/10/thread:
+/usr/include/c++/10/sstream:
+/usr/include/c++/10/bits/sstream.tcc:
 /usr/include/c++/10/memory:
 /usr/include/c++/10/bits/stl_tempbuf.h:
 /usr/include/c++/10/bits/stl_raw_storage_iter.h:
@@ -413,3 +416,4 @@ include/bufferImpl/Semaphore.h:
 /usr/include/c++/10/backward/auto_ptr.h:
 /usr/include/c++/10/pstl/glue_memory_defs.h:
 /usr/include/c++/10/pstl/execution_defs.h:
+/usr/include/c++/10/thread:

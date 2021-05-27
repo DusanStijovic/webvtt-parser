@@ -120,10 +120,7 @@ template <typename StringType, typename dataType>
 std::optional<dataType> SyncBuffer<StringType, dataType>::chechIfDoneAndAdvancedIfNot()
 {
 
-    auto oneData = readFrom();
-    if (!oneData.has_value())
-        return std::nullopt;
-    return oneData.value();
+       return readFrom();
 }
 
 template class SyncBuffer<std::string, uint8_t>;

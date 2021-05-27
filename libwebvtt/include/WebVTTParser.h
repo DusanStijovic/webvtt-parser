@@ -6,9 +6,11 @@
 #include <array>
 #include <list>
 #include <memory.h>
+#include <Logger.h>
 
 namespace WebVTT
 {
+   using namespace CPlusPlusLogging;
 
    class WebVTTParser
    {
@@ -24,6 +26,8 @@ namespace WebVTT
          LF_C = 0x000A,
          SPACE_C = 0x0020,
          TAB_C = 0x0009,
+         HYPEN_MINUS = 0x002D,
+         HYPEN_GREATHER = 0x003E
       };
 
    private:
@@ -32,15 +36,17 @@ namespace WebVTT
       std::shared_ptr<SyncBuffer<std::string, uint8_t>> inputBuffer;
       std::shared_ptr<SyncBuffer<std::u32string, uint32_t>> decodedBuffer;
 
+      Logger parserLogger{"parserLog.txt"};
+
       std::u32string decodeReadBytes(std::string &readBytes);
       void cleanDecodedBytes(std::u32string &input);
 
       void decodeInputStream();
 
+      std::u32string collectWebVTTBlock(bool inHeader);
 
-      std::u32string collectWebVTTBlock();
+      bool checkIfStringContainsArrow(std::u32string input);
    };
-
 }
 
 #endif

@@ -147,7 +147,31 @@ build/Logger.o: source/logger/Logger.cpp /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/c++/10/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/10/bits/c++io.h \
  /usr/include/c++/10/bits/fstream.tcc /usr/include/c++/10/sstream \
- /usr/include/c++/10/bits/sstream.tcc
+ /usr/include/c++/10/bits/sstream.tcc /usr/include/c++/10/memory \
+ /usr/include/c++/10/bits/stl_uninitialized.h \
+ /usr/include/c++/10/bits/stl_tempbuf.h \
+ /usr/include/c++/10/bits/stl_raw_storage_iter.h \
+ /usr/include/c++/10/bits/ranges_uninitialized.h \
+ /usr/include/c++/10/ext/concurrence.h \
+ /usr/include/c++/10/bits/uses_allocator.h \
+ /usr/include/c++/10/bits/unique_ptr.h /usr/include/c++/10/utility \
+ /usr/include/c++/10/bits/stl_relops.h /usr/include/c++/10/tuple \
+ /usr/include/c++/10/array /usr/include/c++/10/bits/invoke.h \
+ /usr/include/c++/10/bits/shared_ptr.h \
+ /usr/include/c++/10/bits/shared_ptr_base.h \
+ /usr/include/c++/10/bits/allocated_ptr.h \
+ /usr/include/c++/10/bits/refwrap.h \
+ /usr/include/c++/10/ext/aligned_buffer.h \
+ /usr/include/c++/10/bits/shared_ptr_atomic.h \
+ /usr/include/c++/10/bits/atomic_base.h \
+ /usr/include/c++/10/bits/atomic_lockfree_defines.h \
+ /usr/include/c++/10/backward/auto_ptr.h \
+ /usr/include/c++/10/pstl/glue_memory_defs.h \
+ /usr/include/c++/10/pstl/execution_defs.h /usr/include/c++/10/mutex \
+ /usr/include/c++/10/chrono /usr/include/c++/10/ratio \
+ /usr/include/c++/10/limits /usr/include/c++/10/bits/parse_numbers.h \
+ /usr/include/c++/10/bits/std_mutex.h \
+ /usr/include/c++/10/bits/unique_lock.h
 /usr/include/stdc-predef.h:
 /usr/include/c++/10/iostream:
 /usr/include/x86_64-linux-gnu/c++/10/bits/c++config.h:
@@ -335,3 +359,34 @@ include/logger/Logger.h:
 /usr/include/c++/10/bits/fstream.tcc:
 /usr/include/c++/10/sstream:
 /usr/include/c++/10/bits/sstream.tcc:
+/usr/include/c++/10/memory:
+/usr/include/c++/10/bits/stl_uninitialized.h:
+/usr/include/c++/10/bits/stl_tempbuf.h:
+/usr/include/c++/10/bits/stl_raw_storage_iter.h:
+/usr/include/c++/10/bits/ranges_uninitialized.h:
+/usr/include/c++/10/ext/concurrence.h:
+/usr/include/c++/10/bits/uses_allocator.h:
+/usr/include/c++/10/bits/unique_ptr.h:
+/usr/include/c++/10/utility:
+/usr/include/c++/10/bits/stl_relops.h:
+/usr/include/c++/10/tuple:
+/usr/include/c++/10/array:
+/usr/include/c++/10/bits/invoke.h:
+/usr/include/c++/10/bits/shared_ptr.h:
+/usr/include/c++/10/bits/shared_ptr_base.h:
+/usr/include/c++/10/bits/allocated_ptr.h:
+/usr/include/c++/10/bits/refwrap.h:
+/usr/include/c++/10/ext/aligned_buffer.h:
+/usr/include/c++/10/bits/shared_ptr_atomic.h:
+/usr/include/c++/10/bits/atomic_base.h:
+/usr/include/c++/10/bits/atomic_lockfree_defines.h:
+/usr/include/c++/10/backward/auto_ptr.h:
+/usr/include/c++/10/pstl/glue_memory_defs.h:
+/usr/include/c++/10/pstl/execution_defs.h:
+/usr/include/c++/10/mutex:
+/usr/include/c++/10/chrono:
+/usr/include/c++/10/ratio:
+/usr/include/c++/10/limits:
+/usr/include/c++/10/bits/parse_numbers.h:
+/usr/include/c++/10/bits/std_mutex.h:
+/usr/include/c++/10/bits/unique_lock.h:

@@ -1,14 +1,16 @@
 #include "WebVTTParser.h"
-#include "Logger.h"
 
+#include <utf8.h>
+
+#include <chrono>
 #include <iostream>
 #include <list>
 #include <optional>
-#include <utf8.h>
+#include <string>
 #include <string_view>
 #include <thread>
-#include <chrono>
-#include <string>
+
+#include "Logger.h"
 
 using namespace WebVTT;
 using namespace CPlusPlusLogging;
@@ -24,6 +26,7 @@ using namespace std::chrono_literals;
 WebVTTParser::WebVTTParser(std::shared_ptr<SyncBuffer<std::string, u_int8_t>> inputBuffer) : inputBuffer(inputBuffer)
 {
     decodedBuffer = std::make_shared<SyncBuffer<std::u32string, uint32_t>>();
+    parserLogger.updateLogType(LogType::CONSOLE);
 };
 
 void WebVTTParser::cleanDecodedBytes(std::u32string &input)
@@ -111,29 +114,94 @@ void WebVTTParser::decodeInputStream()
     decodedBuffer.get()->setInputEnded();
 };
 
-std::u32string WebVTTParser::collectWebVTTBlock()
+bool WebVTTParser::checkIfStringContainsArrow(std::u32string input)
+{
+    //TO do - maybe change to string and use regex
+    if (input.size() < 3)
+        return false;
+    auto current = input.begin();
+    auto end = input.end();
+    do
+    {
+        auto first = current++;
+        auto second = current++;
+        auto thrid = current++;
+        if (*thrid != HYPEN_GREATHER)
+        {
+            if (end - current < 3)
+                break;
+            continue;
+        }
+        if (*second != HYPEN_GREATHER)
+        {
+            if (end - current < 2)
+                break;
+            current = thrid;
+            continue;
+        }
+        if (*first != HYPEN_GREATHER)
+        {
+            if (end - current < 1)
+            {
+                break;
+            }
+            current = second;
+        }
+        return true;
+    } while (true);
+    return false;
+};
+
+std::u32string WebVTTParser::collectWebVTTBlock(bool inHeader)
 {
     uint32_t lineCount = 0;
     std::u32string line;
     std::u32string buffer;
     bool seenEOF = false, seenArrow = false;
     //Cue, stylesheet, region = null;
+
     while (true)
     {
         auto readData = decodedBuffer.get()->readUntilSpecificData(LF_C);
         if (readData.size() != 0)
             line = readData;
+
         lineCount++;
+
         if (decodedBuffer.get()->chechIfDoneAndAdvancedIfNot())
             seenEOF = true;
+
+        if (line.size() == 0)
+            break;
+
+        bool lineContainArrow = checkIfStringContainsArrow(line);
+        if (lineContainArrow)
+        {
+            if (not inHeader and (lineCount == 1 or lineCount == 2 and not seenArrow))
+            {
+                seenArrow = true;
+                //Cue creation
+                //Collect cue info from line
+            }
+            else
+            {
+                //position = previous position;
+            }
+        }
         else
-            decodedBuffer.get()->readFrom();
+        {
+            if (not inHeader and lineCount == 2)
+            {
+            }
+        }
+        if (seenEOF)
+            break;
     }
+    return buffer;
 }
 
 void WebVTTParser::parserRun()
 {
-
     auto one = std::thread(&WebVTTParser::decodeInputStream, this);
 
     uint32_t position = 0;
@@ -189,16 +257,18 @@ void WebVTTParser::parserRun()
         {
             readOneDataOptional = decodedBuffer.get()->readFrom();
         }
+        decodedBuffer.get()->readUntilSpecificData(LF_C);
+        //Regions
 
-        break;
+            break;
     }
     if (!fileIsOK)
     {
-        std::cout << "Eror while parsing!\n";
+        parserLogger.error("Eror while parsing!\n");
     }
     else
     {
-        std::cout << "Parsing sucessful!\n";
+        parserLogger.info("Parsing sucessful!\n");
     }
     std::cout << std::flush;
 
