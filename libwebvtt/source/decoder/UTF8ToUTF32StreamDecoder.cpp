@@ -37,7 +37,6 @@ void UTF8ToUTF32StreamDecoder::decodeInputStream()
         }
         buffer.append(bytes);
         std::u32string decodedBytes = decodeReadBytes(buffer);
-        logger.info(buffer);
         std::cout << std::flush;
 
         outputstream.get()->writeMultiple(decodedBytes);
@@ -65,8 +64,7 @@ std::optional<std::shared_ptr<SyncBuffer<std::u32string, uint32_t>>> UTF8ToUTF32
 UTF8ToUTF32StreamDecoder::~UTF8ToUTF32StreamDecoder()
 {
     //Videti da l je bezbedno uvek
-    if (decodingStarted)
-    {
-        decoderThread.get()->join();
-    }
+    if (not decodingStarted)
+        return;
+    decoderThread.get()->join();
 }

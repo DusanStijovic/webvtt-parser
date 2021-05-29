@@ -1,7 +1,7 @@
-build/main.o: source/main.cpp /usr/include/stdc-predef.h include/Parser.h \
- include/bufferImpl/SyncBuffer.h include/bufferImpl/Semaphore.h \
- /usr/include/c++/10/mutex /usr/include/c++/10/tuple \
- /usr/include/c++/10/utility \
+build/Parser.o: source/Parser.cpp /usr/include/stdc-predef.h \
+ include/Parser.h include/bufferImpl/SyncBuffer.h \
+ include/bufferImpl/Semaphore.h /usr/include/c++/10/mutex \
+ /usr/include/c++/10/tuple /usr/include/c++/10/utility \
  /usr/include/x86_64-linux-gnu/c++/10/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/10/bits/os_defines.h \
  /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
@@ -182,7 +182,12 @@ build/main.o: source/main.cpp /usr/include/stdc-predef.h include/Parser.h \
  /usr/include/c++/10/pstl/glue_memory_defs.h \
  /usr/include/c++/10/pstl/execution_defs.h /usr/include/memory.h \
  /usr/include/string.h /usr/include/strings.h /usr/include/c++/10/thread \
- include/decoder/UTF8ToUTF32StreamDecoder.h
+ include/utfcpp/source/utf8.h include/utfcpp/source/utf8/checked.h \
+ include/utfcpp/source/utf8/core.h /usr/include/c++/10/iterator \
+ /usr/include/c++/10/bits/stream_iterator.h \
+ include/utfcpp/source/utf8/cpp17.h include/utfcpp/source/utf8/checked.h \
+ include/utfcpp/source/utf8/cpp11.h \
+ include/utfcpp/source/utf8/unchecked.h
 /usr/include/stdc-predef.h:
 include/Parser.h:
 include/bufferImpl/SyncBuffer.h:
@@ -418,4 +423,12 @@ include/logger/Logger.h:
 /usr/include/string.h:
 /usr/include/strings.h:
 /usr/include/c++/10/thread:
-include/decoder/UTF8ToUTF32StreamDecoder.h:
+include/utfcpp/source/utf8.h:
+include/utfcpp/source/utf8/checked.h:
+include/utfcpp/source/utf8/core.h:
+/usr/include/c++/10/iterator:
+/usr/include/c++/10/bits/stream_iterator.h:
+include/utfcpp/source/utf8/cpp17.h:
+include/utfcpp/source/utf8/checked.h:
+include/utfcpp/source/utf8/cpp11.h:
+include/utfcpp/source/utf8/unchecked.h:

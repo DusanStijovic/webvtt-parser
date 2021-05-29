@@ -22,7 +22,7 @@ bool SyncBuffer<StringType, dataType>::writeOne(dataType x)
 }
 
 template <typename StringType, typename dataType>
-bool SyncBuffer<StringType, dataType>::writeTo(dataType x)
+bool SyncBuffer<StringType, dataType>::writeNext(dataType x)
 {
     std::lock_guard<std::mutex> lock(mutexWrite);
     return writeOne(x);
@@ -63,7 +63,26 @@ std::optional<dataType> SyncBuffer<StringType, dataType>::readOne()
 }
 
 template <typename StringType, typename dataType>
-std::optional<dataType> SyncBuffer<StringType, dataType>::readFrom()
+std::optional<dataType> SyncBuffer<StringType, dataType>::peekOne()
+{
+    std::unique_lock<std::mutex> lock(mutex);
+
+    int res = -1;
+    while (leftToRead == 0 && !inputEnded)
+        notEmpty.wait(lock);
+
+    if (inputEnded && leftToRead == 0)
+        return std::nullopt;
+    {
+        res = buffer[m_r];
+    }
+    //TO DO, maybe yes meybe no
+    notEmpty.notify_all();
+    return res;
+}
+
+template <typename StringType, typename dataType>
+std::optional<dataType> SyncBuffer<StringType, dataType>::readNext()
 {
     std::lock_guard<std::mutex> lock(mutexRead);
     return readOne();
@@ -92,11 +111,13 @@ StringType SyncBuffer<StringType, dataType>::readUntilSpecificData(dataType spec
 {
     std::lock_guard<std::mutex> lock(mutexRead);
     StringType values;
-    auto result = readOne();
+
+    auto result = peekOne();
     while (result.has_value() && result.value() != specificData)
     {
+        result = readOne();
         values.push_back(result.value());
-        result = readFrom();
+        result = peekOne();
     }
     return values;
 }
@@ -117,10 +138,18 @@ void SyncBuffer<StringType, dataType>::setInputEnded()
 }
 
 template <typename StringType, typename dataType>
-std::optional<dataType> SyncBuffer<StringType, dataType>::chechIfDoneAndAdvancedIfNot()
+std::optional<dataType> SyncBuffer<StringType, dataType>::isReadDoneAndAdvancedIfNot()
 {
+    return readNext();
+}
 
-       return readFrom();
+template <typename StringType, typename dataType>
+bool SyncBuffer<StringType, dataType>::isReadDone()
+{
+    std::unique_lock<std::mutex> lock(mutex);
+    while (leftToRead != 0 && not inputEnded)
+        notEmpty.wait(lock);
+    return inputEnded && leftToRead == 0;
 }
 
 template class SyncBuffer<std::string, uint8_t>;

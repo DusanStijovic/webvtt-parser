@@ -19,20 +19,22 @@ public:
     }
 
     bool writeOne(dataType x);
-    bool writeTo(dataType x);
+    bool writeNext(dataType x);
     bool writeMultiple(StringType input);
 
-    std::optional<dataType> readFrom();
+    std::optional<dataType> readNext();
     std::optional<dataType> readOne();
     StringType readMultiple(uint32_t number);
     StringType readUntilSpecificData(dataType specificData);
+    std::optional<dataType> peekOne();
 
     bool isInputEnded();
     void setInputEnded();
 
     uint32_t getSize() { return leftToRead; }
 
-    std::optional<dataType> chechIfDoneAndAdvancedIfNot();
+    std::optional<dataType> isReadDoneAndAdvancedIfNot();
+    bool isReadDone();
 
 private:
     constexpr static int NUM_OF_SLOTS = 10;

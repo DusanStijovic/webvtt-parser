@@ -1,4 +1,4 @@
-#include "WebVTTParser.h"
+#include "Parser.h"
 #include "SyncBuffer.h"
 #include "UTF8ToUTF32StreamDecoder.h"
 #include <string>
@@ -11,13 +11,11 @@
 
 using namespace std::chrono_literals;
 
-using namespace WebVTT;
-
 void writeToBuffer(const std::shared_ptr<SyncBuffer<std::string, uint8_t>> &buffer, const std::string &input)
 {
     for (auto oneChar : input)
     {
-        buffer.get()->writeTo(oneChar);
+        buffer.get()->writeNext(oneChar);
         std::this_thread::sleep_for(2ms);
     }
     buffer.get()->setInputEnded();
@@ -33,10 +31,10 @@ int main(int argc, char *argv[])
     auto decoder = UTF8ToUTF32StreamDecoder(buffer);
     decoder.startDecoding();
 
-    auto parser = WebVTTParser(decoder.getDecodedStream().value());
+    auto parser = WebVTT::Parser(decoder.getDecodedStream().value());
     auto streamThread = std::thread(writeToBuffer, buffer, str);
 
-    parser.parserRun();
+    parser.startParsing();
 
     streamThread.join();
     while (1)
