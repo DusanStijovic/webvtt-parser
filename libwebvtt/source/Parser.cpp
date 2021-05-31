@@ -1,5 +1,5 @@
 #include "Parser.h"
-
+#include "constants.h"
 #include <utf8.h>
 
 #include <chrono>
@@ -112,8 +112,8 @@ namespace WebVTT
         {
             auto first = current++;
             auto second = current++;
-            auto thrid = current++;
-            if (*thrid != HYPEN_GREATHER)
+            auto third = current++;
+            if (*third != HYPEN_GREATHER)
             {
                 if (end - current < 3)
                     break;
@@ -123,7 +123,7 @@ namespace WebVTT
             {
                 if (end - current < 2)
                     break;
-                current = thrid;
+                current = third;
                 continue;
             }
             if (*first != HYPEN_GREATHER)
@@ -143,6 +143,7 @@ namespace WebVTT
     {
         //[Collect WebVTT Block] Step 1-10
         uint32_t lineCount = 0;
+        auto previousPosition = preprocessedStream.get()->getReadPosition();
         std::u32string line;
         std::u32string buffer;
         bool seenEOF = false, seenArrow = false;
@@ -178,7 +179,8 @@ namespace WebVTT
                 }
                 else
                 {
-                    //position = previous position;
+                    preprocessedStream.get()->setReadPosition(previousPosition);
+                    break;
                 }
             }
             else
@@ -273,7 +275,7 @@ namespace WebVTT
             //List<Region> regions = new List<>();
 
             //[Main loop] Step 14
-            //Maybe to extract to seperate function...
+            //Maybe to extract to separate function...
             while (readOneDataOptional.has_value())
             {
                 //[Block loop] Step1
@@ -295,7 +297,7 @@ namespace WebVTT
         }
         else
         {
-            parserLogger.info("Parsing sucessful!\n");
+            parserLogger.info("Parsing successful!\n");
         }
         std::cout << std::flush;
     }

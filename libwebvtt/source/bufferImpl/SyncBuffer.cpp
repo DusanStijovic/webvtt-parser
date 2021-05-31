@@ -5,19 +5,30 @@
 #include <list>
 
 template <typename StringType, typename dataType>
+SyncBuffer<StringType, dataType>::SyncBuffer()
+{
+    //static_assert(std::is_same<StringType, std::u32string>::value && std::is_same<dataType, uint32_t>::value, "Incompatible types");
+    //static_assert(std::is_same<StringType, std::string>::value && std::is_same<dataType, uint8_t>::value, "Incompatible types");
+    readPosition = buffer.begin();
+}
+
+template <typename StringType, typename dataType>
 bool SyncBuffer<StringType, dataType>::writeOne(dataType x)
 {
     std::unique_lock<std::mutex> lock(mutex);
-    while (leftToRead == NUM_OF_SLOTS && !inputEnded)
-        notFull.wait(lock);
+    bool shouldRetBack = false;
     if (inputEnded)
         return false;
     {
-        buffer[m_w] = x;
-        m_w = (m_w + 1) % NUM_OF_SLOTS == 0 ? 0 : m_w + 1;
-        leftToRead++;
+        if (readPosition == buffer.end())
+            shouldRetBack = true;
+
+        buffer.push_back(x);
+
+        if (shouldRetBack)
+            readPosition = --buffer.end();
     }
-    notEmpty.notify_all();
+    emptyCV.notify_all();
     return true;
 }
 
@@ -47,18 +58,17 @@ std::optional<dataType> SyncBuffer<StringType, dataType>::readOne()
 {
     std::unique_lock<std::mutex> lock(mutex);
 
-    int res = -1;
-    while (leftToRead == 0 && !inputEnded)
-        notEmpty.wait(lock);
+    dataType res = -1;
 
-    if (inputEnded && leftToRead == 0)
+    while (readPosition == buffer.end() && !inputEnded)
+        emptyCV.wait(lock);
+
+    if (readPosition == buffer.end())
         return std::nullopt;
     {
-        res = buffer[m_r];
-        m_r = (m_r + 1) % NUM_OF_SLOTS == 0 ? 0 : m_r + 1;
-        leftToRead--;
+        res = *readPosition;
+        std::advance(readPosition, 1);
     }
-    notFull.notify_all();
     return res;
 }
 
@@ -68,16 +78,16 @@ std::optional<dataType> SyncBuffer<StringType, dataType>::peekOne()
     std::unique_lock<std::mutex> lock(mutex);
 
     int res = -1;
-    while (leftToRead == 0 && !inputEnded)
-        notEmpty.wait(lock);
+    while (readPosition == buffer.end() && !inputEnded)
+        emptyCV.wait(lock);
 
-    if (inputEnded && leftToRead == 0)
+    if (readPosition == buffer.end())
         return std::nullopt;
     {
-        res = buffer[m_r];
+        res = *readPosition;
     }
     //TO DO, maybe yes meybe no
-    notEmpty.notify_all();
+    emptyCV.notify_all();
     return res;
 }
 
@@ -102,6 +112,22 @@ StringType SyncBuffer<StringType, dataType>::readMultiple(uint32_t number)
         }
         else
             return values;
+    }
+    return values;
+}
+
+template <typename StringType, typename dataType>
+StringType SyncBuffer<StringType, dataType>::readWhileSpecificData(dataType specificData)
+{
+    std::lock_guard<std::mutex> lock(mutexRead);
+    StringType values;
+
+    auto result = peekOne();
+    while (result.has_value() && result.value() == specificData)
+    {
+        result = readOne();
+        values.push_back(result.value());
+        result = peekOne();
     }
     return values;
 }
@@ -134,7 +160,7 @@ void SyncBuffer<StringType, dataType>::setInputEnded()
 {
     std::lock_guard<std::mutex> l(mutex);
     inputEnded = true;
-    notEmpty.notify_all();
+    emptyCV.notify_all();
 }
 
 template <typename StringType, typename dataType>
@@ -147,9 +173,36 @@ template <typename StringType, typename dataType>
 bool SyncBuffer<StringType, dataType>::isReadDone()
 {
     std::unique_lock<std::mutex> lock(mutex);
-    while (leftToRead != 0 && not inputEnded)
-        notEmpty.wait(lock);
-    return inputEnded && leftToRead == 0;
+    while (readPosition == buffer.end() && not inputEnded)
+        emptyCV.wait(lock);
+    bool retVal = readPosition != buffer.end();
+    emptyCV.notify_all();
+    //Nema potrebe probudio(probudio je i ostale valjda) da ih ja budim.
+    return retVal;
+}
+
+template <typename StringType, typename dataType>
+bool SyncBuffer<StringType, dataType>::setReadPosition(typename std::list<dataType>::iterator position)
+{
+    if (position == buffer.end())
+        return false;
+    std::scoped_lock lock(mutex, mutexRead);
+    readPosition = position;
+    return true;
+}
+
+template <typename StringType, typename dataType>
+typename std::list<dataType>::iterator SyncBuffer<StringType, dataType>::getReadPosition()
+{
+    std::scoped_lock(mutex, mutexRead);
+    return readPosition;
+}
+
+template <typename StringType, typename dataType>
+void SyncBuffer<StringType, dataType>::clearBufferUntilReadPosition()
+{
+    std::scoped_lock lock(mutex, mutexRead);
+    buffer.erase(buffer.begin(), readPosition);
 }
 
 template class SyncBuffer<std::string, uint8_t>;

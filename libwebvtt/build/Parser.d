@@ -182,9 +182,9 @@ build/Parser.o: source/Parser.cpp /usr/include/stdc-predef.h \
  /usr/include/c++/10/pstl/glue_memory_defs.h \
  /usr/include/c++/10/pstl/execution_defs.h /usr/include/memory.h \
  /usr/include/string.h /usr/include/strings.h /usr/include/c++/10/thread \
- include/utfcpp/source/utf8.h include/utfcpp/source/utf8/checked.h \
- include/utfcpp/source/utf8/core.h /usr/include/c++/10/iterator \
- /usr/include/c++/10/bits/stream_iterator.h \
+ include/constants.h include/utfcpp/source/utf8.h \
+ include/utfcpp/source/utf8/checked.h include/utfcpp/source/utf8/core.h \
+ /usr/include/c++/10/iterator /usr/include/c++/10/bits/stream_iterator.h \
  include/utfcpp/source/utf8/cpp17.h include/utfcpp/source/utf8/checked.h \
  include/utfcpp/source/utf8/cpp11.h \
  include/utfcpp/source/utf8/unchecked.h
@@ -423,6 +423,7 @@ include/logger/Logger.h:
 /usr/include/string.h:
 /usr/include/strings.h:
 /usr/include/c++/10/thread:
+include/constants.h:
 include/utfcpp/source/utf8.h:
 include/utfcpp/source/utf8/checked.h:
 include/utfcpp/source/utf8/core.h:

@@ -7,12 +7,14 @@ source/main.cpp \
 source/bufferImpl/Semaphore.cpp \
 source/bufferImpl/SyncBuffer.cpp \
 source/logger/Logger.cpp \
-source/decoder/UTF8ToUTF32StreamDecoder.cpp
+source/decoder/UTF8ToUTF32StreamDecoder.cpp \
+source/WebVTTElements/Cue.cpp
 
 
 
 INCLUDE_CPP_LIST = \
--Iinclude -Iinclude/bufferImpl -Iinclude/utfcpp/source -Iinclude/logger -Iinclude/decoder
+-Iinclude -Iinclude/bufferImpl -Iinclude/utfcpp/source -Iinclude/logger -Iinclude/decoder -Iinclude/WebVTTElements
+
 
 LIB_CPP_LIST = \
 -lpthread

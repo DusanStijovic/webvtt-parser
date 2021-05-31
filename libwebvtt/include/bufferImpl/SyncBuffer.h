@@ -12,11 +12,7 @@ template <typename StringType, typename dataType>
 class SyncBuffer
 {
 public:
-    SyncBuffer()
-    {
-        //static_assert(std::is_same<StringType, std::u32string>::value && std::is_same<dataType, uint32_t>::value, "Incompatible types");
-        //static_assert(std::is_same<StringType, std::string>::value && std::is_same<dataType, uint8_t>::value, "Incompatible types");
-    }
+    SyncBuffer();
 
     bool writeOne(dataType x);
     bool writeNext(dataType x);
@@ -26,29 +22,36 @@ public:
     std::optional<dataType> readOne();
     StringType readMultiple(uint32_t number);
     StringType readUntilSpecificData(dataType specificData);
+    StringType readWhileSpecificData(dataType specificData);
     std::optional<dataType> peekOne();
+
+    void clearBufferUntilReadPosition();
+
+    bool setReadPosition(typename std::list<dataType>::iterator position);
+    typename std::list<dataType>::iterator getReadPosition();
 
     bool isInputEnded();
     void setInputEnded();
 
-    uint32_t getSize() { return leftToRead; }
+    //uint32_t getSize() { return leftToRead; }
 
     std::optional<dataType> isReadDoneAndAdvancedIfNot();
     bool isReadDone();
 
 private:
     constexpr static int NUM_OF_SLOTS = 10;
-    std::array<dataType, NUM_OF_SLOTS> buffer;
 
-    int m_w = 0;
-    int m_r = 0;
-    std::condition_variable notFull;
-    std::condition_variable notEmpty;
+    std::list<dataType> buffer;
+    typename std::list<dataType>::iterator readPosition;
+
+    std::condition_variable emptyCV;
+    std::mutex mutex;
+
     std::mutex mutexWrite;
     std::mutex mutexRead;
-    std::mutex mutex;
+
     bool inputEnded = false;
-    uint32_t leftToRead = 0;
+    //uint32_t leftToRead = 0;
 };
 
 #endif

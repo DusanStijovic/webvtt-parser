@@ -1,2 +1,2 @@
-Thu May 27 14:09:44 2021  [INFO]: Parsing sucessful!
+Thu May 27 14:09:44 2021  [INFO]: Parsing successful!
 
