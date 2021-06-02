@@ -1,4 +1,4 @@
 
-libwebvtt/build/
-libwebvtt/build/.idea/
+libwebvtt/build/**
+libwebvtt/build/.idea/**
  
