@@ -101,7 +101,7 @@ std::optional<dataType> SyncBuffer<StringType, dataType>::readNext()
 template <typename StringType, typename dataType>
 StringType SyncBuffer<StringType, dataType>::readMultiple(uint32_t number)
 {
-    std::lock_guard<std::mutex> lock(mutexRead);
+     std::lock_guard<std::mutex> lock(mutexRead);
     StringType values;
     for (int i = 0; i < number; i++)
     {

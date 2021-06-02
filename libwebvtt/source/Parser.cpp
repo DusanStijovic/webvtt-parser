@@ -11,6 +11,7 @@
 #include <thread>
 #include "Logger.h"
 #include "Cue.h"
+#include "ParserUtil.h"
 
 using namespace CPlusPlusLogging;
 using namespace std::chrono_literals;
@@ -97,49 +98,9 @@ namespace WebVTT
             }
             cleanDecodedData(decodedData);
 
-            preprocessedStream.get()->writeMultiple(decodedData);
+            preprocessedStream->writeMultiple(decodedData);
         }
-        preprocessedStream.get()->setInputEnded();
-    };
-
-    bool Parser::checkIfStringContainsArrow(std::u32string input)
-    {
-        //TO do - maybe change to string and use regex
-        if (input.size() < 3)
-            return false;
-        auto current = input.begin();
-        auto end = input.end();
-        do
-        {
-            auto first = current++;
-            auto second = current++;
-            auto third = current++;
-            if (*third != HYPEN_GREATHER)
-            {
-                if (end - current < 3)
-                    break;
-                current = second;
-                continue;
-            }
-            if (*second != HYPEN_MINUS)
-            {
-                if (end - current < 3)
-                    break;
-                current = second;
-                continue;
-            }
-            if (*first != HYPEN_MINUS)
-            {
-                if (end - current < 3)
-                {
-                    break;
-                }
-                current = second;
-                continue;
-            }
-            return true;
-        } while (true);
-        return false;
+        preprocessedStream->setInputEnded();
     };
 
     std::u32string Parser::collectWebVTTBlock(bool inHeader)
@@ -157,7 +118,7 @@ namespace WebVTT
         {
             //[Collect WebVTT Block][Loop] Step 1
             auto readData = preprocessedStream.get()->readUntilSpecificData(LF_C);
-            if (readData.size() != 0)
+            if (readData.empty())
                 line = readData;
 
             //[Collect WebVTT Block][Loop] Step 2
@@ -169,7 +130,7 @@ namespace WebVTT
                 seenEOF = true;
 
             //[Collect WebVTT Block][Loop] Step 4
-            bool lineContainArrow = checkIfStringContainsArrow(line);
+            bool lineContainArrow = ParserUtil::checkIfStringContainsArrow(line);
             if (lineContainArrow)
             {
                 //[Collect WebVTT Block][Loop][Line Contain Arrow] Step 1
@@ -225,7 +186,7 @@ namespace WebVTT
         while (true)
         {
             //[Main loop] Steps [2-6]
-            auto readData = preprocessedStream.get()->readMultiple(EXTENSION_NAME_LENGTH);
+            readData = preprocessedStream->readMultiple(EXTENSION_NAME_LENGTH);
             if (readData != EXTENSION_NAME)
             {
                 fileIsOK = false;

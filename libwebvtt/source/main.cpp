@@ -15,15 +15,15 @@ void writeToBuffer(const std::shared_ptr<SyncBuffer<std::string, uint8_t>> &buff
 {
     for (auto oneChar : input)
     {
-        buffer.get()->writeNext(oneChar);
+        buffer->writeNext(oneChar);
         std::this_thread::sleep_for(2ms);
     }
-    buffer.get()->setInputEnded();
+    buffer->setInputEnded();
 }
 
 int main(int argc, char *argv[])
 {
-    std::ifstream t("sample.vtt", std::ios_base::in);
+    std::ifstream t("../sample.vtt", std::ios_base::in);
     std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 
     auto buffer = std::make_shared<SyncBuffer<std::string, uint8_t>>();

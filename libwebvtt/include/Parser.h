@@ -44,7 +44,7 @@ namespace WebVTT
       //Parsing
       void parsingLoop();
       std::u32string collectWebVTTBlock(bool inHeader);
-      bool checkIfStringContainsArrow(std::u32string input);
+     
    };
 }
 

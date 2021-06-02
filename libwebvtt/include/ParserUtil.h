@@ -47,6 +47,46 @@ namespace WebVTT
             }
             return position == input.end();
         }
+
+        static bool checkIfStringContainsArrow(std::u32string input)
+        {
+            //TO do - maybe change to string and use regex
+            if (input.size() < 3)
+                return false;
+            auto current = input.begin();
+            auto end = input.end();
+            do
+            {
+                auto first = current++;
+                auto second = current++;
+                auto third = current++;
+                if (*third != HYPEN_GREATHER)
+                {
+                    if (end - current < 3)
+                        break;
+                    current = second;
+                    continue;
+                }
+                if (*second != HYPEN_MINUS)
+                {
+                    if (end - current < 3)
+                        break;
+                    current = second;
+                    continue;
+                }
+                if (*first != HYPEN_MINUS)
+                {
+                    if (end - current < 3)
+                    {
+                        break;
+                    }
+                    current = second;
+                    continue;
+                }
+                return true;
+            } while (true);
+            return false;
+        };
     };
 
 }

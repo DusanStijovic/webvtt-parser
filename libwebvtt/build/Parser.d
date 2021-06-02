@@ -188,7 +188,18 @@ build/Parser.o: source/Parser.cpp /usr/include/stdc-predef.h \
  include/utfcpp/source/utf8/cpp17.h include/utfcpp/source/utf8/checked.h \
  include/utfcpp/source/utf8/cpp11.h \
  include/utfcpp/source/utf8/unchecked.h include/WebVTTElements/Cue.h \
- include/WebVTTElements/TimePoint.h
+ include/WebVTTElements/TimePoint.h include/ParserUtil.h \
+ /usr/include/c++/10/algorithm /usr/include/c++/10/bits/stl_algo.h \
+ /usr/include/c++/10/bits/algorithmfwd.h \
+ /usr/include/c++/10/bits/stl_heap.h \
+ /usr/include/c++/10/bits/uniform_int_dist.h \
+ /usr/include/c++/10/pstl/glue_algorithm_defs.h \
+ /usr/include/c++/10/functional /usr/include/c++/10/bits/std_function.h \
+ /usr/include/c++/10/unordered_map /usr/include/c++/10/bits/hashtable.h \
+ /usr/include/c++/10/bits/hashtable_policy.h \
+ /usr/include/c++/10/bits/node_handle.h \
+ /usr/include/c++/10/bits/unordered_map.h \
+ /usr/include/c++/10/bits/erase_if.h
 /usr/include/stdc-predef.h:
 include/Parser.h:
 include/bufferImpl/SyncBuffer.h:
@@ -436,3 +447,18 @@ include/utfcpp/source/utf8/cpp11.h:
 include/utfcpp/source/utf8/unchecked.h:
 include/WebVTTElements/Cue.h:
 include/WebVTTElements/TimePoint.h:
+include/ParserUtil.h:
+/usr/include/c++/10/algorithm:
+/usr/include/c++/10/bits/stl_algo.h:
+/usr/include/c++/10/bits/algorithmfwd.h:
+/usr/include/c++/10/bits/stl_heap.h:
+/usr/include/c++/10/bits/uniform_int_dist.h:
+/usr/include/c++/10/pstl/glue_algorithm_defs.h:
+/usr/include/c++/10/functional:
+/usr/include/c++/10/bits/std_function.h:
+/usr/include/c++/10/unordered_map:
+/usr/include/c++/10/bits/hashtable.h:
+/usr/include/c++/10/bits/hashtable_policy.h:
+/usr/include/c++/10/bits/node_handle.h:
+/usr/include/c++/10/bits/unordered_map.h:
+/usr/include/c++/10/bits/erase_if.h:
