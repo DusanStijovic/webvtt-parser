@@ -1,4 +1,5 @@
 #include <string>
+#include <algorithm>
 #include "utf8.h"
 
 namespace WebVTT
@@ -15,7 +16,7 @@ namespace WebVTT
             if (character >= 0x2000 && character <= 0x200A)
                 return true;
 
-            uint32_t checkList[] = {
+            uint32_t checkList[9] = {
                 0x0085, 0x0020, 0x00A0, 0x1680, 0x2028, 0x2029, 0x202F, 0x205F, 0x3000};
             auto position = std::find(std::begin(checkList), std::end(checkList), character);
             return position != std::end(checkList) ? true : false;

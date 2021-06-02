@@ -10,6 +10,7 @@
 #include <string_view>
 #include <thread>
 #include "Logger.h"
+#include "Cue.h"
 
 using namespace CPlusPlusLogging;
 using namespace std::chrono_literals;
@@ -117,22 +118,24 @@ namespace WebVTT
             {
                 if (end - current < 3)
                     break;
+                current = second;
                 continue;
             }
-            if (*second != HYPEN_GREATHER)
+            if (*second != HYPEN_MINUS)
             {
-                if (end - current < 2)
+                if (end - current < 3)
                     break;
-                current = third;
+                current = second;
                 continue;
             }
-            if (*first != HYPEN_GREATHER)
+            if (*first != HYPEN_MINUS)
             {
-                if (end - current < 1)
+                if (end - current < 3)
                 {
                     break;
                 }
                 current = second;
+                continue;
             }
             return true;
         } while (true);
@@ -162,7 +165,7 @@ namespace WebVTT
 
             //Proveriti zbog positiona jos jednom
             //[Collect WebVTT Block][Loop] Step 3
-            if (preprocessedStream.get()->isReadDoneAndAdvancedIfNot())
+            if (!preprocessedStream.get()->isReadDoneAndAdvancedIfNot().has_value())
                 seenEOF = true;
 
             //[Collect WebVTT Block][Loop] Step 4
@@ -174,6 +177,8 @@ namespace WebVTT
                 {
                     //[Collect WebVTT Block][Loop][Line Contain Arrow] [Cue] Steps [1-4]
                     seenArrow = true;
+                    auto position = line.begin();
+                    Cue::collectTextAndSettings(line, std::u32string_view(line).begin());
                     //Cue creation
                     //Collect cue info from line
                 }
@@ -183,6 +188,8 @@ namespace WebVTT
                     break;
                 }
             }
+            else if (line.length() == 0)
+                break;
             else
             {
                 if (not inHeader and lineCount == 2)
@@ -261,7 +268,7 @@ namespace WebVTT
             //[Main loop] Step 11
             if (readOneDataOptional.value() != LF_C)
             {
-                //Collect Header
+                collectWebVTTBlock(true);
             }
             else
             {
@@ -269,7 +276,7 @@ namespace WebVTT
             }
 
             //[Main loop] Step 12
-            preprocessedStream.get()->readUntilSpecificData(LF_C);
+            preprocessedStream.get()->readWhileSpecificData(LF_C);
 
             //[Main loop] Step 13
             //List<Region> regions = new List<>();
@@ -279,7 +286,7 @@ namespace WebVTT
             while (readOneDataOptional.has_value())
             {
                 //[Block loop] Step1
-                //WebVTT::Block blosk =  CollectWebVTTBlock();
+                collectWebVTTBlock(false);
 
                 //[Block loop] Steps [2-4]
                 //Based of block tipe add it to specific output

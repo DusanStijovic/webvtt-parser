@@ -1,5 +1,6 @@
 #include <string>
 #include <memory>
+#include <optional>
 #include "TimePoint.h"
 #include "constants.h"
 

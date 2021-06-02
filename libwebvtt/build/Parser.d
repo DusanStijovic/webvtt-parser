@@ -187,7 +187,8 @@ build/Parser.o: source/Parser.cpp /usr/include/stdc-predef.h \
  /usr/include/c++/10/iterator /usr/include/c++/10/bits/stream_iterator.h \
  include/utfcpp/source/utf8/cpp17.h include/utfcpp/source/utf8/checked.h \
  include/utfcpp/source/utf8/cpp11.h \
- include/utfcpp/source/utf8/unchecked.h
+ include/utfcpp/source/utf8/unchecked.h include/WebVTTElements/Cue.h \
+ include/WebVTTElements/TimePoint.h
 /usr/include/stdc-predef.h:
 include/Parser.h:
 include/bufferImpl/SyncBuffer.h:
@@ -433,3 +434,5 @@ include/utfcpp/source/utf8/cpp17.h:
 include/utfcpp/source/utf8/checked.h:
 include/utfcpp/source/utf8/cpp11.h:
 include/utfcpp/source/utf8/unchecked.h:
+include/WebVTTElements/Cue.h:
+include/WebVTTElements/TimePoint.h:

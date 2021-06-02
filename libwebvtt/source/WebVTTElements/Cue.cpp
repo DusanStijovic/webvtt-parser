@@ -10,7 +10,6 @@ namespace WebVTT
 
         TimeUnit timeUnit = TimeUnit::MINUTES;
         uint32_t value1, value2, value3, value4;
-        auto position = input.begin();
         if (position == input.end())
             return std::nullopt;
         if (!ParserUtil::isDigit(*position))
@@ -75,7 +74,7 @@ namespace WebVTT
         if (position == input.end())
             return std::nullopt;
 
-        auto timePoint1 = colectTimePoint(input.substr(position - input.begin()));
+        auto timePoint1 = colectTimePoint(input.substr(position - input.begin()), position);
         if (!timePoint1.has_value())
             return std::nullopt;
 
@@ -93,15 +92,20 @@ namespace WebVTT
             return std::nullopt;
         ParserUtil::skipWhiteSpaces(input, position);
 
-        auto timePoint2 = colectTimePoint(input.substr(position - input.begin()));
+        auto timePoint2 = colectTimePoint(input.substr(position - input.begin()), position);
         if (!timePoint2.has_value())
             return std::nullopt;
 
         return std::make_tuple(timePoint1.value(), timePoint2.value());
     }
 
-    std::optional<Cue> Cue::collectTextAndSettings(std::u32string_view input, const char32_t *position){
-
+    std::optional<Cue> Cue::collectTextAndSettings(std::u32string_view input, const char32_t *position)
+    {
+        std::unique_ptr<Cue> cue = std::make_unique<Cue>();
+        auto timing = colectTiming(input, position);
+        if (!timing.has_value())
+            return std::nullopt;
+        auto [start, end] = timing.value();
     };
 
 }
