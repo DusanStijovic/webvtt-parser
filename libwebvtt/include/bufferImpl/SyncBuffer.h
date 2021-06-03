@@ -36,6 +36,7 @@ public:
     //uint32_t getSize() { return leftToRead; }
 
     std::optional<dataType> isReadDoneAndAdvancedIfNot();
+
     bool isReadDone();
 
 private:

@@ -2,13 +2,15 @@ PROGRAM = program
 BUILD_DIR = build
 
 SOURCE_CPP_LIST = \
-source/Parser.cpp \
-source/main.cpp \
-source/bufferImpl/Semaphore.cpp \
-source/bufferImpl/SyncBuffer.cpp \
-source/logger/Logger.cpp \
-source/decoder/UTF8ToUTF32StreamDecoder.cpp \
-source/WebVTTElements/Cue.cpp
+source/Parser.cpp\
+source/main.cpp\
+source/bufferImpl/Semaphore.cpp\
+source/bufferImpl/SyncBuffer.cpp\
+source/logger/Logger.cpp\
+source/decoder/UTF8ToUTF32StreamDecoder.cpp\
+source/WebVTTElements/Cue.cpp\
+source/WebVTTElements/Region.cpp\
+source/WebVTTElements/StyleSheet.cpp\
 
 
 
