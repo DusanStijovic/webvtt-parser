@@ -1,5 +1,5 @@
-#ifndef CONSTANTS_H
-#define CONSTANTS_H
+#ifndef WEBVTT_CONSTANTS_H
+#define WEBVTT_CONSTANTS_H
 
 namespace WebVTT
 {
@@ -26,7 +26,7 @@ namespace WebVTT
         TAB_C = 0x0009,
         HYPEN_MINUS = 0x002D,
         HYPEN_GREATHER = 0x003E,
-        COLON = 0x003A,
+        COLON_C = 0x003A,
         FULL_STOP = 0x002E
     };
 
@@ -36,6 +36,8 @@ namespace WebVTT
         MINUTES,
         SECONDS
     };
+
+    constexpr std::u32string_view TIME_STAMP_SEPARATOR = U"-->";
 
 };
 

@@ -2,20 +2,22 @@ PROGRAM = program
 BUILD_DIR = build
 
 SOURCE_CPP_LIST = \
-source/Parser.cpp\
 source/main.cpp\
 source/bufferImpl/Semaphore.cpp\
 source/bufferImpl/SyncBuffer.cpp\
 source/logger/Logger.cpp\
 source/decoder/UTF8ToUTF32StreamDecoder.cpp\
-source/WebVTTElements/Cue.cpp\
-source/WebVTTElements/Region.cpp\
-source/WebVTTElements/StyleSheet.cpp\
-
+source/Elements/Cue.cpp\
+source/Elements/Region.cpp\
+source/Elements/StyleSheet.cpp\
+source/Parser/Parser.cpp\
+source/Parser/CueParser.cpp\
+source/Parser/StyleSheetParser.cpp\
+source/Parser/RegionParser.cpp\
 
 
 INCLUDE_CPP_LIST = \
--Iinclude -Iinclude/bufferImpl -Iinclude/utfcpp/source -Iinclude/logger -Iinclude/decoder -Iinclude/WebVTTElements
+-Iinclude -Iinclude/bufferImpl -Iinclude/utfcpp/source -Iinclude/logger -Iinclude/decoder -Iinclude/Elements -Iinclude/Parser
 
 
 LIB_CPP_LIST = \

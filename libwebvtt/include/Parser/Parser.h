@@ -1,5 +1,5 @@
-#ifndef WEB_VTT_PARSER_H
-#define WEB_VTT_PARSER_H
+#ifndef WEBVTT_PARSER_H
+#define WEBVTT_PARSER_H
 
 #include "SyncBuffer.h"
 #include "Logger.h"
@@ -14,11 +14,13 @@
 #include <thread>
 #include <Block.h>
 
-namespace WebVTT {
+namespace WebVTT
+{
 
     using namespace CPlusPlusLogging;
 
-    class Parser {
+    class Parser
+    {
 
     public:
         explicit Parser(std::shared_ptr<SyncBuffer<std::u32string, uint32_t>> inputStream);
@@ -27,9 +29,11 @@ namespace WebVTT {
 
         ~Parser();
 
-
     private:
-        std::u32string EXTENSION_NAME = utf8::utf8to32(std::string_view("WEBVTT"));
+        constexpr static std::u32string_view EXTENSION_NAME = U"WEBVTT";
+        constexpr static std::u32string_view STYLE_NAME = U"STYLE";
+        constexpr static std::u32string_view REGION_NAME = U"REGION";
+
         constexpr static int EXTENSION_NAME_LENGTH = 6;
         constexpr static int DEFAULT_READ_NUMBER = 15;
 
@@ -44,9 +48,8 @@ namespace WebVTT {
         std::unique_ptr<std::thread> preProcessingThread;
         std::unique_ptr<std::thread> parsingThread;
 
-        std::list<StyleSheet> styleSheets;
-        std::list<Cue> cues;
-        std::list<Region> regions;
+        
+     
 
         Logger parserLogger{"parserLog.txt"};
 
@@ -59,7 +62,6 @@ namespace WebVTT {
         void parsingLoop();
 
         std::unique_ptr<Block> collectBlock(bool inHeader);
-
     };
 }
 

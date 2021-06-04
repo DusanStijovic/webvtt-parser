@@ -120,8 +120,10 @@ namespace CPlusPlusLogging
       void enableConsoleLogging();
       void enableFileLogging();
 
-      Logger(std::string logFileName);
-      ~Logger();
+      explicit Logger(std::string logFileName);
+       Logger() = delete;
+       Logger(const Logger &obj) = delete;
+       ~Logger();
 
    protected:
       // Log file name. File name should be change from here only
@@ -133,8 +135,7 @@ namespace CPlusPlusLogging
       void logIntoFile(std::string &data);
       void logOnConsole(std::string &data);
 
-      Logger() = delete;
-      Logger(const Logger &obj) = delete;
+
       void operator=(const Logger &obj) = delete;
 
    private:

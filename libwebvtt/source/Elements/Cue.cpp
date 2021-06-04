@@ -1,3 +1,4 @@
+#include <Region.h>
 #include "Cue.h"
 #include "ParserUtil.h"
 #include "utf8.h"
@@ -32,7 +33,7 @@ namespace WebVTT {
         }
 
         // [Collect timestamp] Step 8
-        if (position == input.end() || *position != COLON)
+        if (position == input.end() || *position != COLON_C)
             return std::nullopt;
         position++;
 
@@ -49,10 +50,10 @@ namespace WebVTT {
         value2 = std::stoi(collectedTime);
 
         // [Collect timestamp] Step 12
-        if (timeUnit == TimeUnit::HOURS || (position != input.end() && *position == COLON)) {
+        if (timeUnit == TimeUnit::HOURS || (position != input.end() && *position == COLON_C)) {
 
             // [Collect timestamp] Step 12.a.1
-            if (position == input.end() || *position != COLON)
+            if (position == input.end() || *position != COLON_C)
                 return std::nullopt;
             position++;
 
@@ -139,13 +140,87 @@ namespace WebVTT {
         return std::make_tuple(timePoint1.value(), timePoint2.value());
     }
 
+    void Cue::collectSetting(std::u32string_view input, std::u32string_view::iterator &position) {
+        uint32_t currIndex = position - input.begin();
+        unsigned long endSettingPos;
+        std::u32string settingName, settingValue;
+
+        while ((endSettingPos = input.find_first_of(SPACE_C, currIndex)) != std::u32string_view::npos) {
+            auto startSettingPos = currIndex;
+            std::u32string_view settingString = input.substr(startSettingPos, endSettingPos);
+
+            currIndex = endSettingPos;
+            auto colonPos = settingString.find(COLON_C);
+            if (colonPos == std::u32string_view::npos || colonPos == startSettingPos || colonPos == endSettingPos) {
+                continue;
+            }
+
+            settingName = input.substr(startSettingPos, colonPos);
+            settingValue = input.substr(colonPos + 1, endSettingPos);
+
+            if (ParserUtil::compareU32Strings(settingName, CUE_SETTING::REGION)) {
+                collectRegionSetting(settingName, settingValue);
+                continue;
+            }
+            if (ParserUtil::compareU32Strings(settingName, CUE_SETTING::VERTICAL)) {
+                collectVerticalSetting(settingName, settingValue);
+                continue;
+            }
+            if (ParserUtil::compareU32Strings(settingName, CUE_SETTING::LINE)) {
+                collectLineSetting(settingName, settingValue);
+                continue;
+            }
+            if (ParserUtil::compareU32Strings(settingName, CUE_SETTING::POSITION)) {
+                collectPositionSetting(settingName, settingValue);
+                continue;
+            }
+            if (ParserUtil::compareU32Strings(settingName, CUE_SETTING::SIZE)) {
+                collectSizeSetting(settingName, settingValue);
+                continue;
+            }
+            if (ParserUtil::compareU32Strings(settingName, CUE_SETTING::ALIGN)) {
+                collectAlignSetting(settingName, settingValue);
+                continue;
+            }
 
 
-    bool Cue::collectTimingAndSettings(std::unique_ptr<Cue> &cue, std::u32string_view input, std::u32string_view::iterator &position) {
-        auto timing = collectTiming(input, position);
+        }
+    }
+
+
+    bool Cue::collectTimingAndSettings(std::u32string_view input,
+                                       std::u32string_view::iterator &position) {
+        auto timing = this->collectTiming(input, position);
         if (!timing.has_value())
             return false;
         auto[start, end] = timing.value();
+        this->start = start;
+        this->end = end;
+        this->collectSetting(input, position);
         return true;
+    }
+
+    void Cue::collectAlignSetting(std::u32string_view name, std::u32string_view value) {
+
+    }
+
+    void Cue::collectRegionSetting(std::u32string_view name, std::u32string_view value) {
+
+    }
+
+    void Cue::collectVerticalSetting(std::u32string_view name, std::u32string_view value) {
+
+    }
+
+    void Cue::collectLineSetting(std::u32string_view name, std::u32string_view value) {
+
+    }
+
+    void Cue::collectPositionSetting(std::u32string_view name, std::u32string_view value) {
+
+    }
+
+    void Cue::collectSizeSetting(std::u32string_view name, std::u32string_view value) {
+
     };
 }
