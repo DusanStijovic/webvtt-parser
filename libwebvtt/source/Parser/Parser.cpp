@@ -28,6 +28,9 @@ namespace WebVTT
     {
         preprocessedStream = std::make_shared<SyncBuffer<std::u32string, uint32_t>>();
         parserLogger.updateLogType(LogType::CONSOLE);
+        cueParser = std::make_unique<CueParser>();
+        styleSheetParser = std::make_unique<StyleSheetParser>();
+        regionParser = std::make_unique<RegionParser>();
     };
 
     Parser::~Parser()
@@ -44,12 +47,12 @@ namespace WebVTT
             return;
 
         uint32_t firstC = input.front();
-        if (lastReadCR && firstC == LF_C)
+        if (lastReadCR && firstC == ParserUtil::LF_C)
         {
             input.erase(input.begin());
             lastReadCR = false;
         }
-        if (input.back() == CR_C)
+        if (input.back() == ParserUtil::LF_C)
         {
             lastReadCR = true;
         }
@@ -61,16 +64,16 @@ namespace WebVTT
             bool haveNext = std::next(current) != end;
             uint32_t next_c = haveNext ? *current : 0;
 
-            if (current_c == NULL_C)
+            if (current_c == ParserUtil::NULL_C)
             {
-                *current = REPLACEMENT_C;
+                *current = ParserUtil::REPLACEMENT_C;
             }
-            if (current_c == CR_C)
+            if (current_c == ParserUtil::CR_C)
             {
-                *current = LF_C;
+                *current = ParserUtil::LF_C;
             }
 
-            if (current_c == CR_C && haveNext && next_c == LF_C)
+            if (current_c == ParserUtil::CR_C && haveNext && next_c == ParserUtil::LF_C)
             {
                 auto temp = current;
                 std::advance(current, 1);
@@ -100,7 +103,7 @@ namespace WebVTT
         preprocessedStream->setInputEnded();
     };
 
-    std::unique_ptr<Block> Parser::collectBlock(bool inHeader)
+    bool Parser::collectBlock(bool inHeader)
     {
         //[Collect WebVTT Block] Step 1-10
         uint32_t lineCount = 0;
@@ -111,15 +114,15 @@ namespace WebVTT
         bool seenEOF = false, seenArrow = false;
 
         //Cue, stylesheet, region = null;
-        std::unique_ptr<Cue> newCue = nullptr;
-        std::unique_ptr<StyleSheet> newStyleSheet = nullptr;
-        std::unique_ptr<Region> newRegion = nullptr;
+        std::shared_ptr<Cue> newCue = nullptr;
+        std::shared_ptr<StyleSheet> newStyleSheet = nullptr;
+        std::shared_ptr<Region> newRegion = nullptr;
 
         //[Collect WebVTT Block] Step 11
         while (true)
         {
             //[Collect WebVTT Block] Step 11.1
-            auto readData = preprocessedStream->readUntilSpecificData(LF_C);
+            auto readData = preprocessedStream->readUntilSpecificData(ParserUtil::LF_C);
             if (!readData.empty())
                 line = readData;
 
@@ -134,7 +137,7 @@ namespace WebVTT
             readOneDataOptional = preprocessedStream->peekOne();
 
             //[Collect WebVTT Block] Step 11.4
-            bool lineContainArrow = ParserUtil::stringContainsSeparator(line, TIME_STAMP_SEPARATOR);
+            bool lineContainArrow = ParserUtil::stringContainsSeparator(line, ParserUtil::TIME_STAMP_SEPARATOR);
             if (lineContainArrow)
             {
 
@@ -151,15 +154,22 @@ namespace WebVTT
                     previousPosition = preprocessedStream->getReadPosition();
 
                     //[Collect WebVTT Block] Step 11.4.1.3
-                    newCue = std::make_unique<Cue>(buffer);
+                    newCue = std::make_shared<Cue>(buffer);
 
                     //Need to add regions to use
                     //[Collect WebVTT Block] Step 11.4.1.4
                     auto position = std::u32string_view(line).begin();
-                    bool success = newCue->collectTimingAndSettings(line, position);
+                    bool success = cueParser->setNewCueForParsing(newCue);
                     if (!success)
                     {
-                        newCue = nullptr;
+                        //log error
+                    }
+                    success = cueParser->collectTimingAndSettings(line, position);
+                    if (!success)
+                    {
+                        parserLogger.error("Collecting cue error");
+                        return false;
+                        ;
                     }
                     else
                     {
@@ -193,8 +203,9 @@ namespace WebVTT
                         //[Collect WebVTT Block] Step 11.6.1.2
                         buffer.clear();
                     }
-                    //[Collect WebVTT Block] Step 11.6.1.2
-                    if (!seenCue && ParserUtil::stringEqualStringPlusSpaces(buffer, REGION_NAME))
+                    else
+                        //[Collect WebVTT Block] Step 11.6.1.2
+                        if (!seenCue && ParserUtil::stringEqualStringPlusSpaces(buffer, REGION_NAME))
                     {
                         newRegion = std::make_unique<Region>();
                         buffer.clear();
@@ -203,7 +214,7 @@ namespace WebVTT
 
                 //[Collect WebVTT Block] Step 11.6.2
                 if (!buffer.empty())
-                    buffer.push_back(LF_C);
+                    buffer.push_back(ParserUtil::LF_C);
 
                 //[Collect WebVTT Block] Step 11.6.3
                 buffer.append(line);
@@ -222,21 +233,22 @@ namespace WebVTT
             newCue->setText(buffer);
             auto temp = utf8::utf32to8(buffer);
             parserLogger.info("Found cue");
-            parserLogger.info(temp);
-            return newCue;
+            parserLogger.trace(temp);
+            cueParser->finishParsingCurrentCue();
+            return true;
         }
         if (newStyleSheet)
         {
             //TODO Collect style sheets from buffer and add it to style sheets list
-            return newStyleSheet;
+            return true;
         }
         if (newRegion)
         {
             //TODO Collect regions from buffer and add it to regions list
-            return newRegion;
+            return true;
         }
 
-        return nullptr;
+        return false;
     }
 
     bool Parser::startParsing()
@@ -274,14 +286,14 @@ namespace WebVTT
 
             //[Main loop] Step 6
             uint32_t readOne = readOneDataOptional.value();
-            if (readOne != SPACE_C && readOne != LF_C && readOne != TAB_C)
+            if (readOne != ParserUtil::SPACE_C && readOne != ParserUtil::LF_C && readOne != ParserUtil::TAB_C)
             {
                 fileIsOK = false;
                 break;
             }
 
             //[Main loop] Step 7
-            preprocessedStream->readUntilSpecificData(LF_C);
+            preprocessedStream->readUntilSpecificData(ParserUtil::LF_C);
 
             //[Main loop] Step [8-9]
             readOneDataOptional = preprocessedStream->isReadDoneAndAdvancedIfNot();
@@ -291,14 +303,15 @@ namespace WebVTT
             }
 
             //[Main loop] Step 10
-            if (preprocessedStream->isReadDone())
+
+
+            //[Main loop] [Header] Step [10-11]
+            readOneDataOptional = preprocessedStream->peekOne();
+            if (!readOneDataOptional.has_value())
             {
                 break;
             }
-
-            //[Main loop] [Header] Step 11
-            readOneDataOptional = preprocessedStream->peekOne();
-            if (readOneDataOptional.value() != LF_C)
+            if (readOneDataOptional.value() != ParserUtil::LF_C)
             {
                 collectBlock(true);
             }
@@ -308,7 +321,7 @@ namespace WebVTT
             }
 
             //[Main loop] Step 12
-            preprocessedStream->readWhileSpecificData(LF_C);
+            preprocessedStream->readWhileSpecificData(ParserUtil::LF_C);
 
             //[Main loop] Step 14
             readOneDataOptional = preprocessedStream->peekOne();
@@ -319,7 +332,7 @@ namespace WebVTT
                 //Collected block was put in list inside the function
 
                 //[Block loop] Step 5
-                preprocessedStream->readWhileSpecificData(LF_C);
+                preprocessedStream->readWhileSpecificData(ParserUtil::LF_C);
                 readOneDataOptional = preprocessedStream->peekOne();
             }
             break;

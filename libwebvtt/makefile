@@ -17,7 +17,7 @@ source/Parser/RegionParser.cpp\
 
 
 INCLUDE_CPP_LIST = \
--Iinclude -Iinclude/bufferImpl -Iinclude/utfcpp/source -Iinclude/logger -Iinclude/decoder -Iinclude/Elements -Iinclude/Parser
+-Iinclude -Iinclude/bufferImpl -Iinclude/utfcpp/source -Iinclude/logger -Iinclude/decoder -Iinclude/elements -Iinclude/parser -Iinclude/constants
 
 
 LIB_CPP_LIST = \

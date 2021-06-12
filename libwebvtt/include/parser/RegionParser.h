@@ -1,5 +1,5 @@
-#ifndef WEBVTT_CUE_PARSER_H
-#define WEBVTT_CUE_PARSER_H
+#ifndef WEBVTT_REGION_PARSER_H
+#define WEBVTT_REGION_PARSER_H
 
 #include "Region.h"
 #include <list>

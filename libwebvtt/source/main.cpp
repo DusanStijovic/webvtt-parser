@@ -23,7 +23,7 @@ void writeToBuffer(const std::shared_ptr<SyncBuffer<std::string, uint8_t>> &buff
 
 int main(int argc, char *argv[])
 {
-    std::ifstream t("sample.vtt", std::ios_base::in);
+    std::ifstream t("../sample.vtt", std::ios_base::in);
     std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 
     auto buffer = std::make_shared<SyncBuffer<std::string, uint8_t>>();

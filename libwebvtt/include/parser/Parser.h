@@ -7,6 +7,9 @@
 #include "Cue.h"
 #include "Region.h"
 #include "StyleSheet.h"
+#include "CueParser.h"
+#include "StyleSheetParser.h"
+#include "RegionParser.h"
 #include <string>
 #include <array>
 #include <list>
@@ -48,8 +51,9 @@ namespace WebVTT
         std::unique_ptr<std::thread> preProcessingThread;
         std::unique_ptr<std::thread> parsingThread;
 
-        
-     
+        std::unique_ptr<CueParser> cueParser;
+        std::unique_ptr<StyleSheetParser> styleSheetParser;
+        std::unique_ptr<RegionParser> regionParser;
 
         Logger parserLogger{"parserLog.txt"};
 
@@ -61,7 +65,7 @@ namespace WebVTT
         //Parsing
         void parsingLoop();
 
-        std::unique_ptr<Block> collectBlock(bool inHeader);
+        bool collectBlock(bool inHeader);
     };
 }
 
