@@ -1,7 +1,6 @@
 #include "SyncBuffer.h"
 #include "utf8.h"
 #include <optional>
-#include <iostream>
 #include <list>
 
 template<typename StringType, typename dataType>

@@ -6,7 +6,7 @@ std::u32string UTF8ToUTF32StreamDecoder::decodeReadBytes(std::string &readBytes)
 {
     auto positionInvalid = utf8::find_invalid(readBytes);
 
-    std::string_view validUTF8 = std::string_view(readBytes);
+    auto validUTF8 = std::string_view(readBytes);
     std::u32string utf_32;
 
     if (positionInvalid == std::string::npos)
@@ -37,12 +37,12 @@ void UTF8ToUTF32StreamDecoder::decodeInputStream()
         }
         buffer.append(bytes);
         std::u32string decodedBytes = decodeReadBytes(buffer);
-        std::cout << std::flush;
+       //std::cout << std::flush;
 
         outputstream.get()->writeMultiple(decodedBytes);
     }
     outputstream.get()->setInputEnded();
-    logger.info("end");
+    //logger.info("end");
 };
 
 bool UTF8ToUTF32StreamDecoder::startDecoding()

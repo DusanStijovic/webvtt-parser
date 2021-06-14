@@ -8,12 +8,11 @@
 #include "TimePoint.h"
 #include "constants.h"
 #include "Block.h"
+#include "Region.h"
 
-namespace WebVTT
-{
+namespace WebVTT {
 
-    class Cue : public Block
-    {
+    class Cue : public Block {
     public:
         constexpr static int DEFAULT_CUE_SIZE = 100;
         constexpr static std::u32string_view REGION = U"region";
@@ -23,51 +22,75 @@ namespace WebVTT
         constexpr static std::u32string_view SIZE = U"size";
         constexpr static std::u32string_view ALIGN = U"align";
 
-        enum class WritingDIrection
-        {
+        enum class WritingDirection {
             HORIZONTAL,
-            VERTICAL
+            VERTICAL_GROWING_LEFT,
+            VERTICAL_GROWING_RIGHT
         };
-        enum class Alignment
-        {
+        enum class Alignment {
             AUTO,
-            START_ALIGNMENT,
-            CENTER_ALIGNMENT
+            START,
+            CENTER,
+            END,
+            LEFT,
+            RIGHT
         };
 
-        enum class TimeUnit
-        {
+        enum class TimeUnit {
             HOURS,
             MINUTES,
             SECONDS
         };
 
-        explicit Cue(std::u32string identifier) : identifier(std::move(identifier)){};
+        explicit Cue(std::u32string identifier) : identifier(std::move(identifier)) {};
 
-        void setText(std::u32string text)
-        {
+        void setText(std::u32string text) {
             this->text = std::move(text);
         }
-        void setStartTime(long startTime)
-        {
+
+        void setStartTime(long startTime) {
             this->startTime = startTime;
         }
-        void setEndTime(long endTime)
-        {
+
+        void setEndTime(long endTime) {
             this->endTime = endTime;
+        }
+
+        void setWritingDirection(WritingDirection writingDirection) {
+            this->writingDirection = writingDirection;
+        }
+
+        void setRegion(std::shared_ptr<Region> region) {
+            this->region = region;
+        }
+
+        void setTextAlignment(Alignment alignment) {
+            this->textAlignment = alignment;
+        }
+
+        void setPositionAlignment(Alignment alignment) {
+            this->positionAlignment = alignment;
+        }
+
+        void setPosition(double position) {
+            this->position = position;
+        }
+
+        void setSize(double size) {
+            this->size = size;
         }
 
     private:
         std::u32string identifier;
         bool pauseOnExit = false;
-        //Region region = null;
-        WritingDIrection writingDirection = WritingDIrection::HORIZONTAL;
+        std::shared_ptr<Region> region = nullptr;
+        WritingDirection writingDirection = WritingDirection::HORIZONTAL;
         bool snapToLines = true;
         //Line line = auto
-        //Position position = auto
+        double position = -1;
         Alignment positionAlignment = Alignment::AUTO;
-        Alignment lineAlignment = Alignment::START_ALIGNMENT;
-        Alignment textAlignment = Alignment::CENTER_ALIGNMENT;
+        Alignment lineAlignment = Alignment::START;
+        Alignment textAlignment = Alignment::CENTER;
         uint64_t size = DEFAULT_CUE_SIZE;
         std::u32string text;
         uint32_t startTime, endTime;
