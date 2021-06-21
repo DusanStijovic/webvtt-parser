@@ -17,16 +17,16 @@
 #include <thread>
 #include <Block.h>
 
-namespace WebVTT
-{
+namespace WebVTT {
 
     using namespace CPlusPlusLogging;
 
-    class Parser
-    {
+    class Parser {
 
     public:
-        explicit Parser(std::shared_ptr<SyncBuffer<std::u32string, uint32_t>> inputStream);
+        explicit Parser(std::shared_ptr<SyncBuffer < std::u32string, uint32_t>>
+
+        inputStream);
 
         bool startParsing();
 
@@ -45,8 +45,8 @@ namespace WebVTT
 
         bool parsingStarted = false;
 
-        std::shared_ptr<SyncBuffer<std::u32string, uint32_t>> inputStream;
-        std::shared_ptr<SyncBuffer<std::u32string, uint32_t>> preprocessedStream;
+        std::shared_ptr<SyncBuffer < std::u32string, uint32_t>> inputStream;
+        std::shared_ptr<SyncBuffer < std::u32string, uint32_t>> preprocessedStream;
 
         std::unique_ptr<std::thread> preProcessingThread;
         std::unique_ptr<std::thread> parsingThread;
@@ -54,6 +54,13 @@ namespace WebVTT
         std::unique_ptr<CueParser> cueParser;
         std::unique_ptr<StyleSheetParser> styleSheetParser;
         std::unique_ptr<RegionParser> regionParser;
+
+
+        std::list<std::shared_ptr<Cue>> cues;
+        std::list<std::shared_ptr<Region>> regions;
+        std::list<std::shared_ptr<StyleSheet>> styleSheets;
+
+
 
         Logger parserLogger{"parserLog.txt"};
 

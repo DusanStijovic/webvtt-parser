@@ -30,7 +30,7 @@ namespace WebVTT {
             {
                     preprocessedStream = std::make_shared<SyncBuffer < std::u32string, uint32_t>>();
             parserLogger.updateLogType(LogType::CONSOLE);
-            cueParser = std::make_unique<CueParser>();
+            cueParser = std::make_unique<CueParser>(regions);
             styleSheetParser = std::make_unique<StyleSheetParser>();
             regionParser = std::make_unique<RegionParser>();
             };
@@ -144,7 +144,7 @@ namespace WebVTT {
                     //Need to add regions to use
                     //[Collect WebVTT Block] Step 11.4.1.4
                     auto position = std::u32string_view(line).begin();
-                    bool success = cueParser->setNewCueForParsing(newCue);
+                    bool success = cueParser->setNewObjectForParsing(newCue);
                     if (!success) {
                         //log error
                     }
@@ -206,7 +206,8 @@ namespace WebVTT {
             auto temp = utf8::utf32to8(buffer);
             parserLogger.info("Found cue");
             parserLogger.trace(temp);
-            cueParser->finishParsingCurrentCue();
+
+            cueParser->collectCurrentObject();
             return true;
         }
         if (newStyleSheet) {

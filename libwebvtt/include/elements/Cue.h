@@ -80,13 +80,21 @@ namespace WebVTT {
             this->size = size;
         }
 
+        void setLineAlignment(Alignment alignment) {
+            this->lineAlignment = alignment;
+        }
+
+        void setLineNumber(double lineNumber) {
+            this->lineNumber = lineNumber;
+        }
+
     private:
         std::u32string identifier;
         bool pauseOnExit = false;
         std::shared_ptr<Region> region = nullptr;
         WritingDirection writingDirection = WritingDirection::HORIZONTAL;
         bool snapToLines = true;
-        //Line line = auto
+        double lineNumber = -1;
         double position = -1;
         Alignment positionAlignment = Alignment::AUTO;
         Alignment lineAlignment = Alignment::START;

@@ -4,21 +4,6 @@
 
 namespace WebVTT {
 
-    bool CueParser::setNewCueForParsing(std::shared_ptr<Cue> newCue) {
-        if (this->currentCue != nullptr)
-            return false;
-        std::cout << "DAP!";
-        this->currentCue = newCue;
-        return true;
-    };
-
-    bool CueParser::finishParsingCurrentCue() {
-        if (this->currentCue == nullptr)
-            return false;
-        this->cues.push_back(currentCue);
-        this->currentCue = nullptr;
-        return true;
-    };
 
     std::optional<long>
     CueParser::collectTimeStamp(std::u32string_view input, std::u32string_view::iterator &position) {
@@ -160,22 +145,17 @@ namespace WebVTT {
     }
 
     void CueParser::collectSetting(std::u32string_view input, std::u32string_view::iterator &position) {
-        uint32_t currIndex = position - input.begin();
-        unsigned long endSettingPos;
+
+        std::u32string_view setting;
         std::u32string settingName, settingValue;
 
-        while ((endSettingPos = input.find_first_of(ParserUtil::SPACE_C, currIndex)) != std::u32string_view::npos) {
-            auto startSettingPos = currIndex;
-            std::u32string_view settingString = input.substr(startSettingPos, endSettingPos);
+        while (!(setting = ParserUtil::parseUntilCharacter(input, ParserUtil::SPACE_C, position)).empty()) {
 
-            currIndex = endSettingPos;
-            auto colonPos = settingString.find(ParserUtil::COLON_C);
-            if (colonPos == std::u32string_view::npos || colonPos == startSettingPos || colonPos == endSettingPos) {
-                continue;
-            }
+            auto settingInfoOptional = ParserUtil::splitStringAroundCharacter(setting, ParserUtil::COLON_C);
 
-            settingName = input.substr(startSettingPos, colonPos);
-            settingValue = input.substr(colonPos + 1, endSettingPos);
+            if (!settingInfoOptional.has_value()) continue;
+
+            auto[settingName, settingValue] = settingInfoOptional.value();
 
             if (ParserUtil::compareU32Strings(settingName, Cue::REGION)) {
                 collectRegionSetting(settingName, settingValue);
@@ -206,44 +186,45 @@ namespace WebVTT {
 
     bool CueParser::collectTimingAndSettings(std::u32string_view input,
                                              std::u32string_view::iterator &position) {
-        if (currentCue == nullptr)
+        if (currentObject == nullptr)
             return false;
 
         auto timing = this->collectTiming(input, position);
         if (!timing.has_value())
             return false;
         auto[start, end] = timing.value();
-        currentCue->setStartTime(start);
-        currentCue->setEndTime(end);
+        currentObject->setStartTime(start);
+        currentObject->setEndTime(end);
         this->collectSetting(input, position);
         return true;
     }
 
     void CueParser::collectAlignSetting(std::u32string_view name, std::u32string_view value) {
         if (ParserUtil::compareU32Strings(value, U"start")) {
-            currentCue->setTextAlignment(Cue::Alignment::START);
+            currentObject->setTextAlignment(Cue::Alignment::START);
             return;
         }
         if (ParserUtil::compareU32Strings(value, U"center")) {
-            currentCue->setTextAlignment(Cue::Alignment::CENTER);
+            currentObject->setTextAlignment(Cue::Alignment::CENTER);
             return;
         }
         if (ParserUtil::compareU32Strings(value, U"end")) {
-            currentCue->setTextAlignment(Cue::Alignment::END);
+            currentObject->setTextAlignment(Cue::Alignment::END);
             return;
         }
         if (ParserUtil::compareU32Strings(value, U"right")) {
-            currentCue->setTextAlignment(Cue::Alignment::RIGHT);
+            currentObject->setTextAlignment(Cue::Alignment::RIGHT);
             return;
         }
         if (ParserUtil::compareU32Strings(value, U"left")) {
-            currentCue->setTextAlignment(Cue::Alignment::LEFT);
+            currentObject->setTextAlignment(Cue::Alignment::LEFT);
             return;
         }
 
     }
 
     void CueParser::collectRegionSetting(std::u32string_view name, std::u32string_view value) {
+        
     }
 
     void CueParser::collectVerticalSetting(std::u32string_view name, std::u32string_view value) {
@@ -255,9 +236,9 @@ namespace WebVTT {
             currentWritingDirection = Cue::WritingDirection::VERTICAL_GROWING_LEFT;
         }
         if (currentWritingDirection != Cue::WritingDirection::HORIZONTAL) {
-            currentCue->setRegion(nullptr);
+            currentObject->setRegion(nullptr);
         }
-        currentCue->setWritingDirection(currentWritingDirection);
+        currentObject->setWritingDirection(currentWritingDirection);
     }
 
     void CueParser::collectLineSetting(std::u32string_view name, std::u32string_view value) {
@@ -276,14 +257,14 @@ namespace WebVTT {
 
         //Izdvojiti u posebnu funkciju
         if (ParserUtil::compareU32Strings(colAlign, U"line-left")) {
-            currentCue->setPositionAlignment(Cue::Alignment::LEFT);
+            currentObject->setPositionAlignment(Cue::Alignment::LEFT);
         } else if (ParserUtil::compareU32Strings(colAlign, U"center")) {
-            currentCue->setPositionAlignment(Cue::Alignment::CENTER);
+            currentObject->setPositionAlignment(Cue::Alignment::CENTER);
         } else if (ParserUtil::compareU32Strings(colAlign, U"line-right")) {
-            currentCue->setPositionAlignment(Cue::Alignment::RIGHT);
+            currentObject->setPositionAlignment(Cue::Alignment::RIGHT);
         } else if (!colAlign.empty()) return;
 
-        currentCue->setPosition(number);
+        currentObject->setPosition(number);
 
 
     }
@@ -291,14 +272,34 @@ namespace WebVTT {
     void CueParser::collectPositionSetting(std::u32string_view name, std::u32string_view value) {
         std::u32string_view linePos = value, lineAlign;
         auto comaPosition = value.find(U',');
+        double number = -1;
         if (comaPosition != std::u32string_view::npos) {
             linePos = value.substr(0, comaPosition);
             lineAlign = value.substr(comaPosition + 1);
         }
         auto percentagePos = linePos.find(U'%');
-        if(percentagePos == std::u32string_view::npos){
-
+        bool foundPercentageOnLast = (percentagePos == linePos.length() - 1) ? true : false;
+        if (percentagePos == std::u32string_view::npos) {
+            std::string stringNumber = utf8::utf32to8(linePos);
+            number = std::stod(stringNumber);
+            //TODO catch error
+        } else {
+            if (foundPercentageOnLast) {
+                std::string stringNumber = utf8::utf32to8(linePos.substr());
+                number = std::stoi(stringNumber);
+            } else return;
         }
+
+        if (ParserUtil::compareU32Strings(lineAlign, U"start")) {
+            currentObject->setLineAlignment(Cue::Alignment::START);
+        } else if (ParserUtil::compareU32Strings(lineAlign, U"center")) {
+            currentObject->setLineAlignment(Cue::Alignment::CENTER);
+        } else if (ParserUtil::compareU32Strings(lineAlign, U"end")) {
+            currentObject->setLineAlignment(Cue::Alignment::END);
+        } else if (!lineAlign.empty()) return;
+
+        currentObject->setLineNumber(number);
+
 
     }
 
@@ -310,8 +311,8 @@ namespace WebVTT {
         std::string percentageString = percentageStringOptional.value();
         double percentage = std::stod(percentageString);
         if (percentage < 0 || percentage > 100) return;
-        currentCue->setSize(percentage);
-        if (percentage != 100) currentCue->setRegion(nullptr);
+        currentObject->setSize(percentage);
+        if (percentage != 100) currentObject->setRegion(nullptr);
     };
 
 } // end of namespace

@@ -10,7 +10,7 @@ namespace WebVTT
     class StyleSheetParser
     {
     private:
-        std::list<std::shared_ptr<StyleSheet>> styleSheets;
+
     };
 }
 

@@ -187,3 +187,5 @@ class SyncBuffer<std::string, uint8_t>;
 
 template
 class SyncBuffer<std::u32string, uint32_t>;
+
+
