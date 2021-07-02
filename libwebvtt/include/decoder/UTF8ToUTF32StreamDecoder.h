@@ -1,8 +1,8 @@
 #ifndef UTF8_TO_UTF32_STREAM_DECODER_H
 #define UTF8_TO_UTF32_STREAM_DECODER_H
 
-#include "SyncBuffer.h"
-#include "Logger.h"
+#include "buffer/SyncBuffer.h"
+#include "logger/Logger.h"
 #include <memory>
 #include <string>
 #include <thread>

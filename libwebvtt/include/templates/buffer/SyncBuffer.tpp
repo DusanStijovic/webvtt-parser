@@ -1,12 +1,12 @@
-#include "SyncBuffer.h"
+#include "buffer/SyncBuffer.h"
 #include "utf8.h"
 #include <optional>
 #include <list>
 
-template<typename StringType, typename dataType>
-SyncBuffer<StringType, dataType>::SyncBuffer() {
-    //static_assert(std::is_same<StringType, std::u32string>::value && std::is_same<dataType, uint32_t>::value, "Incompatible types");
-    //static_assert(std::is_same<StringType, std::string>::value && std::is_same<dataType, uint8_t>::value, "Incompatible types");
+template<typename ContainerType, typename dataType>
+SyncBuffer<ContainerType, dataType>::SyncBuffer() {
+    //static_assert(std::is_same<ContainerType, std::u32string>::value && std::is_same<dataType, uint32_t>::value, "Incompatible types");
+    //static_assert(std::is_same<ContainerType, std::string>::value && std::is_same<dataType, uint8_t>::value, "Incompatible types");
     readPosition = buffer.begin();
 }
 
@@ -182,10 +182,5 @@ void SyncBuffer<StringType, dataType>::clearBufferUntilReadPosition() {
     buffer.erase(buffer.begin(), readPosition);
 }
 
-template
-class SyncBuffer<std::string, uint8_t>;
-
-template
-class SyncBuffer<std::u32string, uint32_t>;
 
 

@@ -1,15 +1,17 @@
 #ifndef WEBVTT_BLOCK_H
 #define WEBVTT_BLOCK_H
 
+namespace WebVTT
+{
+    /**
+     * Base class for all WebVTT elements.
+     */
+    class Block
+    {
 
-class Block {
+    public:
+        virtual ~Block() {}
+    };
+} //End of namespace
 
-
-public:
-
-    virtual ~Block() {}
-
-};
-
-
-#endif //LIBWEBVTT_BLOCK_H
+#endif

@@ -1,38 +1,49 @@
-//
-// Created by Dušan on 6/15/2021.
-//
-
 #ifndef LIBWEBVTT_OBJECT_PARSER_H
 #define LIBWEBVTT_OBJECT_PARSER_H
 
 #include <memory>
 
-template<typename Object>
-class ObjectParser {
-protected:
-    std::shared_ptr<Object> currentObject;
+namespace WebVTT {
+    /**
+     * Helper class for creating parser for specific WebVTT object
+     * Object parser has one internal object in which will be set all parsed info
+     *
+     * @tparam Object some subtype of Block.
+     */
+    template<typename Object>
+    class ObjectParser {
+    protected:
+        std::shared_ptr<Object> currentObject;
 
-public:
-    virtual bool setNewObjectForParsing(std::shared_ptr<Object> newObject) {
-        if (currentObject != nullptr) return false;
-        currentObject = newObject;
-        return true;
+    public:
+        /**
+         * Set new object as parsing object
+         *
+         * @param newObject  new object to be set as parsing object
+         * @return true if object set, otherwise false
+         */
+        virtual bool setNewObjectForParsing(std::shared_ptr<Object> newObject);
+
+
+        /**
+         * @return return parser internal object and set internal object to nullptr
+         */
+        virtual std::shared_ptr<Object> collectCurrentObject();
+
+        virtual ~ObjectParser() = 0;
+
+
     };
 
+    /**
+     * This is needed because we want that every class ObjectParser<Object> be abstract
+     * @tparam Object
+     */
+    template<typename Object>
+    ObjectParser<Object>::~ObjectParser<Object>() {}
 
-    virtual std::shared_ptr<Object> collectCurrentObject() {
-        std::shared_ptr<Object> temp = currentObject;
-        currentObject = nullptr;
-        return temp;
-    };
+} //End of namespace
 
-    virtual ~ObjectParser() = 0;
+#include "templates/parser/ObjectParser.tpp"
 
-
-};
-
-template<typename Object>
-ObjectParser<Object>::~ObjectParser<Object>() {}
-
-
-#endif //LIBWEBVTT_OBJECT_PARSER_H
+#endif

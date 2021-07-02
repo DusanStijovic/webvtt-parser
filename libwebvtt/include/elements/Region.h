@@ -8,65 +8,84 @@
 #include <list>
 #include "Block.h"
 
-namespace WebVTT
-{
+namespace WebVTT {
 
-    class Region : public Block
-    {
+
+    /**
+     * Class representing region in WebVTT. It containt region id and region settings
+     */
+    class Region : public Block {
 
     public:
-        enum Scroll
-        {
+        enum ScrollType {
             NONE,
             UP
         };
 
-        std::shared_ptr<Region>
+        /**
+         *
+         * @param regions list of regions that will be searched
+         * @param identifier id of region that has been asked for
+         * @return region with given id from list of given regions, otherwise nullptr
+         */
+        static std::shared_ptr<Region>
         getRegionByIdentifier(const std::list<std::shared_ptr<Region>> &regions, std::u32string_view identifier);
 
-        void setId(std::u32string_view identifier)
-        {
-            this->identifier = {identifier.data(), identifier.size()};
-        }
+        /**
+         * Set region identifier
+         * @param newIdentifier new region identifier
+         */
+        void setId(std::u32string_view newIdentifier);
 
-        void setWidth(double width)
-        {
-            this->width = width;
-        }
+        /**
+         * Set region width
+         *
+         * @param newWidth new region width
+         */
+        void setWidth(double newWidth);
 
-        void setLines(int numOfLines)
-        {
-            this->lines = 3;
-        }
+        /**
+         * Set region number of lined
+         *
+         * @param newNumOfLines new number of lines for region
+         */
+        void setLines(int newNumOfLines);
 
-        void setViewAnchorPort(std::tuple<double, double> viewPortAnchor)
-        {
-            this->viewPortAnchor = viewPortAnchor;
-        }
+        /**
+         * Set x and y coordinates of view port anchor's
+         * @param viewPortAnchor new x and y coordinates of view port anchor's
+         */
+        void setViewAnchorPort(std::tuple<double, double> newViewPortAnchor);
 
-        void setAnchor(std::tuple<double, double> anchor)
-        {
-            this->anchor = anchor;
-        }
+        /**
+         * Set x and y coordinates of region anchor's
+         * @param newAnchor new x and y  coordinates of region anchor's
+         */
+        void setAnchor(std::tuple<double, double> newAnchor);
 
-        void setScrollValue(Scroll scrollValue)
-        {
-            this->scrollValue = scrollValue;
-        }
+        /**
+         * Set new scroll value
+         * @param newScrollValue new scroll value, one instance of ScrollType
+         */
+        void setScrollValue(ScrollType newScrollValue);
 
     private:
+        /**
+         * Constexpresions for region settings default values
+         */
         constexpr static double DEFAULT_WIDTH = 100;
         constexpr static uint32_t DEFAULT_NUM_OF_LINES = 3;
         constexpr static double DEFAULT_ANCHOR_PORT_X = 0;
         constexpr static double DEFAULT_ANCHOR_PORT_Y = 100;
+
         std::u32string identifier;
         uint32_t width = DEFAULT_WIDTH;
         uint32_t lines = DEFAULT_NUM_OF_LINES;
         std::tuple<double, double> anchor{DEFAULT_ANCHOR_PORT_X, DEFAULT_ANCHOR_PORT_Y};
         std::tuple<double, double> viewPortAnchor{DEFAULT_ANCHOR_PORT_X, DEFAULT_ANCHOR_PORT_Y};
-        Scroll scrollValue = NONE;
+        ScrollType scrollValue = NONE;
     };
 
 } //End of namespace
 
-#endif //LIBWEBVTT_REGION_H
+#endif

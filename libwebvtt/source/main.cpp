@@ -1,6 +1,6 @@
-#include "Parser.h"
-#include "SyncBuffer.h"
-#include "UTF8ToUTF32StreamDecoder.h"
+#include "parser/Parser.h"
+#include "buffer/SyncBuffer.h"
+#include "decoder/UTF8ToUTF32StreamDecoder.h"
 #include <string>
 #include <fstream>
 #include <streambuf>

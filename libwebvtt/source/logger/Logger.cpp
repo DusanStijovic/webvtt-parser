@@ -31,7 +31,7 @@
 #include <ctime>
 
 // Code Specific Header Files(s)
-#include "Logger.h"
+#include "logger/Logger.h"
 
 using namespace std;
 using namespace CPlusPlusLogging;

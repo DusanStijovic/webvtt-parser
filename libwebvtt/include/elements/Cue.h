@@ -6,27 +6,37 @@
 #include <optional>
 #include <utility>
 #include "TimePoint.h"
-#include "constants.h"
 #include "Block.h"
 #include "Region.h"
 
 namespace WebVTT {
-
+    /**
+     * Class representing cue in WebVTT. It contains cue id,  cue text, cue timing and cue settings
+     *
+     * All description of what specific setting mean could be found on:
+     * https://www.w3.org/TR/webvtt1/#model-cues
+     */
     class Cue : public Block {
     public:
-        constexpr static int DEFAULT_CUE_SIZE = 100;
-        constexpr static std::u32string_view REGION = U"region";
-        constexpr static std::u32string_view VERTICAL = U"vertical";
-        constexpr static std::u32string_view LINE = U"line";
-        constexpr static std::u32string_view POSITION = U"position";
-        constexpr static std::u32string_view SIZE = U"size";
-        constexpr static std::u32string_view ALIGN = U"align";
 
+
+        /**
+         *Default values for the settings are set when calling constructor  
+         */
+        Cue() = default;
+
+        /**
+         * Enum representing writing direction of cue text
+         */
         enum class WritingDirection {
             HORIZONTAL,
             VERTICAL_GROWING_LEFT,
             VERTICAL_GROWING_RIGHT
         };
+
+        /**
+         * Enum representing cue text and position alignment
+         */
         enum class Alignment {
             AUTO,
             START,
@@ -36,72 +46,127 @@ namespace WebVTT {
             RIGHT
         };
 
+        /**
+         *Enum representing type of units in cue time stamp while parsing timestamp
+         */
         enum class TimeUnit {
             HOURS,
             MINUTES,
             SECONDS
         };
 
+
         explicit Cue(std::u32string identifier) : identifier(std::move(identifier)) {};
 
-        void setText(std::u32string text) {
-            this->text = std::move(text);
-        }
+        /**
+         * Set cue text
+         *
+         * @param text cue text
+         */
+        void setText(std::u32string newText);
 
-        void setStartTime(long startTime) {
-            this->startTime = startTime;
-        }
+        /**
+         * Set cue start time
+         *
+         * @param time time in seconds
+         */
+        void setStartTime(double newTime);
 
-        void setEndTime(long endTime) {
-            this->endTime = endTime;
-        }
+        /**
+         * Set cue end time
+         *
+         * @param endTime time in seconds
+         */
+        void setEndTime(double newTime);
 
-        void setWritingDirection(WritingDirection writingDirection) {
-            this->writingDirection = writingDirection;
-        }
+        /**
+         * Set cue writing direction
+         *
+         * @param writingDirection cue text writing direction, one instance of enum WritingDirection
+         */
+        void setWritingDirection(WritingDirection newWritingDirection);
 
-        void setRegion(std::shared_ptr<Region> region) {
-            this->region = region;
-        }
+        /**
+         * Set cue region
+         *
+         * @param region region of cue
+         */
+        void setRegion(std::shared_ptr<Region> newRegion);
 
-        void setTextAlignment(Alignment alignment) {
-            this->textAlignment = alignment;
-        }
+        /**
+         * Set cue text alignment
+         *
+         * @param alignment cue text alignment, one instance of enum Alignment
+         */
+        void setTextAlignment(Alignment newAlignment);
 
-        void setPositionAlignment(Alignment alignment) {
-            this->positionAlignment = alignment;
-        }
+        /**
+         * Set cue position alignment
+         *
+         * @param alignment cue position alignment, one instance of enum Alignment
+         */
+        void setPositionAlignment(Alignment newAlignment);
 
-        void setPosition(double position) {
-            this->position = position;
-        }
+        /**
+         * Set cue position
+         *
+         * @param position cue position
+         */
+        void setPosition(double newPosition);
 
-        void setSize(double size) {
-            this->size = size;
-        }
+        /**
+         * Set cue size
+         *
+         * @param size  set cue size
+         */
+        void setSize(double newSize);
 
-        void setLineAlignment(Alignment alignment) {
-            this->lineAlignment = alignment;
-        }
+        /**
+         * Set cue line alignment
+         *
+         * @param alignment line position alignment, one instance of enum Alignment
+         */
+        void setLineAlignment(Alignment newAlignment);
 
-        void setLineNumber(double lineNumber) {
-            this->lineNumber = lineNumber;
-        }
+        /**
+         * Set cue line number
+         *
+         * @param lineNumber number of line
+         */
+        void setLineNumber(double newLineNumber);
+
+        /**
+         * Set cue snapToLines flag
+         *
+         * @param newSnapToLines new snap to lines flag
+         */
+        void setSnapToLines(bool newSnapToLines);
 
     private:
+
+        static constexpr double MAX_CUE_SIZE = 100;
+        static constexpr double DEFAULT_CUE_SIZE = 100;
+
+        static constexpr double LINE_DEFAULT_VALUE = -1;
+        static constexpr double POSITION_DEFAULT_VALUE = -1;
+
+
+        /**
+         * Unique id of cue
+         */
         std::u32string identifier;
-        bool pauseOnExit = false;
         std::shared_ptr<Region> region = nullptr;
         WritingDirection writingDirection = WritingDirection::HORIZONTAL;
-        bool snapToLines = true;
-        double lineNumber = -1;
-        double position = -1;
+        double lineNumber = LINE_DEFAULT_VALUE;
+        double position = POSITION_DEFAULT_VALUE;
         Alignment positionAlignment = Alignment::AUTO;
         Alignment lineAlignment = Alignment::START;
         Alignment textAlignment = Alignment::CENTER;
-        uint64_t size = DEFAULT_CUE_SIZE;
+        double size = DEFAULT_CUE_SIZE;
         std::u32string text;
-        uint32_t startTime, endTime;
+        double startTime = 0, endTime = 0;
+        bool pauseOnExit = false;
+        bool snapToLines = true;
     };
 }; // namespace name
 

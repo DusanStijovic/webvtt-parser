@@ -3,21 +3,26 @@ BUILD_DIR = build
 
 SOURCE_CPP_LIST = \
 source/main.cpp\
-source/bufferImpl/Semaphore.cpp\
-source/bufferImpl/SyncBuffer.cpp\
 source/logger/Logger.cpp\
 source/decoder/UTF8ToUTF32StreamDecoder.cpp\
-source/Elements/Cue.cpp\
-source/Elements/Region.cpp\
-source/Elements/StyleSheet.cpp\
-source/Parser/Parser.cpp\
-source/Parser/CueParser.cpp\
-source/Parser/StyleSheetParser.cpp\
-source/Parser/RegionParser.cpp\
+source/elements/Cue.cpp\
+source/elements/Region.cpp\
+source/elements/StyleSheet.cpp\
+source/parser/Parser.cpp\
+source/parser/CueParser.cpp\
+source/parser/StyleSheetParser.cpp\
+source/parser/RegionParser.cpp\
+source/parser/ParserUtil.cpp\
+source/parser/cue_text_tokenizer/CueTextTokenizer.cpp\
+source/parser/cue_text_tokenizer/CueTextTokenizerState.cpp\
+source/parser/cue_text_tokenizer/DataState.cpp\
 
 
-INCLUDE_CPP_LIST = \
--Iinclude -Iinclude/bufferImpl -Iinclude/utfcpp/source -Iinclude/logger -Iinclude/decoder -Iinclude/elements -Iinclude/parser -Iinclude/constants
+
+INCLUDE_CPP_LIST =\
+ -Iinclude\
+ -Ilib/utfcpp/source\
+
 
 
 LIB_CPP_LIST = \

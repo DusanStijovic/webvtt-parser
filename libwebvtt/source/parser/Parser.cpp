@@ -1,15 +1,15 @@
+#include "elements/Block.h"
+#include "elements/Cue.h"
+#include "logger/Logger.h"
+#include "parser/ParserUtil.h"
+#include "parser/Parser.h"
 #include <iostream>
 #include <chrono>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <thread>
-#include <Block.h>
-#include "Logger.h"
-#include "Cue.h"
-#include "ParserUtil.h"
-#include "Parser.h"
-#include "constants.h"
+
 
 using namespace CPlusPlusLogging;
 using namespace std::chrono_literals;
@@ -148,7 +148,7 @@ namespace WebVTT {
                     if (!success) {
                         //log error
                     }
-                    success = cueParser->collectTimingAndSettings(line, position);
+                    success = cueParser->parseTimingAndSettings(line, position);
                     if (!success) {
                         parserLogger.error("Collecting cue error");
                         return false;;
