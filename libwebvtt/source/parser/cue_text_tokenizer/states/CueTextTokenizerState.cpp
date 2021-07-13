@@ -1,5 +1,10 @@
-//
-// Created by Dušan on 7/2/2021.
-//
+#include "parser/cue_text_tokenizer/states/CueTextTokenizerState.h"
+#include "parser/ParserUtil.h"
 
-#include "../../../include/parser/cue_text_tokenizer/CueTextTokenizerState.h"
+namespace WebVTT
+{
+    std::shared_ptr<Token> CueTextTokenizerState::getTokenOrNullptr()
+    {
+        return token;
+    }
+}

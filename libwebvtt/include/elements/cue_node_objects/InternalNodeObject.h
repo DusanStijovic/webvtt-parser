@@ -1,14 +1,36 @@
-//
-// Created by Dušan on 7/1/2021.
-//
+#ifndef LIBWEBVTT_INTERNAL_NODE_OBJECT_H
+#define LIBWEBVTT_INTERNAL_NODE_OBJECT_H
 
-#ifndef LIBWEBVTT_INTERNALNODEOBJECT_H
-#define LIBWEBVTT_INTERNALNODEOBJECT_H
+#include "NodeObject.h"
+#include <string>
+#include <stack>
 
+namespace WebVTT
+{
+    class InternalNodeObject : public NodeObject
+    {
 
-class InternalNodeObject {
+    public:
+        InternalNodeObject() = default;
 
-};
+        void setClasses(std::list<std::u32string> &newClasses);
+        virtual void setLanguage(std::u32string &languages);
+        virtual void processAnnotationString(std::stack<std::u32string> &languages, std::u32string &annotation);
 
+        static NodeType
+        convertToInternalNodeType(std::u32string_view nodeTypeName);
+        static std::shared_ptr<InternalNodeObject> makeInternalNode(NodeType nodeType);
 
-#endif //LIBWEBVTT_INTERNALNODEOBJECT_H
+        void appendChild(std::shared_ptr<NodeObject> nodeObject);
+
+      
+
+    private:
+        std::list<std::shared_ptr<NodeObject>> listOfObject;
+
+        std::list<std::u32string> classes;
+        std::u32string language;
+    };
+}
+
+#endif

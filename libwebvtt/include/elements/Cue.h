@@ -1,25 +1,25 @@
 #ifndef WEBVTT_CUE_H
 #define WEBVTT_CUE_H
-
+#include "elements/cue_node_objects/NodeObject.h"
+#include "TimePoint.h"
+#include "Block.h"
+#include "Region.h"
 #include <string>
 #include <memory>
 #include <optional>
 #include <utility>
-#include "TimePoint.h"
-#include "Block.h"
-#include "Region.h"
 
-namespace WebVTT {
+namespace WebVTT
+{
     /**
      * Class representing cue in WebVTT. It contains cue id,  cue text, cue timing and cue settings
      *
      * All description of what specific setting mean could be found on:
      * https://www.w3.org/TR/webvtt1/#model-cues
      */
-    class Cue : public Block {
+    class Cue : public Block
+    {
     public:
-
-
         /**
          *Default values for the settings are set when calling constructor  
          */
@@ -28,7 +28,8 @@ namespace WebVTT {
         /**
          * Enum representing writing direction of cue text
          */
-        enum class WritingDirection {
+        enum class WritingDirection
+        {
             HORIZONTAL,
             VERTICAL_GROWING_LEFT,
             VERTICAL_GROWING_RIGHT
@@ -37,7 +38,8 @@ namespace WebVTT {
         /**
          * Enum representing cue text and position alignment
          */
-        enum class Alignment {
+        enum class Alignment
+        {
             AUTO,
             START,
             CENTER,
@@ -46,17 +48,7 @@ namespace WebVTT {
             RIGHT
         };
 
-        /**
-         *Enum representing type of units in cue time stamp while parsing timestamp
-         */
-        enum class TimeUnit {
-            HOURS,
-            MINUTES,
-            SECONDS
-        };
-
-
-        explicit Cue(std::u32string identifier) : identifier(std::move(identifier)) {};
+        explicit Cue(std::u32string identifier) : identifier(std::move(identifier)){};
 
         /**
          * Set cue text
@@ -142,18 +134,24 @@ namespace WebVTT {
          */
         void setSnapToLines(bool newSnapToLines);
 
-    private:
+        /**
+         * Get cue text
+         *
+         */
+        std::u32string_view getText();
 
+        /**
+         * Set text tree root
+         */
+        void setTextTreeRoot(std::shared_ptr<NodeObject> &treeRoot);
+
+    private:
         static constexpr double MAX_CUE_SIZE = 100;
         static constexpr double DEFAULT_CUE_SIZE = 100;
 
         static constexpr double LINE_DEFAULT_VALUE = -1;
         static constexpr double POSITION_DEFAULT_VALUE = -1;
 
-
-        /**
-         * Unique id of cue
-         */
         std::u32string identifier;
         std::shared_ptr<Region> region = nullptr;
         WritingDirection writingDirection = WritingDirection::HORIZONTAL;
@@ -167,6 +165,7 @@ namespace WebVTT {
         double startTime = 0, endTime = 0;
         bool pauseOnExit = false;
         bool snapToLines = true;
+        std::shared_ptr<NodeObject> textTreeRoot;
     };
 }; // namespace name
 

@@ -6,7 +6,8 @@
 #include <list>
 #include <memory>
 
-namespace WebVTT {
+namespace WebVTT
+{
 
     /**
      * Parser used to parse all cue info from string and set related filed.
@@ -14,7 +15,8 @@ namespace WebVTT {
      * Algorithm and specification used could be found on:
      * https://www.w3.org/TR/webvtt1/#cue-timings-and-settings-parsing
      */
-    class CueParser : public ObjectParser<Cue> {
+    class CueParser : public ObjectParser<Cue>
+    {
 
     public:
         /**
@@ -44,18 +46,7 @@ namespace WebVTT {
          */
         const std::list<std::shared_ptr<Region>> &currentRegions;
 
-        /**
-         * Constexpresions for parsing timestamps
-         */
-        static constexpr int MAX_MINUTES_VALUE = 60;
-        static constexpr int MAX_SECONDS_VALUE = 60;
-        static constexpr int MAX_MILLISECONDS_VALUE = 1000;
-
-        static constexpr int NUM_OF_DIGITS_FIRST_PART = 2;
-        static constexpr int NUM_OF_DIGITS_SECOND_PART = 2;
-        static constexpr int NUM_OF_DIGITS_THIRD_PART = 2;
-        static constexpr int NUM_OF_DIGITS_FORTH_PART = 3;
-
+    
         static constexpr std::u32string_view TIME_STAMP_SEPARATOR = U"-->";
 
         /**
@@ -68,13 +59,11 @@ namespace WebVTT {
         constexpr static std::u32string_view SIZE_SETTING = U"size";
         constexpr static std::u32string_view ALIGN_SETTING = U"align";
 
-
         /**
          * Constexpresions for parsing vertical settings
          */
         static constexpr std::u32string_view VERTICAL_LEFT_TO_RIGHT = U"lr";
         static constexpr std::u32string_view VERTICAL_RIGHT_TO_LEFT = U"rl";
-
 
         /**
          * Constexpresions for parsing alignment
@@ -173,13 +162,13 @@ namespace WebVTT {
          */
         void parseAndSetAlignSetting(std::u32string_view value);
 
-
         /**
          * Parse used style in cue text and make style tree.
          * Style Tree consist od internal(style) and leaf(actual text) nodes
+         * 
+         * @param defaaultLanguage optional, default cue text language
          */
-        void parseTextStyleAndMakeStyleTree();
-
+        void parseTextStyleAndMakeStyleTree(std::u32string_view defaultLanguage = U"");
     };
 
 } //End of namespace

@@ -1,5 +1,14 @@
-//
-// Created by Dušan on 7/1/2021.
-//
+#include "parser/cue_text_tokenizer/tokens/BasicToken.h"
+#include "elements/cue_node_objects/leaf_node_objects/TextObject.h"
+#include <memory>
 
-#include "../../../include/elements/tokens/BasicToken.h"
+namespace WebVTT
+{
+    void BasicToken::process(std::shared_ptr<NodeObject> &nodeObject, std::stack<std::u32string> &language)
+    {
+        std::shared_ptr<TextObject> textObject = std::make_shared<TextObject>(tokenValue);
+        nodeObject->appendChild(textObject);
+        textObject->setParent(nodeObject);
+    }
+
+}

@@ -1,5 +1,6 @@
-//
-// Created by Dušan on 7/1/2021.
-//
+#include "parser/cue_text_tokenizer/tokens/Token.h"
 
-#include "../../../include/elements/tokens/Token.h"
+namespace WebVTT
+{
+
+}
