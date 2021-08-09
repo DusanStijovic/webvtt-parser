@@ -15,8 +15,16 @@ namespace WebVTT
             switch (character)
             {
             case ParserUtil::AMPERSAND_C:
-                //TODO Try to consume html character
+            {
+                tokenizer.getCurrentPosition()++;
+                std::u32string result = ParserUtil::consumeHTMLCharacter(tokenizer.getInput(), tokenizer.getCurrentPosition(), std::nullopt, false);
+                if (result.empty())
+                    tokenizer.getResult().push_back(ParserUtil::AMPERSAND_C);
+                else
+                    tokenizer.getResult().append(result);
+                tokenizer.setTokenizerState(CueTextTokenizer::TokenizerState::DATA);
                 break;
+            }
             case ParserUtil::HYPHEN_LESS:
                 if (tokenizer.getResult().empty())
                 {

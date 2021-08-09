@@ -10,13 +10,10 @@
 #include "parser/ParserUtil.h"
 #include <memory>
 
-namespace WebVTT
-{
+namespace WebVTT {
 
-    std::shared_ptr<Token> CueTextTokenizer::getNextToken()
-    {
-        while (true)
-        {
+    std::shared_ptr<Token> CueTextTokenizer::getNextToken() {
+        while (true) {
             uint32_t c = *currentPosition;
             if (currentPosition == input.end())
                 c = STOP_TOKENIZER;
@@ -28,20 +25,23 @@ namespace WebVTT
         return nullptr;
     }
 
-    void CueTextTokenizer::initializeTokenizerStates()
-    {
+    void CueTextTokenizer::initializeTokenizerStates() {
         statesInsance[TokenizerState::DATA] = std::shared_ptr<CueTextTokenizerState>(new DataState(*this));
         statesInsance[TokenizerState::START_TAG] = std::shared_ptr<CueTextTokenizerState>(new StartTagState(*this));
-        statesInsance[TokenizerState::START_TAG_ANNOTATION] = std::shared_ptr<CueTextTokenizerState>(new StartTagAnnotationState(*this));
+        statesInsance[TokenizerState::START_TAG_ANNOTATION] = std::shared_ptr<CueTextTokenizerState>(
+                new StartTagAnnotationState(*this));
         statesInsance[TokenizerState::TAG] = std::shared_ptr<CueTextTokenizerState>(new TagState(*this));
         statesInsance[TokenizerState::END_TAG] = std::shared_ptr<CueTextTokenizerState>(new EndTagState(*this));
-        statesInsance[TokenizerState::START_TAG_CLASS] = std::shared_ptr<CueTextTokenizerState>(new StartTagClassState(*this));
-        statesInsance[TokenizerState::TIME_STAMP_TAG] = std::shared_ptr<CueTextTokenizerState>(new TimpStampTagState(*this));
+        statesInsance[TokenizerState::START_TAG_CLASS] = std::shared_ptr<CueTextTokenizerState>(
+                new StartTagClassState(*this));
+        statesInsance[TokenizerState::TIME_STAMP_TAG] = std::shared_ptr<CueTextTokenizerState>(
+                new TimpStampTagState(*this));
     }
 
-    std::shared_ptr<CueTextTokenizerState> &CueTextTokenizer::getStateInstance(TokenizerState tokenizerState)
-    {
-        return statesInsance[tokenizerState];
+    std::shared_ptr<CueTextTokenizerState> CueTextTokenizer::getStateInstance(TokenizerState tokenizerState) {
+        auto instance = statesInsance.find(tokenizerState);
+        if (instance != statesInsance.end()) return instance->second;
+        else return nullptr;
     }
 
 }

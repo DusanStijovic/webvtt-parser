@@ -45,7 +45,7 @@ namespace WebVTT
             return currentState;
         }
 
-        std::shared_ptr<CueTextTokenizerState> &getStateInstance(TokenizerState tokenizerState);
+        std::shared_ptr<CueTextTokenizerState> getStateInstance(TokenizerState tokenizerState);
 
         inline std::u32string_view getInput() { return input; }
 

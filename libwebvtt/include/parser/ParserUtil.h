@@ -5,6 +5,10 @@
 #include <string>
 #include <algorithm>
 #include <tuple>
+#include <map>
+#include <functional>
+#include <array>
+#include <set>
 
 namespace WebVTT
 {
@@ -12,6 +16,19 @@ namespace WebVTT
     class ParserUtil
     {
     public:
+        static const std::map<uint32_t, std::u32string> numberHTMLReferences;
+        static const std::map<std::string, std::u32string> namedHTMLREferences;
+
+        static constexpr uint32_t MAX_NAMED_HTML_REF_LENGTH = 31;
+
+        static const std::set<uint32_t> unallowedNumbers;
+
+        static const std::array<uint32_t, 4> low_border;
+
+        static const std::array<uint32_t, 4> high_border;
+
+        static constexpr int MAX_NUMBER_OF_CSS_ESCAPED_CHARACTER = 6;
+
         enum SPECIAL_CHARACTER
         {
             NULL_C = 0x0000,
@@ -24,6 +41,7 @@ namespace WebVTT
             HYPHEN_MINUS = 0x002D,
             HYPHEN_GREATER = 0x003E,
             COLON_C = 0x003A,
+            SEMI_COLON = 0x003B,
             FULL_STOP = 0x002E,
             COMMA_C = 0x002C,
             DOT_C = 0x002E,
@@ -31,8 +49,18 @@ namespace WebVTT
             AMPERSAND_C = 0x0026,
             HYPHEN_LESS = 0x003C,
             EOF_C = 0x0005,
-            SOLIDUS_C = 0x002F
-
+            SOLIDUS_C = 0x002F,
+            LEFT_PARENTHESIS_C = 0x0028,
+            RIGHT_PARENTHESIS_C = 0x0029,
+            LEFT_SQUARE_BRACKET_C = 0x005B,
+            RIGHT_SQUARE_BRACKET_C = 0x005D,
+            HASHTAG_C = 0x0023,
+            EQUAL_C = 0x003D,
+            LEFT_CURLY_BRACKET_C = 0x007B,
+            RIGHT_CURLY_BRACKET_C = 0x007D,
+            LATIN_SMALL_LETTER_X = 0x0078,
+            LATIN_CAPITAL_LETTER_X = 0x0058,
+            BACK_SLASH_C = 0x005C
         };
 
         /**
@@ -61,12 +89,29 @@ namespace WebVTT
 
         static constexpr std::u32string_view EMPTY_STRING_VIEW = U"";
 
+        /**
+         * Constansts for cue style
+         */
+        static constexpr std::u32string_view LANG_TYPE_MARK = U"lang";
+        static constexpr std::u32string_view VOICE_TYPE_MARK = U"v";
+
+        static constexpr std::u32string_view LANG_ATTRIBUTE_MARK = U"lang";
+        static constexpr std::u32string_view VOICE_ATRIBUTE_MARK = U"voice";
+
         static bool isWhiteSpaceCharacter(uint32_t character);
 
-        static bool isDigit(uint32_t character);
+        static bool isAsciiDecDigit(uint32_t character);
+        static bool isAsciiHexDigit(uint32_t character);
+
+       
+
+        static bool isAsciiAlphaNumeric(uint32_t character);
 
         static std::optional<std::string>
         collectDigits(std::u32string_view input, std::u32string_view::iterator &position);
+
+        static std::optional<std::string>
+        collectCharacters(std::u32string_view input, std::u32string_view::iterator &position, std::function<bool(uint32_t character)> isLookedCharacter);
 
         //TODO add dot option
         static std::optional<double>
@@ -86,6 +131,12 @@ namespace WebVTT
         static std::u32string_view
         parseUntilCharacter(std::u32string_view input, uint32_t character, std::u32string_view::iterator &position);
 
+        static std::u32string_view parseUntilAndWhileAskedCharacter(std::u32string_view input, std::u32string_view::iterator &position,
+                                                               std::function<bool(uint32_t)> whileCharacter, std::function<bool(uint32_t)> untilCharacter,
+                                                               uint32_t maxNumberOfCharacters);
+        static std::u32string_view
+        parseUntilAnyOfGivenCharacters(std::u32string_view input, std::u32string_view characters, std::u32string_view::iterator &position);
+
         static std::optional<std::tuple<std::u32string_view, std::u32string_view>>
         splitStringAroundCharacter(std::u32string_view input, uint32_t character);
 
@@ -100,7 +151,7 @@ namespace WebVTT
             input.push_back(characterToSet);
         }
 
-        static void strip(std::u32string &input, bool (*isAskedCharacter)(uint32_t))
+        static void strip(std::u32string_view &input, bool (*isAskedCharacter)(uint32_t))
         {
             auto position = input.begin();
 
@@ -109,15 +160,19 @@ namespace WebVTT
             auto newBegin = position;
 
             position = input.end();
+            position--;
             while (isAskedCharacter(*position) && position != newBegin)
                 position--;
 
             auto newEnd = position;
             if (newBegin == newEnd)
-                input.clear();
+                input = ParserUtil::EMPTY_STRING_VIEW;
 
-            input.erase(input.begin(), newBegin);
-            input.erase(newEnd + 1, input.end());
+            input = input.substr(newBegin - input.begin(), newEnd - newBegin);
+            //TODO check indexes
+            //TODO check if you use somewhere counting on stirng
+            // input.erase(input.begin(), newBegin);
+            // input.erase(newEnd + 1, input.end());
         }
 
         static void replaceAllSequenceWithOneCharacter(std::u32string input, bool (*isAskedCharacter)(uint32_t))
@@ -139,7 +194,22 @@ namespace WebVTT
 
         static std::optional<double>
         parseTimeStamp(std::u32string_view input, std::u32string_view::iterator &position);
-    };
 
-};
+        static std::u32string_view make_string_view_from_iterators(const std::u32string_view input, const typename std::u32string_view::iterator &begin, const typename std::u32string_view::iterator &end)
+        {
+            auto begin_index = begin - input.begin();
+            auto end_index = end - input.begin();
+            auto size = end_index - begin_index;
+
+            return input.substr(begin_index, size);
+        }
+        static std::u32string consumeHTMLCharacter(std::u32string_view input, std::u32string_view::iterator &currentPosition, std::optional<uint32_t> additionalCharacter, bool isInAttribute);
+
+        static std::u32string parseHTMLNumberReference(std::u32string_view input, std::u32string_view::iterator &currentPosition);
+
+        static std::u32string parseHTMLNamedReference(std::u32string_view input, std::u32string_view::iterator &currentPosition, bool isInAttribute);
+
+        static std::u32string convertCSSEscapedString(std::u32string_view input);
+    };
+}; // namespace WebVTT
 #endif

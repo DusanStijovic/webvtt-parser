@@ -10,7 +10,7 @@ namespace WebVTT
     {
         uint32_t character = *this->tokenizer.getCurrentPosition();
 
-        if (ParserUtil::isDigit(character))
+        if (ParserUtil::isAsciiDecDigit(character))
         {
             this->tokenizer.getResult().clear();
             this->tokenizer.getResult().push_back(character);

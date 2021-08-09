@@ -11,7 +11,6 @@ namespace WebVTT {
     class RegionParser : public ObjectParser<Region> {
     public:
 
-
         bool parseSettings(std::u32string_view input);
 
         virtual ~RegionParser() = default;

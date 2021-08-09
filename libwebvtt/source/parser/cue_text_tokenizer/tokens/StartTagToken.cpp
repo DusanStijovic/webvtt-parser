@@ -19,6 +19,5 @@ namespace WebVTT
         newObject->setLanguage(languages.top());
         newObject->setParent(nodeObject);
         nodeObject->appendChild(newObject);
-        
     }
 }

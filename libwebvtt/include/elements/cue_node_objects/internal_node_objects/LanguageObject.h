@@ -12,6 +12,9 @@ namespace WebVTT
         virtual NodeType getNodeType() const override;
         virtual void processAnnotationString(std::stack<std::u32string> &languages, std::u32string &annotation) override;
         virtual void processEndToken(std::shared_ptr<NodeObject> &nodeObejct, std::stack<std::u32string> &languages, NodeType value) override;
+
+    private:
+      
     };
 } // namespace WebVTT
 

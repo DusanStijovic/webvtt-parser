@@ -49,7 +49,6 @@
 namespace CPlusPlusLogging
 {
 
-
    // enum for LOG_LEVEL
    typedef enum LOG_LEVEL
    {
@@ -77,8 +76,11 @@ namespace CPlusPlusLogging
       void error(std::string &text) throw();
       void error(std::ostringstream &stream) throw();
 
+      static std::shared_ptr<Logger> getLogger();
+
       // Interface for Alarm Log
-      void alarm(const char *text) throw();
+      void
+      alarm(const char *text) throw();
       void alarm(std::string &text) throw();
       void alarm(std::ostringstream &stream) throw();
 
@@ -121,9 +123,10 @@ namespace CPlusPlusLogging
       void enableFileLogging();
 
       explicit Logger(std::string logFileName);
-       Logger() = delete;
-       Logger(const Logger &obj) = delete;
-       ~Logger();
+      Logger() : Logger(logFileName) {}
+
+      Logger(const Logger &obj) = delete;
+      ~Logger();
 
    protected:
       // Log file name. File name should be change from here only
@@ -135,11 +138,10 @@ namespace CPlusPlusLogging
       void logIntoFile(std::string &data);
       void logOnConsole(std::string &data);
 
-
       void operator=(const Logger &obj) = delete;
 
    private:
-      static std::unique_ptr<Logger> m_Instance;
+      static std::shared_ptr<Logger> m_Instance;
       std::ofstream m_File;
       std::mutex mutex;
 
