@@ -4,9 +4,10 @@
 
 namespace WebVTT
 {
-    class StylePseudoClassSelectorState : public StyleState
+    class StylePseudoClassTwoColonState : public StyleState
     {
     public:
+        StylePseudoClassTwoColonState(StyleSheetParser &styleSheetParser) : StyleState(styleSheetParser) {}
         virtual void processState() override;
     };
 

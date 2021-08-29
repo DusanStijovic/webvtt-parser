@@ -3,8 +3,13 @@
 #include "parser/ParserUtil.h"
 #include "elements/cue_node_objects/NodeObject.h"
 #include "elements/cue_node_objects/internal_node_objects/RootObject.h"
+#include "logger/LoggingUtility.h"
 #include <iostream>
 #include <stack>
+#include "exceptions/cue_parsing/CueParsingError.h"
+#include "exceptions/cue_parsing/CueParsingTimingException.h"
+#include "exceptions/parser_util/ParsingFloatPointNumber.h"
+#include "exceptions/parser_util/ParsingTimeStampException.h"
 
 namespace WebVTT
 {
@@ -12,61 +17,71 @@ namespace WebVTT
     bool CueParser::parseTimingAndSettings(std::u32string_view input,
                                            std::u32string_view::iterator &position)
     {
-        if (currentObject == nullptr)
-            return false;
+        try
+        {
+            if (currentObject == nullptr)
+                return false;
 
-        auto timing = this->parseTiming(input, position, TIME_STAMP_SEPARATOR);
-        if (!timing.has_value())
-            return false;
+            this->parseAndSetTiming(input, position, TIME_STAMP_SEPARATOR);
 
-        auto [start, end] = timing.value();
-        currentObject->setStartTime(start);
-        currentObject->setEndTime(end);
-
-        this->parseAndSetSetting(input, position);
-        return true;
+            this->parseAndSetSetting(input, position);
+            return true;
+        }
+        catch (const CueParsingTimingException &error)
+        {
+            DILOGE(error.what());
+        }
+        return false;
     }
 
-    std::optional<std::tuple<double, double>>
-    CueParser::parseTiming(std::u32string_view input, std::u32string_view::iterator &position,
-                           std::u32string_view separator)
+    void
+    CueParser::parseAndSetTiming(std::u32string_view input, std::u32string_view::iterator &position,
+                                 std::u32string_view separator)
     {
+        try
+        {
+            ParserUtil::skipWhiteSpaces(input, position);
+            if (position == input.end())
+                throw CueParsingTimingException();
 
-        ParserUtil::skipWhiteSpaces(input, position);
-        if (position == input.end())
-            return std::nullopt;
+            double timePoint1 = ParserUtil::parseTimeStamp(input.substr(position - input.begin()), position);
+            currentObject->setStartTime(timePoint1);
 
-        auto timePoint1 = ParserUtil::parseTimeStamp(input.substr(position - input.begin()), position);
-        if (!timePoint1.has_value())
-            return std::nullopt;
+            ParserUtil::skipWhiteSpaces(input, position);
+            if (position == input.end())
+                throw CueParsingTimingException();
 
-        ParserUtil::skipWhiteSpaces(input, position);
-        if (position == input.end())
-            return std::nullopt;
+            std::u32string_view temp = input.substr(position - input.begin(), separator.length());
+            if (!ParserUtil::compareU32Strings(separator, temp))
+                throw CueParsingTimingException();
+            position = position + separator.length();
 
-        std::u32string_view temp = input.substr(position - input.begin(), separator.length());
-        if (!ParserUtil::compareU32Strings(separator, temp))
-            return std::nullopt;
+            ParserUtil::skipWhiteSpaces(input, position);
 
-        position = position + separator.length();
-
-        ParserUtil::skipWhiteSpaces(input, position);
-
-        auto timePoint2 = ParserUtil::parseTimeStamp(input.substr(position - input.begin()), position);
-        if (!timePoint2.has_value())
-            return std::nullopt;
-
-        return std::make_tuple(timePoint1.value(), timePoint2.value());
+            double timePoint2 = ParserUtil::parseTimeStamp(input.substr(position - input.begin()), position);
+            currentObject->setEndTime(timePoint2);
+            return;
+        }
+        catch (const ParsingTimeStampException &error)
+        {
+            DILOGE(error.what());
+            throw CueParsingTimingException();
+        }
     }
 
     void CueParser::parseAndSetSetting(std::u32string_view input, std::u32string_view::iterator &position)
     {
-
         std::u32string_view setting;
         std::u32string settingName, settingValue;
+        std::u32string characters = {ParserUtil::SPACE_C, ParserUtil::TAB_C};
 
-        while (!(setting = ParserUtil::parseUntilCharacter(input, ParserUtil::SPACE_C, position)).empty())
+        while (position != input.end())
         {
+            setting = ParserUtil::parseUntilAnyOfGivenCharacters(input, characters, position);
+            if (position != input.end())
+                position++;
+
+            DILOGI(utf8::utf32to8(setting));
 
             auto settingInfoOptional = ParserUtil::splitStringAroundCharacter(setting, ParserUtil::COLON_C);
 
@@ -140,7 +155,7 @@ namespace WebVTT
     void CueParser::parseAndSetRegionSetting(std::u32string_view value)
     {
 
-        std::shared_ptr<Region> foundRegion = Region::getRegionByIdentifier(currentRegions, value);
+        Region *foundRegion = Region::getRegionByIdentifier(currentRegions, value);
         if (foundRegion == nullptr)
             return;
         currentObject->setRegion(foundRegion);
@@ -165,130 +180,165 @@ namespace WebVTT
 
     void CueParser::parseAndSetPositionSetting(std::u32string_view value)
     {
-        std::u32string_view colPos = value, colAlign;
-
-        auto splitStrings = ParserUtil::splitStringAroundCharacter(value, ParserUtil::COMMA_C);
-        if (splitStrings.has_value())
+        try
         {
-            auto [colPosHelp, colAlignHelp] = splitStrings.value();
-            colPos = std::move(colPosHelp);
-            colAlign = std::move(colAlignHelp);
-        }
+            std::u32string_view colPos = value, colAlign;
 
-        auto percentageOptional = ParserUtil::parsePercentage(colPos);
-        if (!percentageOptional.has_value())
-            return;
-        double number = percentageOptional.value();
+            auto splitStrings = ParserUtil::splitStringAroundCharacter(value, ParserUtil::COMMA_C);
+            if (splitStrings.has_value())
+            {
+                auto [colPosHelp, colAlignHelp] = splitStrings.value();
+                colPos = std::move(colPosHelp);
+                colAlign = std::move(colAlignHelp);
+                if (colAlign.empty() || colAlign.empty())
+                {
+                    DILOGE("Error while parsing position setting");
+                    throw CueParsingError();
+                }
+            }
 
-        if (ParserUtil::compareU32Strings(colAlign, LINE_LEFT))
-        {
-            currentObject->setPositionAlignment(Cue::Alignment::LEFT);
-        }
-        else if (ParserUtil::compareU32Strings(colAlign, LINE_CENTER))
-        {
-            currentObject->setPositionAlignment(Cue::Alignment::CENTER);
-        }
-        else if (ParserUtil::compareU32Strings(colAlign, LINE_RIGHT))
-        {
-            currentObject->setPositionAlignment(Cue::Alignment::RIGHT);
-        }
-        else if (!colAlign.empty())
-            return;
+            double number = ParserUtil::parsePercentage(colPos);
 
-        currentObject->setPosition(number);
+            if (ParserUtil::compareU32Strings(colAlign, LINE_LEFT))
+            {
+                currentObject->setPositionAlignment(Cue::Alignment::LEFT);
+            }
+            else if (ParserUtil::compareU32Strings(colAlign, LINE_CENTER))
+            {
+                currentObject->setPositionAlignment(Cue::Alignment::CENTER);
+            }
+            else if (ParserUtil::compareU32Strings(colAlign, LINE_RIGHT))
+            {
+                currentObject->setPositionAlignment(Cue::Alignment::RIGHT);
+            }
+            else if (!colAlign.empty())
+                return;
+
+            currentObject->setPosition(number);
+        }
+        catch (const ParsingFloatPointNumber &error)
+        {
+            DILOGE(error.what());
+        }
+        catch (const CueParsingError &error)
+        {
+            DILOGE(error.what());
+        }
     }
 
     void CueParser::parseAndSetLineSetting(std::u32string_view value)
     {
-        std::u32string_view linePos = value, lineAlign;
-        std::optional<double> optionalNumber;
-        double number;
-
-        auto splitStrings = ParserUtil::splitStringAroundCharacter(value, ParserUtil::COMMA_C);
-        if (splitStrings.has_value())
+        try
         {
-            auto [linePosHelp, lineAlignHelp] = splitStrings.value();
-            linePos = std::move(linePosHelp);
-            lineAlign = std::move(lineAlignHelp);
-        }
-        auto percentagePos = linePos.find(ParserUtil::PERCENT_C);
-        bool percentageOnLastPosition = (percentagePos == linePos.length() - 1);
-        bool percentageFound = (percentagePos == std::u32string_view::npos);
+            std::u32string_view linePos = value, lineAlign;
+            std::optional<double> optionalNumber;
+            double number;
 
-        if (percentageFound && !percentageOnLastPosition)
-            return;
+            auto splitStrings = ParserUtil::splitStringAroundCharacter(value, ParserUtil::COMMA_C);
+            if (splitStrings.has_value())
+            {
+                auto [linePosHelp, lineAlignHelp] = splitStrings.value();
+                linePos = linePosHelp;
+                lineAlign = lineAlignHelp;
 
-        if (percentageOnLastPosition)
-        {
-            optionalNumber = ParserUtil::parsePercentage(linePos);
-        }
-        else
-        {
-            optionalNumber = ParserUtil::parseFloatPointingNumber(linePos);
-        }
+                if (linePos.empty() || lineAlign.empty())
+                {
+                    DILOGE("Line setting not parsed succesffuly");
+                    throw CueParsingError();
+                }
+            }
+            auto percentagePos = linePos.find(ParserUtil::PERCENT_C);
+            bool percentageOnLastPosition = (percentagePos == linePos.length() - 1);
+            bool percentageFound = (percentagePos == std::u32string_view::npos);
 
-        if (!optionalNumber.has_value())
-            return;
-        number = optionalNumber.value();
+            if (percentageFound && !percentageOnLastPosition)
+                return;
 
-        if (ParserUtil::compareU32Strings(lineAlign, START_ALIGNMENT))
-        {
-            currentObject->setLineAlignment(Cue::Alignment::START);
-        }
-        else if (ParserUtil::compareU32Strings(lineAlign, CENTER_ALIGNMENT))
-        {
-            currentObject->setLineAlignment(Cue::Alignment::CENTER);
-        }
-        else if (ParserUtil::compareU32Strings(lineAlign, END_ALIGNMENT))
-        {
-            currentObject->setLineAlignment(Cue::Alignment::END);
-        }
-        else if (!lineAlign.empty())
-            return;
+            if (percentageOnLastPosition)
+            {
+                number = ParserUtil::parsePercentage(linePos);
+            }
+            else
+            {
+                number = ParserUtil::parseFloatPointingNumber(linePos);
+            }
 
-        currentObject->setLineNumber(number);
+            if (ParserUtil::compareU32Strings(lineAlign, START_ALIGNMENT))
+            {
+                currentObject->setLineAlignment(Cue::Alignment::START);
+            }
+            else if (ParserUtil::compareU32Strings(lineAlign, CENTER_ALIGNMENT))
+            {
+                currentObject->setLineAlignment(Cue::Alignment::CENTER);
+            }
+            else if (ParserUtil::compareU32Strings(lineAlign, END_ALIGNMENT))
+            {
+                currentObject->setLineAlignment(Cue::Alignment::END);
+            }
+            else if (!lineAlign.empty())
+                return;
 
-        bool newSnapToLines = true;
-        if (percentageOnLastPosition)
-        {
-            newSnapToLines = false;
+            currentObject->setLineNumber(number);
+
+            bool newSnapToLines = true;
+            if (percentageOnLastPosition)
+            {
+                newSnapToLines = false;
+            }
+            currentObject->setSnapToLines(newSnapToLines);
         }
-        currentObject->setSnapToLines(newSnapToLines);
+        catch (const CueParsingError &error)
+        {
+            DILOGE(error.what());
+        }
+        catch (const ParsingFloatPointNumber &error)
+        {
+            DILOGE(error.what());
+        }
     }
 
     void CueParser::parseAndSetSizeSetting(std::u32string_view value)
     {
-        auto position = value.begin();
-        auto percentageStringOptional = ParserUtil::parsePercentage(value);
-        if (!percentageStringOptional.has_value())
-            return;
+        try
+        {
+            double percentage = ParserUtil::parsePercentage(value);
+            if (percentage < 0 || percentage > 100)
+                return;
+            currentObject->setSize(percentage);
+        }
+        catch (const ParsingFloatPointNumber &error)
+        {
+            DILOGE(error.what());
+        }
+    }
 
-        double percentage = percentageStringOptional.value();
-        if (percentage < 0 || percentage > 100)
-            return;
-        currentObject->setSize(percentage);
+    void CueParser::setTextToObject(std::u32string text)
+    {
+        currentObject->setText(std::move(text));
     }
 
     void CueParser::parseTextStyleAndMakeStyleTree(std::u32string_view defaultLangage)
     {
-        std::shared_ptr<CueTextTokenizer> cueTextTokenizer = std::make_shared<CueTextTokenizer>(this->currentObject->getText());
+
+        cueTextTokenizer->setText(this->currentObject->getText());
         std::shared_ptr<Token> token = nullptr;
 
         std::stack<std::u32string> languages;
 
-        std::shared_ptr<NodeObject> current = std::make_shared<RootObject>();
+        std::shared_ptr<NodeObject> root = std::make_shared<RootObject>();
+
+        std::shared_ptr<NodeObject> currentNode = root;
 
         if (!defaultLangage.empty())
             languages.push(std::u32string(defaultLangage));
 
-        while (true)
+        while (cueTextTokenizer->getCurrentPosition() != cueTextTokenizer->getInput().end())
         {
+
             token = cueTextTokenizer->getNextToken();
-            if (token == nullptr)
-                break;
-            token->process(current, languages);
+            token->process(currentNode, languages);
         }
-        currentObject->setTextTreeRoot(current);
+        currentObject->setTextTreeRoot(root);
     };
 
 } // end of namespace
