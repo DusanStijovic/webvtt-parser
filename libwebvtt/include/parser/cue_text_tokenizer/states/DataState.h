@@ -11,9 +11,8 @@ namespace WebVTT
     {
 
     public:
-        DataState(CueTextTokenizer &tokenizer)
-            : CueTextTokenizerState(tokenizer){};
-        virtual std::shared_ptr<Token> process() override;
+        DataState() = default;
+        virtual std::shared_ptr<Token> process(CueTextTokenizer &tokenizer) override;
 
     private:
     };

@@ -1,6 +1,6 @@
 #ifndef REGION_STYLE_SHEET_H
 #define REGION_STYLE_SHEET_H
-#include "elements/StyleSheet.h"
+#include "StyleSheet.h"
 
 namespace WebVTT
 {

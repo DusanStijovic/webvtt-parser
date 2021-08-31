@@ -6,40 +6,45 @@
 namespace WebVTT
 {
 
-    std::shared_ptr<Token> StartTagClassState::process()
+    std::shared_ptr<Token> StartTagClassState::process(CueTextTokenizer &tokenizer)
     {
-        uint32_t character = *this->tokenizer.getCurrentPosition();
+        uint32_t character = getNextCharacter(tokenizer);
         switch (character)
         {
         case ParserUtil::TAB_C:
         case ParserUtil::FF_C:
         case ParserUtil::SPACE_C:
-            this->tokenizer.addBufferToClasses();
-            this->tokenizer.getBuffer().clear();
-            this->tokenizer.setTokenizerState(CueTextTokenizer::TokenizerState::START_TAG_ANNOTATION);
+            DILOGI(utf8::utf32to8(tokenizer.getBuffer()));
+            tokenizer.addBufferToClasses();
+            tokenizer.getBuffer().clear();
+            tokenizer.setState(CueTextTokenizerState::TokenizerState::START_TAG_ANNOTATION);
             break;
 
         case ParserUtil::LF_C:
-            this->tokenizer.addBufferToClasses();
-            ParserUtil::clearAndSetCharacter(this->tokenizer.getBuffer(), character);
-            this->tokenizer.setTokenizerState(CueTextTokenizer::TokenizerState::START_TAG_ANNOTATION);
+            DILOGI(utf8::utf32to8(tokenizer.getBuffer()));
+            tokenizer.addBufferToClasses();
+            ParserUtil::clearAndSetCharacter(tokenizer.getBuffer(), character);
+            tokenizer.setState(CueTextTokenizerState::TokenizerState::START_TAG_ANNOTATION);
             break;
 
         case ParserUtil::FULL_STOP:
-            this->tokenizer.addBufferToClasses();
-            this->tokenizer.getBuffer().clear();
+            DILOGI(utf8::utf32to8(tokenizer.getBuffer()));
+            tokenizer.addBufferToClasses();
+            tokenizer.getBuffer().clear();
             break;
         case ParserUtil::HYPHEN_GREATER:
-            this->tokenizer.getCurrentPosition()++;
+            tokenizer.getCurrentPosition()++;
+            [[fallthrough]]
 
         case CueTextTokenizer::STOP_TOKENIZER:
-            this->tokenizer.addBufferToClasses();
+            DILOGI(utf8::utf32to8(tokenizer.getBuffer()));
+            tokenizer.addBufferToClasses();
             return std::make_shared<StartTagToken>(
-                this->tokenizer.getResult(),
-                this->tokenizer.getClasses());
+                tokenizer.getResult(),
+                tokenizer.getClasses());
             break;
         default:
-            this->tokenizer.getBuffer().push_back(character);
+            tokenizer.getBuffer().push_back(character);
             break;
         }
         return nullptr;

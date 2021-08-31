@@ -1,6 +1,6 @@
 #ifndef LIBWEBVTT_ATTRIBUTE_SELECTOR_H
 #define LIBWEBVTT_ATTRIBUTE_SELECTOR_H
-#include "elements/style_objects/StyleSelector.h"
+#include "elements/style_selectors/StyleSelector.h"
 
 namespace WebVTT
 {

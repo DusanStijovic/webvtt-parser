@@ -1,70 +1,74 @@
 #include "decoder/UTF8ToUTF32StreamDecoder.h"
 #include "utf8.h"
 #include <thread>
+#include "logger/LoggingUtility.h"
 
-std::u32string UTF8ToUTF32StreamDecoder::decodeReadBytes(std::string &readBytes)
-{
-    auto positionInvalid = utf8::find_invalid(readBytes);
-
-    auto validUTF8 = std::string_view(readBytes);
-    std::u32string utf_32;
-
-    if (positionInvalid == std::string::npos)
-    {
-        utf_32 = utf8::utf8to32(validUTF8);
-        readBytes.clear();
-    }
-    else
-    {
-        utf_32 = utf8::utf8to32(validUTF8.substr(0, positionInvalid));
-        readBytes.erase(readBytes.begin(), readBytes.begin() + positionInvalid);
-    }
-    return utf_32;
+namespace WebVTT {
+UTF8ToUTF32StreamDecoder::UTF8ToUTF32StreamDecoder(std::shared_ptr<StringSyncBuffer<std::string, uint8_t>> inputStream)
+    : inputStream(std::move(inputStream)) {
+  outputStream = std::make_shared<StringSyncBuffer<std::u32string, uint32_t>>();
 }
 
-void UTF8ToUTF32StreamDecoder::decodeInputStream()
-{
-    std::string buffer;
-    std::string bytes;
+std::u32string UTF8ToUTF32StreamDecoder::decodeReadBytes(std::string &readBytes) {
+  auto positionInvalid = utf8::find_invalid(readBytes);
 
-    while (true)
-    {
-        bytes = inputStream.get()->readMultiple(DEFAULT_READ_NUMBER);
+  auto validUTF8 = std::string_view(readBytes);
+  std::u32string utf_32;
 
-        if (bytes.length() == 0)
-        {
-            break;
-        }
-        buffer.append(bytes);
-        std::u32string decodedBytes = decodeReadBytes(buffer);
-       //std::cout << std::flush;
+  if (positionInvalid == std::string::npos) {
+    utf_32 = utf8::utf8to32(validUTF8);
+    readBytes.clear();
+  } else {
+    utf_32 = utf8::utf8to32(validUTF8.substr(0, positionInvalid));
+    readBytes.erase(readBytes.begin(), readBytes.begin() + positionInvalid);
+  }
+  return utf_32;
+}
 
-        outputstream.get()->writeMultiple(decodedBytes);
+void UTF8ToUTF32StreamDecoder::decodeInputStream() {
+  std::string buffer;
+  std::string bytes;
+
+  try {
+
+    while (true) {
+      bytes = inputStream->readMultiple(DEFAULT_READ_NUMBER);
+
+      if (bytes.length() == 0) {
+        break;
+      }
+      buffer.append(bytes);
+      std::u32string decodedBytes = decodeReadBytes(buffer);
+
+      outputStream->writeMultiple(decodedBytes);
     }
-    outputstream.get()->setInputEnded();
-    //logger.info("end");
+    outputStream->setInputEnded();
+  }
+  catch (const std::bad_alloc &error) {
+    DILOGE(error.what());
+    outputStream->setInputEnded();
+    inputStream->clearBufferUntilReadPosition();
+    throw;
+  }
 };
 
-bool UTF8ToUTF32StreamDecoder::startDecoding()
-{
-    if (decodingStarted)
-        return false;
-    decodingStarted = true;
-    decoderThread = std::make_unique<std::thread>(&UTF8ToUTF32StreamDecoder::decodeInputStream, this);
-
-    return true;
-};
-std::optional<std::shared_ptr<SyncBuffer<std::u32string, uint32_t>>> UTF8ToUTF32StreamDecoder::getDecodedStream()
-{
-    if (not decodingStarted)
-        return std::nullopt;
-    return outputstream;
+bool UTF8ToUTF32StreamDecoder::startDecoding() {
+  if (decodingStarted)
+    return false;
+  decodingStarted = true;
+  decoderThread = std::make_unique<std::thread>(&UTF8ToUTF32StreamDecoder::decodeInputStream, this);
+  return true;
 };
 
-UTF8ToUTF32StreamDecoder::~UTF8ToUTF32StreamDecoder()
-{
-    //Videti da l je bezbedno uvek
-    if (not decodingStarted)
-        return;
-    decoderThread.get()->join();
+std::shared_ptr<StringSyncBuffer<std::u32string, uint32_t>> UTF8ToUTF32StreamDecoder::getDecodedStream() {
+  if (not decodingStarted)
+    return nullptr;
+  return outputStream;
+};
+
+UTF8ToUTF32StreamDecoder::~UTF8ToUTF32StreamDecoder() {
+  if (not decodingStarted)
+    return;
+  decoderThread->join();
+}
 }

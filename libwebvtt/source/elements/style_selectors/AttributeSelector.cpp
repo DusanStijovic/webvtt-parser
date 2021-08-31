@@ -1,4 +1,4 @@
-#include "elements/style_objects/AttributeSelector.h"
+#include "elements/style_selectors/AttributeSelector.h"
 
 namespace WebVTT
 {

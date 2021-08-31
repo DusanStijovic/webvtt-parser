@@ -1,7 +1,7 @@
 #ifndef LIBWEBVTT_STYLE_SELECTOR_H
 #define LIBWEBVTT_STYLE_SELECTOR_H
-#include "elements/rules_filter_objects/RuleFilter.h"
-#include "elements/cue_node_objects/NodeObject.h"
+#include "elements/rules_filters/RuleFilter.h"
+#include "elements/cue_nodes/NodeObject.h"
 #include <set>
 #include <string>
 #include <map>

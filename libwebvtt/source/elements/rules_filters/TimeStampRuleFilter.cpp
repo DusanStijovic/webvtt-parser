@@ -1,13 +1,14 @@
-#include "elements/rules_filter_objects/TimeStampRuleFilter.h"
+#include "elements/rules_filters/TimeStampRuleFilter.h"
+#include "parser/CSSConstants.h"
 
 namespace WebVTT
 {
     TimeStampRuleFilter::TimeStampRuleFilter()
     {
-        allowedPropreties.insert(RuleFilter::COLOR);
-        allowedPropreties.insert(RuleFilter::OPACITY);
-        allowedPropreties.insert(RuleFilter::VISIBILITY);
-        allowedPropreties.insert(RuleFilter::TEXT_SHADOW);
+        allowedPropreties.insert(CSSConstants::COLOR);
+        allowedPropreties.insert(CSSConstants::OPACITY);
+        allowedPropreties.insert(CSSConstants::VISIBILITY);
+        allowedPropreties.insert(CSSConstants::TEXT_SHADOW);
 
         RuleFilter::addRuleGroupToAllowedRules(RULE_SHORTLAND_TYPE::ANIMATION);
         RuleFilter::addRuleGroupToAllowedRules(RULE_SHORTLAND_TYPE::TRANSITION);

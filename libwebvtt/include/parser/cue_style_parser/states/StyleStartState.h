@@ -1,6 +1,8 @@
 #ifndef LIBWEBVTT_START_STYLE_STATE_H
 #define LIBWEBVTT_START_STYLE_STATE_H
+
 #include "parser/cue_style_parser/states/StyleState.h"
+#include "elements/webvtt_objects/StyleSheet.h"
 #include "string"
 
 namespace WebVTT
@@ -9,11 +11,16 @@ namespace WebVTT
     class StyleStartState : public StyleState
     {
     public:
-        StyleStartState(StyleSheetParser &styleSheetParser) : StyleState(styleSheetParser) {}
-        virtual void processState() override;
+        StyleStartState() = default;
+
+        void processState(StyleSheetParser &parser) override;
 
     private:
-        bool checkIfInputStartWith(std::u32string_view string);
+        StyleSheet::StyleSheetType decideStyleSheetType(std::u32string_view);
+
+        void decideNextStateWithSelector(StyleSheetParser &parser, StyleSheet::StyleSheetType);
+
+        StyleSheet::StyleSheetType makeAndSetNewStyleSheetForParsing(StyleSheetParser &parser);
     };
 }
 

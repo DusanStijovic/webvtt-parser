@@ -1,5 +1,5 @@
 #include "parser/cue_text_tokenizer/tokens/BasicToken.h"
-#include "elements/cue_node_objects/leaf_node_objects/TextObject.h"
+#include "elements/cue_nodes/leaf_node_objects/TextObject.h"
 #include <memory>
 
 namespace WebVTT

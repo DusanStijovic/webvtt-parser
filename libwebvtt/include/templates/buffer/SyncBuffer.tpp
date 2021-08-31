@@ -1,186 +1,151 @@
-#include "buffer/SyncBuffer.h"
 #include "utf8.h"
 #include <optional>
 #include <list>
+#include "logger/LoggingUtility.h"
 
-template<typename ContainerType, typename dataType>
-SyncBuffer<ContainerType, dataType>::SyncBuffer() {
-    //static_assert(std::is_same<ContainerType, std::u32string>::value && std::is_same<dataType, uint32_t>::value, "Incompatible types");
-    //static_assert(std::is_same<ContainerType, std::string>::value && std::is_same<dataType, uint8_t>::value, "Incompatible types");
+namespace WebVTT
+{
+
+  template <typename StoredDataType, typename ReceivedDataType, typename SendDataType>
+  bool SyncBuffer<StoredDataType, ReceivedDataType, SendDataType>::writeNext(ReceivedDataType x)
+  {
+    std::lock_guard<std::mutex> lock(this->mutexWrite);
+    return this->writeOne(std::forward<ReceivedDataType>(x));
+  }
+
+  template <typename StoredDataType, typename ReceivedDataType, typename SendDataType>
+  SendDataType SyncBuffer<StoredDataType, ReceivedDataType, SendDataType>::readNext()
+  {
+    std::lock_guard<std::mutex> lock(this->mutexRead);
+    return this->readOne();
+  }
+
+  template <typename StoredDataType, typename ReceivedDataType, typename SendDataType>
+  SyncBuffer<StoredDataType, ReceivedDataType, SendDataType>::SyncBuffer()
+  {
     readPosition = buffer.begin();
-}
+  }
 
-template<typename StringType, typename dataType>
-bool SyncBuffer<StringType, dataType>::writeOne(dataType x) {
-    std::unique_lock<std::mutex> lock(mutex);
-    bool shouldRetBack = false;
-    if (inputEnded)
-        return false;
+  template <typename StoredDataType, typename ReceivedDataType, typename SendDataType>
+  bool SyncBuffer<StoredDataType, ReceivedDataType, SendDataType>::writeOne(ReceivedDataType x)
+  {
+    try
     {
+      std::unique_lock<std::mutex> lock(mutex);
+      bool shouldRetBack = false;
+      if (inputEnded)
+        return false;
+      {
+        //All data already read
         if (readPosition == buffer.end())
-            shouldRetBack = true;
+          shouldRetBack = true;
 
-        buffer.push_back(x);
+        acceptDataToBuffer(std::forward<ReceivedDataType>(x));
 
         if (shouldRetBack)
-            readPosition = --buffer.end();
+          readPosition = --buffer.end();
+      }
+      emptyCV.notify_all();
+      return true;
     }
-    emptyCV.notify_all();
-    return true;
-}
-
-template<typename StringType, typename dataType>
-bool SyncBuffer<StringType, dataType>::writeNext(dataType x) {
-    std::lock_guard<std::mutex> lock(mutexWrite);
-    return writeOne(x);
-}
-
-template<typename StringType, typename dataType>
-bool SyncBuffer<StringType, dataType>::writeMultiple(StringType input) {
-    std::lock_guard<std::mutex> lock(mutexWrite);
-    bool success;
-    for (auto one : input) {
-        success = writeOne(one);
-        if (!success)
-            return false;
+    catch (const std::bad_alloc &error)
+    {
+      DILOGE(error.what());
+      setInputEnded();
+      throw;
     }
-    return true;
-}
+  }
 
-template<typename StringType, typename dataType>
-std::optional<dataType> SyncBuffer<StringType, dataType>::readOne() {
+  template <typename StoredDataType, typename ReceivedDataType, typename SendDataType>
+  SendDataType SyncBuffer<StoredDataType, ReceivedDataType, SendDataType>::readOne()
+  {
     std::unique_lock<std::mutex> lock(mutex);
 
-    dataType res = -1;
+    SendDataType res = sendDataTypeNoValue();
 
     while (readPosition == buffer.end() && !inputEnded)
-        emptyCV.wait(lock);
+      emptyCV.wait(lock);
 
     if (readPosition == buffer.end())
-        return std::nullopt;
+      return sendDataTypeNoValue();
     {
-        res = *readPosition;
-        std::advance(readPosition, 1);
+      res = sendDataType();
+      std::advance(readPosition, 1);
     }
     return res;
-}
+  }
 
-template<typename StringType, typename dataType>
-std::optional<dataType> SyncBuffer<StringType, dataType>::peekOne() {
+  template <typename StoredDataType, typename ReceivedDataType, typename SendDataType>
+  SendDataType SyncBuffer<StoredDataType, ReceivedDataType, SendDataType>::peekOne()
+  {
     std::unique_lock<std::mutex> lock(mutex);
 
-    int res = -1;
     while (readPosition == buffer.end() && !inputEnded)
-        emptyCV.wait(lock);
+      emptyCV.wait(lock);
 
     if (readPosition == buffer.end())
-        return std::nullopt;
-    {
-        res = *readPosition;
-    }
-    //TO DO, maybe yes maybe no
+      return sendDataTypeNoValue();
+
+    auto res = sendDataType();
+
     emptyCV.notify_all();
     return res;
-}
+  }
 
-template<typename StringType, typename dataType>
-std::optional<dataType> SyncBuffer<StringType, dataType>::readNext() {
-    std::lock_guard<std::mutex> lock(mutexRead);
-    return readOne();
-}
-
-template<typename StringType, typename dataType>
-StringType SyncBuffer<StringType, dataType>::readMultiple(uint32_t number) {
-    std::lock_guard<std::mutex> lock(mutexRead);
-    StringType values;
-    for (int i = 0; i < number; i++) {
-        auto result = readOne();
-        if (result.has_value()) {
-            values.push_back(result.value());
-        } else
-            return values;
-    }
-    return values;
-}
-
-template<typename StringType, typename dataType>
-StringType SyncBuffer<StringType, dataType>::readWhileSpecificData(dataType specificData) {
-    std::lock_guard<std::mutex> lock(mutexRead);
-    StringType values;
-
-    auto result = peekOne();
-    while (result.has_value() && result.value() == specificData) {
-        result = readOne();
-        values.push_back(result.value());
-        result = peekOne();
-    }
-    return values;
-}
-
-template<typename StringType, typename dataType>
-StringType SyncBuffer<StringType, dataType>::readUntilSpecificData(dataType specificData) {
-    std::lock_guard<std::mutex> lock(mutexRead);
-    StringType values;
-
-    auto result = peekOne();
-    while (result.has_value() && result.value() != specificData) {
-        result = readOne();
-        values.push_back(result.value());
-        result = peekOne();
-    }
-    return values;
-}
-
-template<typename StringType, typename dataType>
-bool SyncBuffer<StringType, dataType>::isInputEnded() {
+  template <typename StoredDataType, typename ReceivedDataType, typename SendDataType>
+  bool SyncBuffer<StoredDataType, ReceivedDataType, SendDataType>::isInputEnded()
+  {
     std::lock_guard<std::mutex> l(mutex);
     return inputEnded;
-}
+  }
 
-template<typename StringType, typename dataType>
-void SyncBuffer<StringType, dataType>::setInputEnded() {
+  template <typename StoredDataType, typename ReceivedDataType, typename SendDataType>
+  void SyncBuffer<StoredDataType, ReceivedDataType, SendDataType>::setInputEnded()
+  {
     std::lock_guard<std::mutex> l(mutex);
     inputEnded = true;
     emptyCV.notify_all();
-}
+  }
 
-template<typename StringType, typename dataType>
-std::optional<dataType> SyncBuffer<StringType, dataType>::isReadDoneAndAdvancedIfNot() {
-    return readNext();
-}
-
-template<typename StringType, typename dataType>
-bool SyncBuffer<StringType, dataType>::isReadDone() {
+  template <typename StoredDataType, typename ReceivedDataType, typename SendDataType>
+  bool SyncBuffer<StoredDataType, ReceivedDataType, SendDataType>::isReadDone()
+  {
     std::unique_lock<std::mutex> lock(mutex);
     while (readPosition == buffer.end() && not inputEnded)
-        emptyCV.wait(lock);
+      emptyCV.wait(lock);
     bool retVal = readPosition == buffer.end();
     emptyCV.notify_all();
     //Nema potrebe probudio(probudio je i ostale valjda) da ih ja budim.
     return retVal;
-}
+  }
 
-template<typename StringType, typename dataType>
-bool SyncBuffer<StringType, dataType>::setReadPosition(typename std::list<dataType>::iterator position) {
+  template <typename StoredDataType, typename ReceivedDataType, typename SendDataType>
+  bool SyncBuffer<StoredDataType,
+                  ReceivedDataType,
+                  SendDataType>::setReadPosition(typename std::list<StoredDataType>::iterator position)
+  {
     std::scoped_lock lock(mutex, mutexRead, mutexWrite);
     if (position == buffer.end())
-        return false;
+      return false;
 
     readPosition = position;
     return true;
-}
+  }
 
-template<typename StringType, typename dataType>
-typename std::list<dataType>::iterator SyncBuffer<StringType, dataType>::getReadPosition() {
+  template <typename StoredDataType, typename ReceivedDataType, typename SendDataType>
+  typename std::list<StoredDataType>::iterator SyncBuffer<StoredDataType,
+                                                          ReceivedDataType,
+                                                          SendDataType>::getReadPosition()
+  {
     isReadDone();
     return readPosition;
-}
+  }
 
-template<typename StringType, typename dataType>
-void SyncBuffer<StringType, dataType>::clearBufferUntilReadPosition() {
+  template <typename StoredDataType, typename ReceivedDataType, typename SendDataType>
+  void SyncBuffer<StoredDataType, ReceivedDataType, SendDataType>::clearBufferUntilReadPosition()
+  {
     std::scoped_lock lock(mutex, mutexRead);
     buffer.erase(buffer.begin(), readPosition);
+  }
+
 }
-
-
-

@@ -1,4 +1,5 @@
-#include "elements/cue_node_objects/internal_node_objects/VoiceObject.h"
+#include "elements/cue_nodes/internal_node_objects/VoiceObject.h"
+#include "elements/visitors/ICueTreeVisitor.h"
 
 namespace WebVTT
 {
@@ -7,10 +8,17 @@ namespace WebVTT
     {
         this->name = annotation;
     }
-     NodeObject::NodeType VoiceObject::getNodeType() const
+    NodeObject::NodeType VoiceObject::getNodeType() const
     {
         return NodeObject::NodeType::VOICE;
     };
 
+    void
+    VoiceObject::accept(ICueTreeVisitor &visitor)
+    {
+        visitor.visitOnEntry(*this);
+        visitChildren(visitor);
+        visitor.visitOnExit(*this);
+    }
 
 } // namespace WebVTT

@@ -6,36 +6,44 @@
 namespace WebVTT
 {
 
-    std::shared_ptr<Token> StartTagAnnotationState::process()
+    std::shared_ptr<Token> StartTagAnnotationState::process(CueTextTokenizer &tokenizer)
     {
-        uint32_t character = *this->tokenizer.getCurrentPosition();
-
+        uint32_t character = getNextCharacter(tokenizer);
         switch (character)
         {
         case ParserUtil::AMPERSAND_C:
         {
+            bool parsingError = false;
             tokenizer.getCurrentPosition()++;
-            std::u32string result = ParserUtil::consumeHTMLCharacter(tokenizer.getInput(), tokenizer.getCurrentPosition(),
-                                                                     ParserUtil::HYPHEN_LESS, true);
+            std::u32string result = ParserUtil::consumeHTMLCharacter(tokenizer.getInput(),
+                                                                     tokenizer.getCurrentPosition(),
+                                                                     ParserUtil::HYPHEN_LESS, true, parsingError);
             if (result.empty())
                 tokenizer.getResult().push_back(ParserUtil::AMPERSAND_C);
             else
                 tokenizer.getResult().append(result);
-            tokenizer.setTokenizerState(CueTextTokenizer::TokenizerState::START_TAG_ANNOTATION);
+          tokenizer.setState(CueTextTokenizerState::TokenizerState::START_TAG_ANNOTATION);
             break;
         }
         case ParserUtil::HYPHEN_GREATER:
-            this->tokenizer.getCurrentPosition()++;
+            tokenizer.getCurrentPosition()++;
+            [[fallthrough]];
         case CueTextTokenizer::STOP_TOKENIZER:
-            //TODO Change or add another for string striping
-            //ParserUtil::strip(this->tokenizer.getBuffer(), ParserUtil::isWhiteSpaceCharacter);
-            ParserUtil::replaceAllSequenceWithOneCharacter(this->tokenizer.getBuffer(), ParserUtil::isWhiteSpaceCharacter);
+        {
+            std::u32string_view temp = tokenizer.getBuffer();
+            ParserUtil::strip(temp, ParserUtil::isASCIIWhiteSpaceCharacter);
+            tokenizer.getBuffer() = std::u32string(temp);
+
+            ParserUtil::replaceAllSequenceOfCharactersWithGivenCharacter(tokenizer.getBuffer(), ParserUtil::isASCIIWhiteSpaceCharacter, ParserUtil::SPACE_C);
+
             return std::make_shared<StartTagToken>(
-                this->tokenizer.getResult(),
-                this->tokenizer.getClasses(),
-                this->tokenizer.getBuffer());
+                tokenizer.getResult(),
+                tokenizer.getClasses(),
+                tokenizer.getBuffer());
+            break;
+        }
         default:
-            this->tokenizer.getBuffer().push_back(character);
+            tokenizer.getBuffer().push_back(character);
             break;
         }
         return nullptr;

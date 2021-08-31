@@ -1,4 +1,5 @@
-#include "elements/cue_node_objects/leaf_node_objects/TextObject.h"
+#include "elements/cue_nodes/leaf_node_objects/TextObject.h"
+#include "elements/visitors/ICueTreeVisitor.h"
 
 namespace WebVTT
 {
@@ -6,4 +7,12 @@ namespace WebVTT
     {
         return NodeObject::NodeType::TEXT;
     };
+
+    void
+    TextObject::accept(ICueTreeVisitor &visitor)
+    {
+        visitor.visitOnEntry(*this);
+        visitor.visitOnExit(*this);
+    }
+
 } // namespace WebVTT

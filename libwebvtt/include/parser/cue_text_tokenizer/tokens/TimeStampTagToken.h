@@ -9,7 +9,7 @@ namespace WebVTT
     class TimeStampTagToken : public Token
     {
     public:
-        TimeStampTagToken(std::u32string &tagName) : Token(tokenValue)
+        TimeStampTagToken(std::u32string &tagName) : Token(tagName)
         {
         }
         virtual void process(std::shared_ptr<NodeObject> &nodeObject, std::stack<std::u32string> &language) override;

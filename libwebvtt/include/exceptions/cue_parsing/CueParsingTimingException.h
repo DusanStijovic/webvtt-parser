@@ -1,16 +1,14 @@
-//
-// Created by Dušan on 8/24/2021.
-//
+#ifndef LIBWEBVTT_CUE_PARSING_TIMING_EXCEPTION_H
+#define LIBWEBVTT_CUE_PARSING_TIMING_EXCEPTION_H
+#include <exception>
 
-#ifndef LIBWEBVTT_CUEPARSINGTIMINGEXCEPTION_H
-#define LIBWEBVTT_CUEPARSINGTIMINGEXCEPTION_H
-
-
-
-class CueParsingTimingException {
-
+class CueParsingTimingException : public std::exception
+{
+public:
+  const char *what() const noexcept override
+  {
+    return "Error while parsing cue timing";
+  }
 };
 
-
-
-#endif //LIBWEBVTT_CUEPARSINGTIMINGEXCEPTION_H
+#endif //LIBWEBVTT_CUE_PARSING_TIMING_EXCEPTION_H

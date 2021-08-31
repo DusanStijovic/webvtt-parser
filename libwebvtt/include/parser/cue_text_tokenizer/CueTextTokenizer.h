@@ -3,78 +3,40 @@
 
 #include "parser/cue_text_tokenizer/states/CueTextTokenizerState.h"
 #include "parser/cue_text_tokenizer/tokens/Token.h"
+#include "state_machine/StateMachineForParsingText.h"
 #include <string>
 #include <list>
 
-namespace WebVTT
-{
+namespace WebVTT {
 
-    class CueTextTokenizer
-    {
-    public:
-        enum class TokenizerState
-        {
-            DATA,
-            START_TAG,
-            START_TAG_ANNOTATION,
-            START_TAG_CLASS,
-            END_TAG,
-            TIME_STAMP_TAG,
-            TAG
-        };
-        constexpr static uint32_t STOP_TOKENIZER = 0xFFFF;
+class CueTextTokenizer : public StateMachineForParsingText<CueTextTokenizerState,
+                                                           CueTextTokenizerState::TokenizerState> {
+ public:
+  constexpr static uint32_t STOP_TOKENIZER = 0xFFFF;
 
-        explicit CueTextTokenizer(std::u32string_view new_input)
-        {
-            this->input = new_input;
-            currentPosition = input.begin();
+  explicit CueTextTokenizer() {
+    currentState = CueTextTokenizerState::getInstance(CueTextTokenizerState::TokenizerState::DATA);
+  }
+  std::shared_ptr<Token> getNextToken();
 
-            initializeTokenizerStates();
-            currentState = getStateInstance(TokenizerState::DATA);
-        }
 
-        std::shared_ptr<Token> getNextToken();
+  inline std::u32string &getResult() { return result; }
 
-        void setTokenizerState(TokenizerState tokenizerState)
-        {
-            currentState = getStateInstance(tokenizerState);
-        }
+  inline std::u32string &getBuffer() { return buffer; }
 
-        std::shared_ptr<CueTextTokenizerState> &getTokenizerState()
-        {
-            return currentState;
-        }
+  inline std::list<std::u32string> &getClasses() { return classes; }
 
-        std::shared_ptr<CueTextTokenizerState> getStateInstance(TokenizerState tokenizerState);
+  void addBufferToClasses() {
+    if (!this->buffer.empty())
+      this->classes.push_back(this->buffer);
+  }
 
-        inline std::u32string_view getInput() { return input; }
+ private:
+  std::u32string buffer;
 
-        inline std::u32string &getResult() { return result; }
-
-        inline std::u32string &getBuffer() { return buffer; }
-
-        inline typename std::u32string_view::iterator &getCurrentPosition() { return currentPosition; }
-
-        inline std::list<std::u32string> &getClasses() { return classes; }
-
-        void addBufferToClasses()
-        {
-            this->classes.push_back(this->buffer);
-        }
-
-    private:
-        std::u32string_view input{};
-        std::u32string result;
-        std::u32string buffer;
-        std::list<std::u32string> classes;
-
-        std::shared_ptr<CueTextTokenizerState> currentState;
-        typename std::u32string_view::iterator currentPosition;
-
-        void initializeTokenizerStates();
-
-        std::map<TokenizerState, std::shared_ptr<CueTextTokenizerState>> statesInsance;
-    };
+  std::u32string result;
+  std::list<std::u32string> classes;
+};
 
 }
 #endif

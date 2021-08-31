@@ -3,59 +3,64 @@
 
 #include "parser/ObjectParser.h"
 #include "parser/cue_style_parser/states/StyleState.h"
-
-#include "elements/StyleSheet.h"
+#include "state_machine/StateMachineForParsingText.h"
+#include "buffer/UniquePtrSyncBuffer.h"
+#include "elements/webvtt_objects/StyleSheet.h"
 
 #include <map>
 #include <memory>
 #include <string>
+#include <list>
 
 namespace WebVTT
 {
-    class StyleSheetParser : public ObjectParser<StyleSheet>
+  class StyleSheetParser : public ObjectParser<StyleSheet>,
+                           public StateMachineForParsingText<StyleState, StyleState::StyleStateType>
+  {
+  public:
+    constexpr static std::u32string_view CUE_STYLE_START = U"::cue";
+    constexpr static std::u32string_view REGION_STYLE_START = U"::cue-region";
+    constexpr static uint32_t STOP_PARSER = 0xFFFF;
+
+    StyleSheetParser()
     {
-    public:
-        constexpr static std::u32string_view CUE_STYLE_START = U"::cue";
-        constexpr static std::u32string_view REGION_STYLE_START = U"region";
-        enum class StyleSheetParserState
-        {
-            START,
-            START_SELECTOR,
-            CUE_ID_SELECTOR,
-            CUE_REGION_ID_SELECTOR,
-            CLASS_SELECTOR,
-            TYPE_SELECTOR,
-            ATTRIBUTE_SELECTOR,
-            PSEUDO_CLASS_SELECTOR,
-            END_SELECTOR,
-            RULES
-        };
-        void parseCSSRules(std::u32string_view input);
-        void setSelectorToCurrentObject(std::shared_ptr<StyleSelector> styleSelector);
+      currentState = StyleState::getInstance(StyleState::StyleStateType::START);
+    }
 
-        inline std::u32string_view &getInput() { return input; }
-        inline typename std::u32string_view::iterator &getCurrentPosition() { return currentPosition; };
+    inline std::list<std::unique_ptr<StyleSheet>> &getParsedStyleSheets() { return styleSheets; }
 
-        inline void setEndParsing(bool endParsing) { this->endParsing = endParsing; }
-        inline bool isEndParsing() { return endParsing; }
+    void parseCSSRules(std::u32string_view input);
+    void addCSSRule(std::string name, std::string value);
 
-        inline std::u32string &getTypeMark() { return type_mark; }
+    void addSelectorToCurrentObject();
+    void addSelectorToCurrentSelectorList(std::unique_ptr<StyleSelector> &&styleSelector);
+    void addCurrentObjectToStyleSheetList();
+    void setCombinatorToMostRecentSelector(StyleSelector::StyleSelectorCombinator styleSelectorCombinator);
 
-        void setState(StyleSheetParserState newState);
+    inline std::u32string &getBuffer() { return buffer; }
+    inline std::u32string &getAdditionalBuffer() { return additionalBuffer; }
 
-    private:
-        bool endParsing = false;
-        std::shared_ptr<StyleState> currentState;
+    inline void setEndParsing(bool isEnd) { this->endParsing = isEnd; }
+    [[nodiscard]] inline bool isEndParsing() const { return endParsing; }
 
-        std::u32string_view input;
-        typename std::u32string_view::iterator currentPosition;
+    void goToSavedState() { setState(savedState); }
+    void saveState(StyleState::StyleStateType styleStateType) { savedState = styleStateType; }
 
-        std::u32string type_mark;
+    void goToSavedPseudoState() { setState(savedPseudoState); }
+    void savePseudoState(StyleState::StyleStateType styleStateType) { savedPseudoState = styleStateType; }
 
-        void initializeTokenizerStates();
+  private:
+    bool endParsing = false;
 
-        std::map<StyleSheetParserState, std::shared_ptr<StyleState>> statesInsance;
-    };
+    std::u32string buffer;
+    std::u32string additionalBuffer;
+
+    StyleState::StyleStateType savedState = StyleState::StyleStateType::NONE;
+    StyleState::StyleStateType savedPseudoState = StyleState::StyleStateType::NONE;
+
+    std::list<std::unique_ptr<StyleSheet>> styleSheets;
+    std::list<std::unique_ptr<StyleSelector>> compoundSelectorList;
+  };
 }
 
 #endif

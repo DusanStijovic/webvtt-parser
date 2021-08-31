@@ -8,33 +8,35 @@
 namespace WebVTT
 {
 
-    std::shared_ptr<Token> DataState::process()
+    std::shared_ptr<Token> DataState::process(CueTextTokenizer &tokenizer)
     {
         {
-            uint32_t character = *this->tokenizer.getCurrentPosition();
+            uint32_t character = getNextCharacter(tokenizer);
             switch (character)
             {
             case ParserUtil::AMPERSAND_C:
             {
-                tokenizer.getCurrentPosition()++;
-                std::u32string result = ParserUtil::consumeHTMLCharacter(tokenizer.getInput(), tokenizer.getCurrentPosition(), std::nullopt, false);
+                bool parsingError = false;
+                std::u32string result = ParserUtil::consumeHTMLCharacter(tokenizer.getInput(),
+                                                                         tokenizer.getCurrentPosition(),
+                                                                         std::nullopt, false, parsingError);
                 if (result.empty())
                     tokenizer.getResult().push_back(ParserUtil::AMPERSAND_C);
                 else
                     tokenizer.getResult().append(result);
-                tokenizer.setTokenizerState(CueTextTokenizer::TokenizerState::DATA);
+              tokenizer.setState(CueTextTokenizerState::TokenizerState::DATA);
                 break;
             }
             case ParserUtil::HYPHEN_LESS:
                 if (tokenizer.getResult().empty())
                 {
-                    this->tokenizer.setTokenizerState(CueTextTokenizer::TokenizerState::START_TAG);
+                  tokenizer.setState(CueTextTokenizerState::TokenizerState::START_TAG);
                 }
                 else
                 {
                     return std::make_shared<BasicToken>(tokenizer.getResult());
                 }
-
+                break;
             case CueTextTokenizer::STOP_TOKENIZER:
                 return std::make_shared<BasicToken>(tokenizer.getResult());
                 break;

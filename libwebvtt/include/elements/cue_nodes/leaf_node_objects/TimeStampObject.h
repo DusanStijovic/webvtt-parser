@@ -1,7 +1,7 @@
 #ifndef LIBWEBVTT_TIME_STAMP_OBJECT_H
 #define LIBWEBVTT_TIME_STAMP_OBJECT_H
 
-#include "elements/cue_node_objects/LeafNodeObject.h"
+#include "elements/cue_nodes/LeafNodeObject.h"
 
 namespace WebVTT
 {
@@ -11,6 +11,7 @@ namespace WebVTT
         TimeStampObject(double newTime) : time(newTime) {}
 
         virtual NodeObject::NodeType getNodeType() const;
+        void accept(ICueTreeVisitor &visitor) override;
 
     private:
         double time;

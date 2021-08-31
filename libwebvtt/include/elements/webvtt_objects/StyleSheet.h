@@ -1,8 +1,8 @@
 #ifndef WEBVTT_STYLE_SHEET_H
 #define WEBVTT_STYLE_SHEET_H
 
-#include "elements/Block.h"
-#include "elements/style_objects/StyleSelector.h"
+#include "Block.h"
+#include "elements/style_selectors/StyleSelector.h"
 #include <memory>
 #include <map>
 #include <string>

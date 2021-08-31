@@ -1,16 +1,15 @@
-//
-// Created by Dušan on 8/24/2021.
-//
+#ifndef LIBWEBVTT_PARSING_TIME_STAMP_EXCEPTION_H
+#define LIBWEBVTT_PARSING_TIME_STAMP_EXCEPTION_H
 
-#ifndef LIBWEBVTT_PARSINGTIMESTAMPEXCEPTION_H
-#define LIBWEBVTT_PARSINGTIMESTAMPEXCEPTION_H
+#include <exception>
 
-
-
-class ParsingTimeStampException {
-
+class ParsingTimeStampException : public std::exception
+{
+public:
+    const char *what() const noexcept override
+    {
+        return "Exception while parsing timestamp";
+    }
 };
 
-
-
-#endif //LIBWEBVTT_PARSINGTIMESTAMPEXCEPTION_H
+#endif //LIBWEBVTT_PARSING_TIME_STAMP_EXCEPTION_H

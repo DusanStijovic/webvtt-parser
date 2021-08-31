@@ -1,4 +1,5 @@
-#include "elements/cue_node_objects/leaf_node_objects/TimeStampObject.h"
+#include "elements/cue_nodes/leaf_node_objects/TimeStampObject.h"
+#include "elements/visitors/ICueTreeVisitor.h"
 
 namespace WebVTT
 {
@@ -6,5 +7,11 @@ namespace WebVTT
     {
         return NodeObject::NodeType::TIME_STAMP;
     };
+    void
+    TimeStampObject::accept(ICueTreeVisitor &visitor)
+    {
+        visitor.visitOnEntry(*this);
+        visitor.visitOnExit(*this);
+    }
 
 } // namespace WebVTT

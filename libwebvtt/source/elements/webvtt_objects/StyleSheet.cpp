@@ -1,6 +1,6 @@
-#include "elements/webvtt_elements/StyleSheet.h"
-#include "elements/webvtt_elements/CueStyleSheet.h"
-#include "elements/webvtt_elements/RegionStyleSheet.h"
+#include "elements/webvtt_objects/StyleSheet.h"
+#include "elements/webvtt_objects/CueStyleSheet.h"
+#include "elements/webvtt_objects/RegionStyleSheet.h"
 
 namespace WebVTT
 {

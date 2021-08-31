@@ -1,4 +1,4 @@
-#include "elements/style_objects/TypeSelector.h"
+#include "elements/style_selectors/TypeSelector.h"
 
 namespace WebVTT
 {

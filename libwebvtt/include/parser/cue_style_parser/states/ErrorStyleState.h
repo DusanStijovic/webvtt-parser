@@ -7,8 +7,8 @@ namespace WebVTT
     class ErrorStyleState : public StyleState
     {
     public:
-        ErrorStyleState(StyleSheetParser &styleSheetParser) : StyleState(styleSheetParser) {}
-        virtual void processState() override;
+        ErrorStyleState() = default;
+        virtual void processState(StyleSheetParser & parser) override;
     };
 
 } // namespace WebVTT

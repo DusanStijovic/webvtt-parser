@@ -1,5 +1,5 @@
 #include "parser/cue_text_tokenizer/tokens/EndTagToken.h"
-#include "elements/cue_node_objects/InternalNodeObject.h"
+#include "elements/cue_nodes/InternalNodeObject.h"
 namespace WebVTT
 {
 

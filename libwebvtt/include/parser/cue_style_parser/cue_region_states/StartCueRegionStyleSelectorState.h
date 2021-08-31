@@ -8,8 +8,8 @@ namespace WebVTT
     class StartCueRegionStyleSelectorState : public StyleState
     {
     public:
-        StartCueRegionStyleSelectorState(StyleSheetParser &styleSheetParser) : StyleState(styleSheetParser) {}
-        virtual void processState() override;
+        StartCueRegionStyleSelectorState() = default;
+        virtual void processState(StyleSheetParser &parser) override;
     };
 
 } // namespace WebVTT

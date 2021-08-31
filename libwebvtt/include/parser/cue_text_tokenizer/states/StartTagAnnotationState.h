@@ -8,9 +8,8 @@ namespace WebVTT
     class StartTagAnnotationState : public CueTextTokenizerState
     {
     public:
-         StartTagAnnotationState(CueTextTokenizer& tokenizer)
-            : CueTextTokenizerState(tokenizer) {};
-             virtual std::shared_ptr<Token> process() override;
+        StartTagAnnotationState() = default;
+        virtual std::shared_ptr<Token> process(CueTextTokenizer &tokenizer) override;
     };
 }
 

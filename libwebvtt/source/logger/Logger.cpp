@@ -94,7 +94,7 @@ void Logger::error(const char *text) throw()
    }
 }
 
-void Logger::error(std::string &text) throw()
+void Logger::error(std::string text) throw()
 {
    error(text.data());
 }
@@ -208,7 +208,7 @@ void Logger::info(const char *text) throw()
    }
 }
 
-void Logger::info(std::string &text) throw()
+void Logger::info(const std::string &text) throw()
 {
    info(text.data());
 }

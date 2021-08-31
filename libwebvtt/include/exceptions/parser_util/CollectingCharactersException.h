@@ -1,16 +1,12 @@
-//
-// Created by Dušan on 8/24/2021.
-//
+#ifndef LIBWEBVTT_INCLUDE_EXCEPTIONS_PARSER_UTIL_COLLECTING_CHARACTERS_EXCEPTION_H_
+#define LIBWEBVTT_INCLUDE_EXCEPTIONS_PARSER_UTIL_COLLECTING_CHARACTERS_EXCEPTION_H_
+#include <exception>
 
-#ifndef LIBWEBVTT_INCLUDE_EXCEPTIONS_PARSER_UTIL_COLLECTINGCHARACTERSEXCEPTION_H_
-#define LIBWEBVTT_INCLUDE_EXCEPTIONS_PARSER_UTIL_COLLECTINGCHARACTERSEXCEPTION_H_
-
-
-
-class CollectingCharactersException {
-
+class CollectingCharactersException : public std::exception {
+ public:
+  const char *what() const noexcept override {
+    return "Error while colleting characters, given position not ok";
+  }
 };
 
-
-
-#endif //LIBWEBVTT_INCLUDE_EXCEPTIONS_PARSER_UTIL_COLLECTINGCHARACTERSEXCEPTION_H_
+#endif //LIBWEBVTT_INCLUDE_EXCEPTIONS_PARSER_UTIL_COLLECTING_CHARACTERS_EXCEPTION_H_

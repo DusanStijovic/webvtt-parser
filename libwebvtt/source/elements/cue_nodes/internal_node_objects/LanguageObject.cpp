@@ -1,4 +1,6 @@
-#include "elements/cue_node_objects/internal_node_objects/LanguageObject.h"
+#include "elements/cue_nodes/internal_node_objects/LanguageObject.h"
+#include "elements/visitors/ICueTreeVisitor.h"
+
 #include <stack>
 #include <string>
 
@@ -23,5 +25,14 @@ namespace WebVTT
                 languages.pop();
         }
     };
+
+  
+    void
+    LanguageObject ::accept(ICueTreeVisitor &visitor)
+    {
+        visitor.visitOnEntry(*this);
+        visitChildren(visitor);
+        visitor.visitOnExit(*this);
+    }
 
 } // namespace WebVTT

@@ -9,9 +9,8 @@ namespace WebVTT
     {
 
     public:
-       EndTagState(CueTextTokenizer& tokenizer)
-            : CueTextTokenizerState(tokenizer) {};
-            virtual std::shared_ptr<Token> process() override;
+        EndTagState() = default;
+        virtual std::shared_ptr<Token> process(CueTextTokenizer &tokenizer) override;
 
     private:
     };

@@ -1,29 +1,34 @@
 #include "parser/cue_text_tokenizer/tokens/TimeStampTagToken.h"
 #include "parser/ParserUtil.h"
-#include "elements/cue_node_objects/NodeObject.h"
-#include "elements/cue_node_objects/leaf_node_objects/TimeStampObject.h"
+#include "elements/cue_nodes/NodeObject.h"
+#include "elements/cue_nodes/leaf_node_objects/TimeStampObject.h"
+#include "logger/LoggingUtility.h"
+#include "exceptions/parser_util/ParsingTimeStampException.h"
 
 namespace WebVTT
 {
 
     void TimeStampTagToken::process(std::shared_ptr<NodeObject> &nodeObject, std::stack<std::u32string> &language)
     {
-        std::u32string_view input = this->tokenValue;
-        auto position = input.begin();
-        auto timeOptional = ParserUtil::parseTimeStamp(input, position);
-        if (!timeOptional.has_value())
+        try
         {
-            //TODO Log error
+            std::u32string_view input = this->tokenValue;
+            auto position = input.begin();
+            double time = ParserUtil::parseTimeStamp(input, position);
+
+            if (position != input.end())
+            {
+                DILOGE("Timestamp contains extra characters" + utf8::utf32to8(input));
+                return;
+            }
+            std::shared_ptr<TimeStampObject> timeStampObject = std::make_shared<TimeStampObject>(time);
+            nodeObject->appendChild(timeStampObject);
+            timeStampObject->setParent(nodeObject);
+        }
+        catch (const ParsingTimeStampException &error)
+        {
+            DILOGE(error.what());
             return;
         }
-        double time = timeOptional.value();
-        if (position != input.end())
-        {
-            //TODO Log error
-            return;
-        }
-        std::shared_ptr<TimeStampObject> timeStampObject = std::make_shared<TimeStampObject>(time);
-        nodeObject->appendChild(timeStampObject);
-        timeStampObject->setParent(nodeObject);
     }
 }

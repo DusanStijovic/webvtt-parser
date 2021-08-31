@@ -3,23 +3,10 @@
 #include "parser/cue_style_parser/ruleStates/StyleRulesState.h"
 #include "exceptions/styleParserExceptions/StyleSheetFormatError.h"
 #include "logger/LoggingUtility.h"
-#include "elements/style_objects/CompoundSelector.h"
+#include "elements/style_selectors/CompoundSelector.h"
 
 namespace WebVTT
 {
-
-    void StyleSheetParser::setState(StyleState::StyleStateType newState)
-    {
-        auto found = statesInstance.find(newState);
-        if (found == statesInstance.end())
-        {
-            currentState = (statesInstance[newState] = StyleState::makeNewState(*this, newState)).get();
-        }
-        else
-        {
-            currentState = found->second.get();
-        }
-    }
 
     void StyleSheetParser::addCSSRule(std::string name, std::string value)
     {
@@ -40,9 +27,9 @@ namespace WebVTT
         {
             while (true)
             {
-                currentState->processState();
-                // if (endParsing)
-                //     break;
+                currentState->processState(*this);
+                if (endParsing)
+                    break;
                 currentPosition++;
             }
         }
@@ -89,4 +76,5 @@ namespace WebVTT
             return;
         currentObject->getSelectors().back()->setStyleSelectorCombinator(styleSelectorCombinator);
     }
+
 }

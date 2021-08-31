@@ -1,72 +1,83 @@
 #include "parser/cue_style_parser/states/StyleStartState.h"
 #include "parser/StyleSheetParser.h"
 #include "parser/ParserUtil.h"
-#include "elements/RegionStyleSheet.h"
-#include "elements/CueStyleSheet.h"
+#include "elements/webvtt_objects/RegionStyleSheet.h"
+#include "elements/webvtt_objects/CueStyleSheet.h"
+#include "elements/style_selectors/MatchAllSelector.h"
 
 namespace WebVTT
 {
 
-    bool StyleStartState::checkIfInputStartWith(std::u32string_view string)
+    StyleSheet::StyleSheetType StyleStartState::decideStyleSheetType(std::u32string_view input)
     {
-        auto size = styleSheetParser.getInput().end() - styleSheetParser.getCurrentPosition();
-        if (size < string.length())
-        {
-            return false;
-        }
+        bool isCue = (StyleSheetParser::CUE_STYLE_START == input);
+        bool isCueRegion = (StyleSheetParser::REGION_STYLE_START == input);
 
-        std::u32string_view begin = ParserUtil::make_string_view_from_iterators(styleSheetParser.getInput(), styleSheetParser.getCurrentPosition(),
-                                                                                styleSheetParser.getCurrentPosition() + string.length());
+        if (isCue)
+            return StyleSheet::StyleSheetType::CUE;
+        if (isCueRegion)
+            return StyleSheet::StyleSheetType::REGION;
 
-        if (StyleSheetParser::CUE_STYLE_START != begin)
-        {
-            return false;
-        }
-        return true;
+        return StyleSheet::StyleSheetType::UNDEFINED;
     }
 
-    void StyleStartState::processState()
+    void StyleStartState::decideNextStateWithSelector(StyleSheetParser &parser, StyleSheet::StyleSheetType styleSheetType)
     {
-        ParserUtil::skipWhiteSpaces(styleSheetParser.getInput(), styleSheetParser.getCurrentPosition());
-        bool success = checkIfInputStartWith(StyleSheetParser::CUE_STYLE_START);
-        if (!success)
+        switch (styleSheetType)
         {
-            styleSheetParser.setEndParsing(true);
-            return;
+        case StyleSheet::StyleSheetType::CUE:
+            parser.saveState(StyleState::StyleStateType::CUE_START_SELECTOR);
+            parser.setState(StyleState::StyleStateType::CUE_START_SELECTOR);
+            break;
+        case StyleSheet::StyleSheetType::REGION:
+            parser.saveState(StyleState::StyleStateType::CUE_REGION_START_SELECTOR);
+            parser.setState(StyleState::StyleStateType::CUE_REGION_START_SELECTOR);
+            break;
+        default:
+            parser.setState(StyleState::StyleStateType::ERROR);
+            break;
         }
-        styleSheetParser.getCurrentPosition() += StyleSheetParser::CUE_STYLE_START.length();
+    }
 
-        if (styleSheetParser.getCurrentPosition() == styleSheetParser.getInput().end())
+    StyleSheet::StyleSheetType StyleStartState::makeAndSetNewStyleSheetForParsing(StyleSheetParser &parser)
+    {
+        ParserUtil::strip(parser.getBuffer(), ParserUtil::isASCIIWhiteSpaceCharacter);
+        auto type = decideStyleSheetType(parser.getBuffer());
+        parser.setNewObjectForParsing(std::move(StyleSheet::makeNewStyleSheet(type)));
+        parser.getBuffer().clear();
+        return type;
+    }
+
+    void StyleStartState::processState(StyleSheetParser &parser)
+    {
+        uint32_t character = getNextCharacter(parser);
+
+        switch (character)
         {
-            styleSheetParser.setEndParsing(true);
-            return;
-        }
-
-        if (*styleSheetParser.getCurrentPosition() == ParserUtil::HYPHEN_MINUS)
+        case ParserUtil::LEFT_PARENTHESIS_C:
         {
+            auto madeType = makeAndSetNewStyleSheetForParsing(parser);
+            decideNextStateWithSelector(parser, madeType);
 
-            styleSheetParser.getCurrentPosition()++;
-            success = checkIfInputStartWith(StyleSheetParser::REGION_STYLE_START);
-            if (!success)
-            {
-                styleSheetParser.setEndParsing(true);
-                return;
-            }
-            styleSheetParser.getCurrentPosition() += StyleSheetParser::REGION_STYLE_START.length();
-            styleSheetParser.setNewObjectForParsing(std::make_shared<RegionStyleSheet>());
+            break;
         }
-        else
+        case ParserUtil::LEFT_CURLY_BRACKET_C:
+        case ParserUtil::COMMA_C:
         {
-            styleSheetParser.setNewObjectForParsing(std::make_shared<CueStyleSheet>());
+            makeAndSetNewStyleSheetForParsing(parser);
+            parser.addSelectorToCurrentSelectorList(std::make_unique<MatchAllSelector>());
+            parser.addSelectorToCurrentObject();
+            parser.getCurrentPosition()--;
+            parser.setState(StyleState::StyleStateType::BEFORE_RULE_STATE);
+            break;
         }
+        case StyleSheetParser::STOP_PARSER:
+            parser.setState(StyleState::StyleStateType::ERROR);
+            break;
 
-        if (styleSheetParser.getCurrentPosition() == styleSheetParser.getInput().end() || ParserUtil::LEFT_PARENTHESIS_C !=
-                                                                                              *styleSheetParser.getCurrentPosition())
-        {
-            styleSheetParser.setEndParsing(true);
-            return;
+        default:
+            parser.getBuffer().push_back(character);
+            break;
         }
-
-        styleSheetParser.setState(StyleSheetParser::StyleSheetParserState::START_SELECTOR);
     }
 }

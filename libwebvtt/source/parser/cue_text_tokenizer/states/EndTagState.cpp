@@ -7,15 +7,17 @@
 namespace WebVTT
 {
 
-    std::shared_ptr<Token> EndTagState::process()
+    std::shared_ptr<Token> EndTagState::process(CueTextTokenizer &tokenizer)
     {
-        uint32_t character = *tokenizer.getCurrentPosition();
+        uint32_t character = getNextCharacter(tokenizer);
+
         switch (character)
         {
         case ParserUtil::HYPHEN_GREATER:
             tokenizer.getCurrentPosition()++;
+            [[fallthrough]];
         case CueTextTokenizer::STOP_TOKENIZER:
-            return std::make_shared<EndTagToken>(this->tokenizer.getResult());
+            return std::make_shared<EndTagToken>(tokenizer.getResult());
             break;
         default:
             tokenizer.getResult().push_back(character);

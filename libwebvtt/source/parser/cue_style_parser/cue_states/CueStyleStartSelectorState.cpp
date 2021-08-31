@@ -1,50 +1,44 @@
 #include "parser/cue_style_parser/cue_states/CueStyleStartSelectorState.h"
 #include "parser/StyleSheetParser.h"
 #include "parser/ParserUtil.h"
-#include "elements/style_objects/MatchAllSelector.h"
 
 namespace WebVTT
 {
 
-    void CueStyleStartSelectorState::processState()
+    void CueStyleStartSelectorState::processState(StyleSheetParser &parser)
     {
-        auto &currentPosition = styleSheetParser.getCurrentPosition();
-        if (currentPosition == styleSheetParser.getInput().end())
-        {
-            styleSheetParser.setEndParsing(true);
-            return;
-        }
-        ParserUtil::skipWhiteSpaces(styleSheetParser.getInput(), currentPosition);
 
-        if (*currentPosition == ParserUtil::HASHTAG_C)
-        {
-            currentPosition++;
-            styleSheetParser.setState(StyleSheetParser::StyleSheetParserState::CUE_ID_SELECTOR);
-            return;
-        }
-        if (*currentPosition == ParserUtil::RIGHT_PARENTHESIS_C)
-        {
-            currentPosition++;
-            styleSheetParser.setSelectorToCurrentObject(std::make_shared<MatchAllSelector>());
-            styleSheetParser.setState(StyleSheetParser::StyleSheetParserState::END_SELECTOR);
-            return;
-        }
+        uint32_t character = getNextCharacter(parser);
 
-     
-        if (*currentPosition == ParserUtil::DOT_C)
-        {
-            currentPosition++;
-            styleSheetParser.setState(StyleSheetParser::StyleSheetParserState::CLASS_SELECTOR);
+        if (ParserUtil::isASCIIWhiteSpaceCharacter(character))
             return;
-        }
-        if (*currentPosition == ParserUtil::COLON_C)
-        {
-            currentPosition++;
-            styleSheetParser.setState(StyleSheetParser::StyleSheetParserState::PSEUDO_CLASS_SELECTOR);
-            return;
-        }
 
-        styleSheetParser.setState(StyleSheetParser::StyleSheetParserState::TYPE_SELECTOR);
+        switch (character)
+        {
+
+        case ParserUtil::HASHTAG_C:
+            parser.setState(StyleState::StyleStateType::ID_SELECTOR);
+            break;
+
+        case ParserUtil::DOT_C:
+            parser.setState(StyleState::StyleStateType::CLASS_SELECTOR);
+            break;
+
+        case ParserUtil::COLON_C:
+            parser.setState(StyleState::StyleStateType::PSEUDO_START);
+            break;
+        case ParserUtil::LEFT_SQUARE_BRACKET_C:
+            parser.setState(StyleState::StyleStateType::ATTRIBUTE_SELECTOR);
+            break;
+        case StyleSheetParser::STOP_PARSER:
+            parser.setState(StyleState::StyleStateType::ERROR);
+            break;
+
+        default:
+            parser.setState(StyleState::StyleStateType::TYPE_SELECTOR);
+            parser.getBuffer().push_back(character);
+            break;
+        }
     }
 
 } // namespace WebVTT

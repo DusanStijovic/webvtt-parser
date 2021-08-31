@@ -73,7 +73,7 @@ namespace CPlusPlusLogging
    public:
       // Interface for Error Log
       void error(const char *text) throw();
-      void error(std::string &text) throw();
+      void error(std::string text) throw();
       void error(std::ostringstream &stream) throw();
 
       static std::shared_ptr<Logger> getLogger();
@@ -96,7 +96,7 @@ namespace CPlusPlusLogging
 
       // Interface for Info Log
       void info(const char *text) throw();
-      void info(std::string &text) throw();
+      void info(const std::string &text) throw();
       void info(std::ostringstream &stream) throw();
 
       // Interface for Trace log

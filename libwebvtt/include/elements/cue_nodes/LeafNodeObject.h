@@ -1,7 +1,7 @@
 #ifndef LIBWEBVTT_LEAF_NODE_OBJECT_H
 #define LIBWEBVTT_LEAF_NODE_OBJECT_H
 
-#include "elements/cue_node_objects/NodeObject.h"
+#include "elements/cue_nodes/NodeObject.h"
 #include <stdexcept>
 
 namespace WebVTT
@@ -11,12 +11,8 @@ namespace WebVTT
     {
 
     public:
-    
-        virtual void appendChild(std::shared_ptr<NodeObject> nodeObject) final override
-        {
-            throw std::runtime_error("Add Node Object not supported to leaf node in tree");
-        }
-       
+        void appendChild(std::shared_ptr<NodeObject> nodeObject) final override;
+        void visitChildren(ICueTreeVisitor &visitor) final override;
     };
 
 } // namespace WebVTT

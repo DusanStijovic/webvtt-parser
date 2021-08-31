@@ -1,4 +1,5 @@
 #include "logger/Logger.h"
+#include "utf8.h"
 
 #define DILOGE(message)                      \
     do                                        \

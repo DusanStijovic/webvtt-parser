@@ -3,17 +3,19 @@
 
 #include <memory>
 
-namespace WebVTT {
+namespace WebVTT
+{
     /**
      * Helper class for creating parser for specific WebVTT object
      * Object parser has one internal object in which will be set all parsed info
      *
      * @tparam Object some subtype of Block.
      */
-    template<typename Object>
-    class ObjectParser {
+    template <typename Object>
+    class ObjectParser
+    {
     protected:
-        std::shared_ptr<Object> currentObject;
+        std::unique_ptr<Object> currentObject;
 
     public:
         /**
@@ -22,25 +24,21 @@ namespace WebVTT {
          * @param newObject  new object to be set as parsing object
          * @return true if object set, otherwise false
          */
-        virtual bool setNewObjectForParsing(std::shared_ptr<Object> newObject);
+        virtual bool setNewObjectForParsing(std::unique_ptr<Object>&& newObject);
 
+        // /**
+        //  * Set new object as parsing object. Parser  make object by itself.
+        //  * @return true if object set, otherwise false
+        //  */
+        // virtual bool setNewObjectForParsing();
 
         /**
          * @return return parser internal object and set internal object to nullptr
          */
-        virtual std::shared_ptr<Object> collectCurrentObject();
+        virtual std::unique_ptr<Object> collectCurrentObject();
 
         virtual ~ObjectParser() = 0;
-
-
     };
-
-    /**
-     * This is needed because we want that every class ObjectParser<Object> be abstract
-     * @tparam Object
-     */
-    template<typename Object>
-    ObjectParser<Object>::~ObjectParser<Object>() {}
 
 } //End of namespace
 

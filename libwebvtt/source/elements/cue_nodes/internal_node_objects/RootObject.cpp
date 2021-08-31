@@ -1,4 +1,5 @@
-#include "elements/cue_node_objects/internal_node_objects/RootObject.h"
+#include "elements/cue_nodes/internal_node_objects/RootObject.h"
+#include "elements/visitors/ICueTreeVisitor.h"
 
 namespace WebVTT
 {
@@ -7,5 +8,13 @@ namespace WebVTT
     {
         return NodeObject::NodeType::ROOT;
     };
+
+    void
+    RootObject::accept(ICueTreeVisitor &visitor)
+    {
+        visitor.visitOnEntry(*this);
+        visitChildren(visitor);
+        visitor.visitOnExit(*this);
+    }
 
 } // namespace WebVTT

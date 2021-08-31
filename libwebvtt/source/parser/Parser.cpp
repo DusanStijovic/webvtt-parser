@@ -1,7 +1,7 @@
-#include "elements/webvtt_elements/Block.h"
-#include "elements/webvtt_elements/Cue.h"
-#include "parser/ParserUtil.h"
 #include "parser/Parser.h"
+#include "elements/webvtt_objects/Block.h"
+#include "elements/webvtt_objects/Cue.h"
+#include "parser/ParserUtil.h"
 #include "logger/LoggingUtility.h"
 #include "exceptions/FileFormatError.h"
 #include <iostream>
@@ -10,303 +10,272 @@
 #include <string>
 #include <string_view>
 #include <thread>
+#include <utility>
 
-namespace WebVTT
-{
+namespace WebVTT {
 
-  Parser::Parser(std::shared_ptr<SyncBuffer<std::u32string, uint32_t>> inputStream) : inputStream(inputStream)
-  {
-    preprocessedStream = std::make_unique<SyncBuffer<std::u32string, uint32_t>>();
+const std::shared_ptr<UniquePtrSyncBuffer<Cue>> Parser::getCueBuffer() {
+  return cues;
+}
+const std::shared_ptr<UniquePtrSyncBuffer<Region>> Parser::getRegionBuffer() {
+  return regions;
+}
+const std::shared_ptr<UniquePtrSyncBuffer<StyleSheet>> Parser::getStyleSheetBuffer() {
+  return styleSheets;
+}
 
-    cueParser = std::make_unique<CueParser>(regions);
-    styleSheetParser = std::make_unique<StyleSheetParser>();
-    regionParser = std::make_unique<RegionParser>();
-  };
+Parser::Parser(std::shared_ptr<StringSyncBuffer<std::u32string, uint32_t>> inputStream) : inputStream(std::move(
+    inputStream)) {
+  preprocessedStream = std::make_unique<StringSyncBuffer<std::u32string, uint32_t>>();
 
-  Parser::~Parser()
-  {
-    if (not parsingThread)
-      return;
-    preProcessingThread->join();
-    parsingThread->join();
-  };
+  cueParser = std::make_unique<CueParser>(regions);
+  styleSheetParser = std::make_unique<StyleSheetParser>();
+  regionParser = std::make_unique<RegionParser>();
 
-  void Parser::cleanDecodedData(std::u32string &input)
-  {
-    if (input.empty())
-      return;
+  cues = std::make_shared<UniquePtrSyncBuffer<Cue>>();
+  regions = std::make_shared<UniquePtrSyncBuffer<Region>>();
+  styleSheets = std::make_shared<UniquePtrSyncBuffer<StyleSheet>>();
+};
 
-    uint32_t firstC = input.front();
-    if (lastReadCR && firstC == ParserUtil::LF_C)
-    {
-      input.erase(input.begin());
-      lastReadCR = false;
-    }
-    if (input.back() == ParserUtil::LF_C)
-    {
-      lastReadCR = true;
-    }
+Parser::~Parser() {
+  if (not parsingThread)
+    return;
+  preProcessingThread->join();
+  parsingThread->join();
+  DILOGE("end of parsing");
+};
 
-    for (auto current = input.begin(); current != input.end();)
-    {
-      uint32_t current_c = *current;
-      bool haveNext = std::next(current) != input.end();
-      uint32_t next_c = haveNext ? *current : 0;
+void Parser::cleanDecodedData(std::u32string &input) {
+  if (input.empty())
+    return;
 
-      if (current_c == ParserUtil::NULL_C || current_c == ParserUtil::FFFF_C)
-      {
-        *current = ParserUtil::REPLACEMENT_C;
-      }
-      if (current_c == ParserUtil::CR_C)
-      {
-        *current = ParserUtil::LF_C;
-      }
-
-      if (current_c == ParserUtil::CR_C && haveNext && next_c == ParserUtil::LF_C)
-      {
-        current = input.erase(current);
-      }
-      else
-        std::advance(current, 1);
-    }
+  uint32_t firstC = input.front();
+  if (lastReadCR && firstC == ParserUtil::LF_C) {
+    input.erase(input.begin());
+    lastReadCR = false;
+  }
+  if (input.back() == ParserUtil::LF_C) {
+    lastReadCR = true;
   }
 
-  void Parser::preProcessDecodedStreamLoop()
-  {
-    std::string buffer;
-    std::u32string decodedData;
-    try
-    {
-      while (true)
-      {
-        decodedData = inputStream->readMultiple(DEFAULT_READ_NUMBER);
+  for (auto current = input.begin(); current != input.end();) {
+    uint32_t current_c = *current;
+    bool haveNext = std::next(current) != input.end();
+    uint32_t next_c = haveNext ? *current : 0;
 
-        if (decodedData.length() == 0)
-        {
-          break;
-        }
-        cleanDecodedData(decodedData);
-
-        preprocessedStream->writeMultiple(decodedData);
-      };
-      preprocessedStream->setInputEnded();
-      inputStream->clearBufferUntilReadPosition();
+    if (current_c == ParserUtil::NULL_C || current_c == ParserUtil::FFFF_C) {
+      *current = ParserUtil::REPLACEMENT_C;
     }
-    catch (const std::bad_alloc &error)
-    {
-      preprocessedStream->setInputEnded();
-      DILOGE(error.what());
-      return;
+    if (current_c == ParserUtil::CR_C) {
+      *current = ParserUtil::LF_C;
     }
-  };
 
-  bool Parser::collectBlock(bool inHeader)
-  {
+    if (current_c == ParserUtil::CR_C && haveNext && next_c == ParserUtil::LF_C) {
+      current = input.erase(current);
+    } else
+      std::advance(current, 1);
+  }
+}
 
-    uint32_t lineCount = 0;
-    auto previousPosition = preprocessedStream->getReadPosition();
-    std::u32string line, buffer;
-    bool seenEOF = false, seenArrow = false;
-    bool isNewCue = false, isNewRegion = false, isNewStyleSheet = false;
+void Parser::preProcessDecodedStreamLoop() {
+  std::string buffer;
+  std::u32string decodedData;
+  try {
+    while (true) {
+      decodedData = inputStream->readMultiple(DEFAULT_READ_NUMBER);
 
-    while (true)
-    {
-      auto readData = preprocessedStream->readUntilSpecificData(ParserUtil::LF_C);
-      line = readData;
-
-      lineCount++;
-
-      auto readOneDataOptional = preprocessedStream->readNext();
-      if (!readOneDataOptional.has_value())
-        seenEOF = true;
-      else
-      {
-        readOneDataOptional = preprocessedStream->peekOne();
-      }
-
-      bool lineContainArrow = ParserUtil::stringContainsSeparator(line, ParserUtil::TIME_STAMP_SEPARATOR);
-      if (lineContainArrow)
-      {
-
-        if (!inHeader && (lineCount == 1 || (lineCount == 2 && !seenArrow)))
-        {
-          seenArrow = true;
-
-          preprocessedStream->clearBufferUntilReadPosition();
-          previousPosition = preprocessedStream->getReadPosition();
-
-          DILOGI("FOUND CUE");
-          isNewCue = true;
-
-          auto position = std::u32string_view(line).begin();
-          bool success = cueParser->setNewObjectForParsing(std::make_unique<Cue>(buffer));
-          success = cueParser->parseTimingAndSettings(line, position);
-
-          if (!success)
-          {
-            DILOGE("Cue timing an settings not parsed successfully");
-          }
-          buffer.clear();
-          seenCue = true;
-        }
-        else
-        {
-          preprocessedStream->setReadPosition(previousPosition);
-          break;
-        }
-      }
-      else if (line.length() == 0)
+      if (decodedData.length() == 0) {
         break;
-      else
-      {
-        if (!inHeader and lineCount == 2)
-        {
-          std::u32string_view temp = buffer;
-          ParserUtil::strip(temp, ParserUtil::isASCIIWhiteSpaceCharacter);
-          auto tempStyleSheet = temp.substr(0, STYLE_NAME.length());
-          auto tempRegion = temp.substr(0, REGION_NAME.length());
-          if (!seenCue && tempStyleSheet == STYLE_NAME)
-          {
+      }
+      cleanDecodedData(decodedData);
 
-            DILOGI("FOUND  STYLESHEET");
-            isNewStyleSheet = true;
-            buffer.clear();
-          }
-          else if (!seenCue && tempRegion == REGION_NAME)
-          {
+      preprocessedStream->writeMultiple(decodedData);
+    };
+    preprocessedStream->setInputEnded();
+    inputStream->clearBufferUntilReadPosition();
+  }
+  catch (const std::bad_alloc &error) {
+    preprocessedStream->setInputEnded();
+    DILOGE(error.what());
+    return;
+  }
+};
 
-            DILOGI("FOUND REGION");
-            isNewRegion = true;
-            regionParser->setNewObjectForParsing(std::make_unique<Region>());
-            buffer.clear();
-          }
-        }
+bool Parser::collectBlock(bool inHeader) {
 
-        if (!buffer.empty())
-          buffer.push_back(ParserUtil::LF_C);
-        buffer.append(line);
+  uint32_t lineCount = 0;
+  auto previousPosition = preprocessedStream->getReadPosition();
+  std::u32string line, buffer;
+  bool seenEOF = false, seenArrow = false;
+  bool isNewCue = false, isNewRegion = false, isNewStyleSheet = false;
 
+  while (true) {
+    auto readData = preprocessedStream->readUntilSpecificData(ParserUtil::LF_C);
+    line = readData;
+
+    lineCount++;
+
+    auto readOneDataOptional = preprocessedStream->readNext();
+    if (!readOneDataOptional.has_value())
+      seenEOF = true;
+    else {
+      readOneDataOptional = preprocessedStream->peekOne();
+    }
+
+    bool lineContainArrow = ParserUtil::stringContainsSeparator(line, ParserUtil::TIME_STAMP_SEPARATOR);
+    if (lineContainArrow) {
+
+      if (!inHeader && (lineCount == 1 || (lineCount == 2 && !seenArrow))) {
+        seenArrow = true;
+
+        preprocessedStream->clearBufferUntilReadPosition();
         previousPosition = preprocessedStream->getReadPosition();
-      }
-      if (seenEOF)
+
+        DILOGI("FOUND CUE");
+        isNewCue = true;
+
+        auto position = std::u32string_view(line).begin();
+        bool success = cueParser->setNewObjectForParsing(std::make_unique<Cue>(buffer));
+        success = cueParser->parseTimingAndSettings(line, position);
+
+        if (!success) {
+          DILOGE("Cue timing an settings not parsed successfully");
+        }
+        buffer.clear();
+        seenCue = true;
+      } else {
+        preprocessedStream->setReadPosition(previousPosition);
         break;
-    }
+      }
+    } else if (line.length() == 0)
+      break;
+    else {
+      if (!inHeader and lineCount == 2) {
+        std::u32string_view temp = buffer;
+        ParserUtil::strip(temp, ParserUtil::isASCIIWhiteSpaceCharacter);
+        auto tempStyleSheet = temp.substr(0, STYLE_NAME.length());
+        auto tempRegion = temp.substr(0, REGION_NAME.length());
+        if (!seenCue && tempStyleSheet == STYLE_NAME) {
 
-    if (isNewCue)
-    {
-      cueParser->setTextToObject(buffer);
-      cueParser->parseTextStyleAndMakeStyleTree(predefinedLanguage);
-      cues.push_back(std::move(cueParser->collectCurrentObject()));
-      return true;
-    }
-    if (isNewStyleSheet)
-    {
-      styleSheetParser->parseCSSRules(buffer);
-      styleSheetParser->collectStyleSheetsTo(styleSheets);
-      return true;
-    }
+          DILOGI("FOUND  STYLESHEET");
+          isNewStyleSheet = true;
+          buffer.clear();
+        } else if (!seenCue && tempRegion == REGION_NAME) {
 
-    if (isNewRegion)
-    {
-      regionParser->parseSettings(buffer);
-      regions.push_back(regionParser->collectCurrentObject());
-      return true;
-    }
+          DILOGI("FOUND REGION");
+          isNewRegion = true;
+          regionParser->setNewObjectForParsing(std::make_unique<Region>());
+          buffer.clear();
+        }
+      }
 
-    return false;
+      if (!buffer.empty())
+        buffer.push_back(ParserUtil::LF_C);
+      buffer.append(line);
+
+      previousPosition = preprocessedStream->getReadPosition();
+    }
+    if (seenEOF)
+      break;
   }
 
-  bool Parser::startParsing()
-  {
-    if (parsingStarted)
-      return false;
-    parsingStarted = true;
-    preProcessingThread = std::make_unique<std::thread>(&Parser::preProcessDecodedStreamLoop, this);
-    parsingThread = std::make_unique<std::thread>(&Parser::parsingLoop, this);
+  if (isNewCue) {
+    cueParser->setTextToObject(buffer);
+    cueParser->parseTextStyleAndMakeStyleTree(predefinedLanguage);
+    cues->writeNext(cueParser->collectCurrentObject());
+    return true;
+  }
+  if (isNewStyleSheet) {
+    styleSheetParser->parseCSSRules(buffer);
+    styleSheets->writeMultiple(styleSheetParser->getParsedStyleSheets());
     return true;
   }
 
-  void Parser::parsingLoop()
-  {
-    try
-    {
+  if (isNewRegion) {
+    regionParser->parseSettings(buffer);
+    regions->writeNext(regionParser->collectCurrentObject());
+    return true;
+  }
 
-      std::u32string readData;
-      std::optional<uint32_t> readOneDataOptional;
+  return false;
+}
 
-      //Read WebVTT at the beginning of file
-      readData = preprocessedStream->readMultiple(EXTENSION_NAME_LENGTH);
-      if (readData != EXTENSION_NAME)
-      {
-        DILOGE("File need to start witg WEBVTT");
-        throw FileFormatError();
-      }
+bool Parser::startParsing() {
+  if (parsingStarted)
+    return false;
+  parsingStarted = true;
+  preProcessingThread = std::make_unique<std::thread>(&Parser::preProcessDecodedStreamLoop, this);
+  parsingThread = std::make_unique<std::thread>(&Parser::parsingLoop, this);
+  return true;
+}
 
-      readOneDataOptional = preprocessedStream->isReadDoneAndAdvancedIfNot();
-      if (!readOneDataOptional.has_value())
-      {
-        DILOGE("Need additonal character after WEBVTT");
-        throw FileFormatError();
-      }
+void Parser::parsingLoop() {
+  try {
 
-      uint32_t readOne = readOneDataOptional.value();
-      if (readOne != ParserUtil::SPACE_C && readOne != ParserUtil::LF_C && readOne != ParserUtil::TAB_C)
-      {
-        DILOGE("Need additonal character after WEBVTT(Space, line feed or tab");
-        throw FileFormatError();
-      }
+    std::u32string readData;
+    std::optional<uint32_t> readOneDataOptional;
 
-      preprocessedStream->readUntilSpecificData(ParserUtil::LF_C);
+    //Read WebVTT at the beginning of file
+    readData = preprocessedStream->readMultiple(EXTENSION_NAME_LENGTH);
+    if (readData != EXTENSION_NAME) {
+      DILOGE("File need to start witg WEBVTT");
+      throw FileFormatError();
+    }
 
-      readOneDataOptional = preprocessedStream->isReadDoneAndAdvancedIfNot();
-      if (!readOneDataOptional.has_value())
-      {
-        DILOGI("Parsing done but no useful data");
-        return;
-      }
+    readOneDataOptional = preprocessedStream->isReadDoneAndAdvancedIfNot();
+    if (!readOneDataOptional.has_value()) {
+      DILOGE("Need additonal character after WEBVTT");
+      throw FileFormatError();
+    }
 
-      readOneDataOptional = preprocessedStream->peekOne();
-      if (!readOneDataOptional.has_value())
-      {
-        DILOGI("Parsing done but no useful data");
-        return;
-      }
+    uint32_t readOne = readOneDataOptional.value();
+    if (readOne != ParserUtil::SPACE_C && readOne != ParserUtil::LF_C && readOne != ParserUtil::TAB_C) {
+      DILOGE("Need additonal character after WEBVTT(Space, line feed or tab");
+      throw FileFormatError();
+    }
 
-      if (readOneDataOptional.value() != ParserUtil::LF_C)
-      {
-        DILOGI("Collecting block in header");
-        collectBlock(true);
-      }
-      else
-      {
-        readOneDataOptional = preprocessedStream->readNext();
-      }
+    preprocessedStream->readUntilSpecificData(ParserUtil::LF_C);
+
+    readOneDataOptional = preprocessedStream->isReadDoneAndAdvancedIfNot();
+    if (!readOneDataOptional.has_value()) {
+      DILOGI("Parsing done but no useful data");
+      return;
+    }
+
+    readOneDataOptional = preprocessedStream->peekOne();
+    if (!readOneDataOptional.has_value()) {
+      DILOGI("Parsing done but no useful data");
+      return;
+    }
+
+    if (readOneDataOptional.value() != ParserUtil::LF_C) {
+      DILOGI("Collecting block in header");
+      collectBlock(true);
+    } else {
+      readOneDataOptional = preprocessedStream->readNext();
+    }
+
+    preprocessedStream->readWhileSpecificData(ParserUtil::LF_C);
+
+    while ((readOneDataOptional = preprocessedStream->peekOne()).has_value()) {
+      DILOGI("Collecting block not in header");
+      collectBlock(false);
+      //Collected block was put in list inside the function
 
       preprocessedStream->readWhileSpecificData(ParserUtil::LF_C);
-
-      while ((readOneDataOptional = preprocessedStream->peekOne()).has_value())
-      {
-        DILOGI("Collecting block not in header");
-        collectBlock(false);
-        //Collected block was put in list inside the function
-
-        preprocessedStream->readWhileSpecificData(ParserUtil::LF_C);
-      }
-    }
-    catch (const FileFormatError &error)
-    {
-      DILOGE(error.what());
-      return;
-    }
-    catch (const std::bad_alloc &error)
-    {
-      DILOGE(error.what());
-      return;
     }
   }
-
-  void Parser::setPredefineLanguage(std::u32string_view language)
-  {
-    this->predefinedLanguage = language;
+  catch (const FileFormatError &error) {
+    DILOGE(error.what());
+    return;
   }
+  catch (const std::bad_alloc &error) {
+    DILOGE(error.what());
+    return;
+  }
+}
+
+void Parser::setPredefineLanguage(std::u32string_view language) {
+  this->predefinedLanguage = language;
+}
 } // namespace WebVTT

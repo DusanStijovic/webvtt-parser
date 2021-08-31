@@ -1,6 +1,6 @@
 #ifndef LIBWEBVTT_TOKEN_H
 #define LIBWEBVTT_TOKEN_H
-#include "elements/cue_node_objects/NodeObject.h"
+#include "elements/cue_nodes/NodeObject.h"
 #include <string>
 #include <stack>
 #include <memory>

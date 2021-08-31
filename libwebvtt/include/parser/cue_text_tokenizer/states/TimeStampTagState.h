@@ -7,9 +7,8 @@ namespace WebVTT
     class TimpStampTagState : public CueTextTokenizerState
     {
     public:
-        TimpStampTagState(CueTextTokenizer &tokenizer)
-            : CueTextTokenizerState(tokenizer){};
-        virtual std::shared_ptr<Token> process() override;
+        TimpStampTagState() = default;
+        virtual std::shared_ptr<Token> process(CueTextTokenizer &tokenizer) override;
 
     private:
     };

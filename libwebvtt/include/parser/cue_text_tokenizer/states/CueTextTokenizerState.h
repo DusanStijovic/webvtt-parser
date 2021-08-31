@@ -16,19 +16,29 @@ namespace WebVTT
     {
 
     public:
-        virtual std::shared_ptr<Token> process() = 0;
-        virtual std::shared_ptr<Token> getTokenOrNullptr();
+        enum class TokenizerState
+        {
+            DATA,
+            START_TAG,
+            START_TAG_ANNOTATION,
+            START_TAG_CLASS,
+            END_TAG,
+            TIME_STAMP_TAG,
+            TAG
+        };
+
+        virtual std::shared_ptr<Token> process(CueTextTokenizer &tokenizer) = 0;
+
+        uint32_t getNextCharacter(CueTextTokenizer &tokenizer);
+
+        explicit CueTextTokenizerState() = default;
         virtual ~CueTextTokenizerState() = default;
 
-        explicit CueTextTokenizerState(CueTextTokenizer &tokenizer)
-            : tokenizer(tokenizer){};
-
-    protected:
-        CueTextTokenizer &tokenizer;
-
-        std::shared_ptr<Token> token = nullptr;
+        static CueTextTokenizerState *getInstance(CueTextTokenizerState::TokenizerState tokenizerState);
 
     private:
+        static std::map<TokenizerState, std::unique_ptr<CueTextTokenizerState>> statesInstance;
+        static std::unique_ptr<CueTextTokenizerState> makeNewTokenizerState(TokenizerState tokenizerState);
     };
 
 }

@@ -2,11 +2,12 @@
 #define WEBVTT_PARSER_H
 
 #include "utf8.h"
-#include "buffer/SyncBuffer.h"
+#include "buffer/StringSyncBuffer.h"
+#include "buffer/UniquePtrSyncBuffer.h"
 #include "logger/Logger.h"
-#include "elements/Cue.h"
-#include "elements/Region.h"
-#include "elements/StyleSheet.h"
+#include "elements/webvtt_objects/Cue.h"
+#include "elements/webvtt_objects/Region.h"
+#include "elements/webvtt_objects/StyleSheet.h"
 #include "parser/CueParser.h"
 #include "parser/StyleSheetParser.h"
 #include "parser/RegionParser.h"
@@ -16,63 +17,60 @@
 #include <memory.h>
 #include <thread>
 
-namespace WebVTT {
+namespace WebVTT
+{
 
-    using namespace CPlusPlusLogging;
+  class Parser
+  {
 
-    class Parser {
+  public:
+    explicit Parser(std::shared_ptr<StringSyncBuffer<std::u32string, uint32_t>> inputStream);
+    void setPredefineLanguage(std::u32string_view language);
+    bool startParsing();
 
-    public:
-        explicit Parser(std::shared_ptr<SyncBuffer < std::u32string, uint32_t>>
+    const std::shared_ptr<UniquePtrSyncBuffer<Region>> getRegionBuffer();
+    const std::shared_ptr<UniquePtrSyncBuffer<Cue>> getCueBuffer();
+    const std::shared_ptr<UniquePtrSyncBuffer<StyleSheet>> getStyleSheetBuffer();
 
-        inputStream);
+    ~Parser();
 
-        bool startParsing();
+  private:
+    constexpr static std::u32string_view EXTENSION_NAME = U"WEBVTT";
+    constexpr static std::u32string_view STYLE_NAME = U"STYLE";
+    constexpr static std::u32string_view REGION_NAME = U"REGION";
 
-        ~Parser();
+    std::u32string predefinedLanguage;
 
-    private:
-        constexpr static std::u32string_view EXTENSION_NAME = U"WEBVTT";
-        constexpr static std::u32string_view STYLE_NAME = U"STYLE";
-        constexpr static std::u32string_view REGION_NAME = U"REGION_SETTING";
+    constexpr static int EXTENSION_NAME_LENGTH = 6;
+    constexpr static int DEFAULT_READ_NUMBER = 15;
 
-        constexpr static int EXTENSION_NAME_LENGTH = 6;
-        constexpr static int DEFAULT_READ_NUMBER = 15;
+    bool lastReadCR = false;
+    bool seenCue = false;
 
-        bool lastReadCR = false;
-        bool seenCue = false;
+    bool parsingStarted = false;
 
-        bool parsingStarted = false;
+    std::shared_ptr<StringSyncBuffer<std::u32string, uint32_t>> inputStream;
+    std::unique_ptr<StringSyncBuffer<std::u32string, uint32_t>> preprocessedStream;
 
-        std::shared_ptr<SyncBuffer < std::u32string, uint32_t>> inputStream;
-        std::shared_ptr<SyncBuffer < std::u32string, uint32_t>> preprocessedStream;
+    std::unique_ptr<std::thread> preProcessingThread;
+    std::unique_ptr<std::thread> parsingThread;
 
-        std::unique_ptr<std::thread> preProcessingThread;
-        std::unique_ptr<std::thread> parsingThread;
+    std::unique_ptr<CueParser> cueParser;
+    std::unique_ptr<StyleSheetParser> styleSheetParser;
+    std::unique_ptr<RegionParser> regionParser;
 
-        std::unique_ptr<CueParser> cueParser;
-        std::unique_ptr<StyleSheetParser> styleSheetParser;
-        std::unique_ptr<RegionParser> regionParser;
+    std::shared_ptr<UniquePtrSyncBuffer<Cue>> cues;
+    std::shared_ptr<UniquePtrSyncBuffer<Region>> regions;
+    std::shared_ptr<UniquePtrSyncBuffer<StyleSheet>> styleSheets;
 
+    void cleanDecodedData(std::u32string &input);
 
-        std::list<std::shared_ptr<Cue>> cues;
-        std::list<std::shared_ptr<Region>> regions;
-        std::list<std::shared_ptr<StyleSheet>> styleSheets;
+    void preProcessDecodedStreamLoop();
 
+    void parsingLoop();
 
-
-        Logger parserLogger{"parserLog.txt"};
-
-        //Preprocessing
-        void cleanDecodedData(std::u32string &input);
-
-        void preProcessDecodedStreamLoop();
-
-        //Parsing
-        void parsingLoop();
-
-        bool collectBlock(bool inHeader);
-    };
+    bool collectBlock(bool inHeader);
+  };
 }
 
 #endif

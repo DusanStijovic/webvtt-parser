@@ -9,6 +9,7 @@ namespace WebVTT
 {
 
     class Cue;
+    class ICueTreeVisitor;
 
     class NodeObject
     {
@@ -41,8 +42,12 @@ namespace WebVTT
 
         virtual ~NodeObject() = default;
 
-    private:
+        virtual void accept(ICueTreeVisitor &visitor) = 0;
+
+    protected:
         std::weak_ptr<NodeObject> parent;
+
+        virtual void visitChildren(ICueTreeVisitor &visitor) = 0;
     };
 
 } // namespace WebVTT

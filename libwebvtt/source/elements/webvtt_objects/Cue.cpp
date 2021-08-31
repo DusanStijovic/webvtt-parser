@@ -1,5 +1,5 @@
-#include "elements/webvtt_elements/Region.h"
-#include "elements/webvtt_elements/Cue.h"
+#include "elements/webvtt_objects/Region.h"
+#include "elements/webvtt_objects/Cue.h"
 #include "parser/ParserUtil.h"
 #include "utf8.h"
 

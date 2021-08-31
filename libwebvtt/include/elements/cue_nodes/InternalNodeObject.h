@@ -23,13 +23,12 @@ namespace WebVTT
 
         void appendChild(std::shared_ptr<NodeObject> nodeObject);
 
-      
-
-    private:
-        std::list<std::shared_ptr<NodeObject>> listOfObject;
-
+    protected:
+        std::list<std::shared_ptr<NodeObject>> children;
         std::list<std::u32string> classes;
         std::u32string language;
+
+        void visitChildren(ICueTreeVisitor &visitor) override;
     };
 }
 

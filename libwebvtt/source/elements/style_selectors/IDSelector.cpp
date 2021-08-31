@@ -1,4 +1,4 @@
-#include "elements/style_objects/IDSelector.h"
+#include "elements/style_selectors/IDSelector.h"
 
 namespace WebVTT
 {

@@ -1,4 +1,4 @@
-#include "elements/style_objects/CompoundSelector.h"
+#include "elements/style_selectors/CompoundSelector.h"
 
 namespace WebVTT
 {

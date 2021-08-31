@@ -1,4 +1,4 @@
-#include "elements/style_objects/MatchAllSelector.h"
+#include "elements/style_selectors/MatchAllSelector.h"
 
 namespace WebVTT
 {

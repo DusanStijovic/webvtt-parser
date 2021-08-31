@@ -1,5 +1,7 @@
-PROGRAM = program
+PROGRAM = webvtt
 BUILD_DIR = build
+EXTENSION = o
+OUTPUT_DIR = output_dir
 
 SOURCE_CPP_LIST = \
 source/main.cpp\
@@ -7,9 +9,11 @@ source/logger/Logger.cpp\
 source/decoder/UTF8ToUTF32StreamDecoder.cpp\
 \
 \
-source/elements/Cue.cpp\
-source/elements/Region.cpp\
-source/elements/StyleSheet.cpp\
+source/elements/webvtt_objects/Cue.cpp\
+source/elements/webvtt_objects/Region.cpp\
+source/elements/webvtt_objects/StyleSheet.cpp\
+source/elements/webvtt_objects/CueStyleSheet.cpp\
+source/elements/webvtt_objects/RegionStyleSheet.cpp\
 \
 \
 source/parser/Parser.cpp\
@@ -21,21 +25,34 @@ source/parser/ParserUtil.cpp\
 \
 source/parser/cue_style_parser/states/StyleState.cpp\
 source/parser/cue_style_parser/states/StyleStartState.cpp\
-source/parser/cue_style_parser/states/StyleIDSelectorState.cpp\
-source/parser/cue_style_parser/states/StyleClassSelectorState.cpp\
-source/parser/cue_style_parser/states/StyleTypeSelectorState.cpp\
-source/parser/cue_style_parser/states/StylePseudoClassSelectorState.cpp\
-source/parser/cue_style_parser/states/StyleEndSelectorState.cpp\
-source/parser/cue_style_parser/states/StyleRulesState.cpp\
+source/parser/cue_style_parser/states/EndStyleState.cpp\
 source/parser/cue_style_parser/states/ErrorStyleState.cpp\
 \
 \
+source/parser/cue_style_parser/selectorStates/StyleIDSelectorState.cpp\
+source/parser/cue_style_parser/selectorStates/StyleClassSelectorState.cpp\
+source/parser/cue_style_parser/selectorStates/StyleAttributeSelectorState.cpp\
+source/parser/cue_style_parser/selectorStates/StyleTypeSelectorState.cpp\
+source/parser/cue_style_parser/selectorStates/StyleEndSelectorState.cpp\
+source/parser/cue_style_parser/selectorStates/FetchSelectorState.cpp\
+source/parser/cue_style_parser/selectorStates/StyleStartPseudoState.cpp\
+source/parser/cue_style_parser/selectorStates/StylePseudoElementSelectorState.cpp\
+source/parser/cue_style_parser/selectorStates/StylePseudoClassSelectorState.cpp\
+source/parser/cue_style_parser/selectorStates/StylePseudoElementWithArgumentEndState.cpp\
+source/parser/cue_style_parser/selectorStates/StylePseudoClassWithArgumentEndState.cpp\
+source/parser/cue_style_parser/selectorStates/StylePseudoWithArgumentEndState.cpp\
+\
+\
+\
+\
+source/parser/cue_style_parser/ruleStates/BeforeRuleStartState.cpp\
+source/parser/cue_style_parser/ruleStates/StyleRulesState.cpp\
+\
+\
 source/parser/cue_style_parser/cue_states/CueStyleStartSelectorState.cpp\
-source/parser/cue_style_parser/cue_states/CueStyleIDSelectorState.cpp\
 \
 \
 source/parser/cue_style_parser/cue_region_states/CueRegionStyleStartSelectorState.cpp\
-source/parser/cue_style_parser/cue_region_states/CueRegionStyleIDSelectorState.cpp\
 \
 \
 source/parser/cue_text_tokenizer/CueTextTokenizer.cpp\
@@ -54,44 +71,54 @@ source/parser/cue_text_tokenizer/tokens/EndTagToken.cpp\
 source/parser/cue_text_tokenizer/tokens/TimeStampTagToken.cpp\
 \
 \
-source/elements/cue_node_objects/NodeObject.cpp\
-source/elements/cue_node_objects/InternalNodeObject.cpp\
-source/elements/cue_node_objects/LeafNodeObject.cpp\
+source/elements/cue_nodes/NodeObject.cpp\
+source/elements/cue_nodes/InternalNodeObject.cpp\
+source/elements/cue_nodes/LeafNodeObject.cpp\
 \
 \
-source/elements/cue_node_objects/internal_node_objects/RootObject.cpp\
-source/elements/cue_node_objects/internal_node_objects/VoiceObject.cpp\
-source/elements/cue_node_objects/internal_node_objects/BoldObject.cpp\
-source/elements/cue_node_objects/internal_node_objects/ClassObject.cpp\
-source/elements/cue_node_objects/internal_node_objects/ItalicObject.cpp\
-source/elements/cue_node_objects/internal_node_objects/LanguageObject.cpp\
-source/elements/cue_node_objects/internal_node_objects/UnderlineObject.cpp\
-source/elements/cue_node_objects/internal_node_objects/RubyObject.cpp\
-source/elements/cue_node_objects/internal_node_objects/RubyTextObject.cpp\
+source/elements/cue_nodes/internal_node_objects/RootObject.cpp\
+source/elements/cue_nodes/internal_node_objects/VoiceObject.cpp\
+source/elements/cue_nodes/internal_node_objects/BoldObject.cpp\
+source/elements/cue_nodes/internal_node_objects/ClassObject.cpp\
+source/elements/cue_nodes/internal_node_objects/ItalicObject.cpp\
+source/elements/cue_nodes/internal_node_objects/LanguageObject.cpp\
+source/elements/cue_nodes/internal_node_objects/UnderlineObject.cpp\
+source/elements/cue_nodes/internal_node_objects/RubyObject.cpp\
+source/elements/cue_nodes/internal_node_objects/RubyTextObject.cpp\
 \
 \
-source/elements/cue_node_objects/leaf_node_objects/TextObject.cpp\
-source/elements/cue_node_objects/leaf_node_Objects/TimeStampObject.cpp\
+source/elements/cue_nodes/leaf_node_objects/TextObject.cpp\
+source/elements/cue_nodes/leaf_node_Objects/TimeStampObject.cpp\
 \
 \
-source/elements/style_objects/StyleSelector.cpp\
-source/elements/style_objects/StyleSelectorWithArgument.cpp\
-source/elements/style_objects/ClassSelector.cpp\
-source/elements/style_objects/IDSelector.cpp\
-source/elements/style_objects/TypeSelector.cpp\
-source/elements/style_objects/AttributeSelector.cpp\
-source/elements/style_objects/MatchAllSelector.cpp\
-source/elements/style_objects/TimeStampSelector.cpp\
+source/elements/style_selectors/StyleSelector.cpp\
+source/elements/style_selectors/ClassSelector.cpp\
+source/elements/style_selectors/IDSelector.cpp\
+source/elements/style_selectors/TypeSelector.cpp\
+source/elements/style_selectors/AttributeSelector.cpp\
+source/elements/style_selectors/MatchAllSelector.cpp\
+source/elements/style_selectors/PseudoClassSelector.cpp\
+source/elements/style_selectors/PseudoElementSelector.cpp\
+source/elements/style_selectors/CompoundSelector.cpp\
 \
 \
-source/parser/NumberReferenceMapDefinition.cpp\
-source/parser/NamedReferenceMapDefinition.cpp\
-source/parser/UnallowedHTMLCharacterReferences.cpp\
+source/parser/html_references_constants/NumberReferenceMapDefinition.cpp\
+source/parser/html_references_constants/NamedReferenceMapDefinition.cpp\
+source/parser/html_references_constants/UnallowedHTMLCharacterReferences.cpp\
+\
+\
+source/elements/rules_filters/RuleFilter.cpp\
+source/elements/rules_filters/ArgumentRuleFilter.cpp\
+source/elements/rules_filters/NoArgumentRuleFilter.cpp\
+source/elements/rules_filters/TimeStampRuleFilter.cpp\
+\
+\
+source/elements/visitors/ICueTreeVisitor.cpp
+
 
 INCLUDE_CPP_LIST =\
  -Iinclude\
  -Ilib/utfcpp/source\
-
 
 
 LIB_CPP_LIST = \
@@ -110,29 +137,53 @@ $(info start)
 $(info $(SOURCE_CPP_PATH)) 
 
 
-CC = g++ -c --std=c++17
-LD = g++
+CXX = g++ -c
+LD = g++ 
 
-FLAGS_CC = -MD -MP -g $(INCLUDE_CPP_LIST)
+SHARED = 0
 
-FLAGS_LD= 
+CXXFLAGS = -MD -MP
+CXXFLAGS += -g --std=c++17
+CXXFLAGS += -Wall -Wextra 
+CXXFLAGS += $(INCLUDE_CPP_LIST)
+ifeq ($(SHARED), 1)
+	CXXFLAGS += -fPIC
+endif
+
+FLAGS_LD =
+
+ifeq ($(SHARED), 1)
+	FLAGS_LD += -shared -fPIC -pie
+endif
+
+
+ifeq ($(SHARED), 1)
+	EXTENSION = so
+	PROGRAM = libwebvtt
+endif
 
 .phony: all
-all : $(BUILD_DIR)/$(PROGRAM).o
+all :  $(OUTPUT_DIR)/$(PROGRAM).$(EXTENSION) $(OUTPUT_DIR)
 
-$(BUILD_DIR)/$(PROGRAM).o : $(OBJECTS_LIST) makefile
+
+$(OUTPUT_DIR)/$(PROGRAM).$(EXTENSION) : $(OBJECTS_LIST) makefile |  $(OUTPUT_DIR)
 	$(LD) $(FLAGS_LD) -o $(@) $(OBJECTS_LIST) $(LIB_CPP_LIST)
 
 
 $(BUILD_DIR)/%.o : %.cpp makefile | $(BUILD_DIR)
-	$(CC) $(FLAGS_CC) -o $(@) $(<) 
+	$(CXX) $(CXXFLAGS) -o $(@) $(<) 
 
 $(BUILD_DIR) :
+	mkdir $(@)
+
+$(OUTPUT_DIR) :
 	mkdir $(@)
 
 .phony: clean
 clean :
 	rm -rf $(BUILD_DIR)
+	rm -rf $(OUTPUT_DIR)
+
 
 
 -include $(wildcard $(BUILD_DIR)/*.d)

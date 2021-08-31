@@ -1,7 +1,8 @@
-#include "elements/rules_filter_objects/RuleFilter.h"
-#include "elements/rules_filter_objects/ArgumentRuleFilter.h"
-#include "elements/rules_filter_objects/NoArgumentRuleFilter.h"
-#include "elements/rules_filter_objects/TimeStampRuleFilter.h"
+#include "elements/rules_filters/RuleFilter.h"
+#include "elements/rules_filters/ArgumentRuleFilter.h"
+#include "elements/rules_filters/NoArgumentRuleFilter.h"
+#include "elements/rules_filters/TimeStampRuleFilter.h"
+#include "parser/CSSConstants.h"
 
 namespace WebVTT
 {
@@ -45,54 +46,54 @@ namespace WebVTT
         switch (ruleShortlandType)
         {
         case RULE_SHORTLAND_TYPE::ANIMATION:
-            allowedPropreties.insert(RuleFilter::ANIMATION);
-            allowedPropreties.insert(RuleFilter::ANIMATION_DELAY);
-            allowedPropreties.insert(RuleFilter::ANIMATION_DIRECTION);
-            allowedPropreties.insert(RuleFilter::ANIMATION_DURATION);
-            allowedPropreties.insert(RuleFilter::ANIMATION_FILL_MODE);
-            allowedPropreties.insert(RuleFilter::ANIMATION_ITERATION_COUNT);
-            allowedPropreties.insert(RuleFilter::ANIMATION_NAME);
-            allowedPropreties.insert(RuleFilter::ANIMATION_PLAY_STATE);
-            allowedPropreties.insert(RuleFilter::ANIMATION_TIMING_FNCTION);
+            allowedPropreties.insert(CSSConstants::ANIMATION);
+            allowedPropreties.insert(CSSConstants::ANIMATION_DELAY);
+            allowedPropreties.insert(CSSConstants::ANIMATION_DIRECTION);
+            allowedPropreties.insert(CSSConstants::ANIMATION_DURATION);
+            allowedPropreties.insert(CSSConstants::ANIMATION_FILL_MODE);
+            allowedPropreties.insert(CSSConstants::ANIMATION_ITERATION_COUNT);
+            allowedPropreties.insert(CSSConstants::ANIMATION_NAME);
+            allowedPropreties.insert(CSSConstants::ANIMATION_PLAY_STATE);
+            allowedPropreties.insert(CSSConstants::ANIMATION_TIMING_FNCTION);
             break;
         case RULE_SHORTLAND_TYPE::BACKGROUND:
-            allowedPropreties.insert(RuleFilter::BACKGROUND);
-            allowedPropreties.insert(RuleFilter::BACKGROUND_ATTACHMENT);
-            allowedPropreties.insert(RuleFilter::BACKGROUND_CLIP);
-            allowedPropreties.insert(RuleFilter::BACKGROUND_COLOR);
-            allowedPropreties.insert(RuleFilter::BACKGROUND_IMAGE);
-            allowedPropreties.insert(RuleFilter::BACKGROUND_POSITION);
-            allowedPropreties.insert(RuleFilter::BACKGROUND_REPEAT);
-            allowedPropreties.insert(RuleFilter::BACKGROUND_SIZE);
+            allowedPropreties.insert(CSSConstants::BACKGROUND);
+            allowedPropreties.insert(CSSConstants::BACKGROUND_ATTACHMENT);
+            allowedPropreties.insert(CSSConstants::BACKGROUND_CLIP);
+            allowedPropreties.insert(CSSConstants::BACKGROUND_COLOR);
+            allowedPropreties.insert(CSSConstants::BACKGROUND_IMAGE);
+            allowedPropreties.insert(CSSConstants::BACKGROUND_POSITION);
+            allowedPropreties.insert(CSSConstants::BACKGROUND_REPEAT);
+            allowedPropreties.insert(CSSConstants::BACKGROUND_SIZE);
             break;
         case RULE_SHORTLAND_TYPE::DECORATION:
-            allowedPropreties.insert(RuleFilter::TEXT_DECORATION);
-            allowedPropreties.insert(RuleFilter::TEXT_DECORATION_COLOR);
-            allowedPropreties.insert(RuleFilter::TEXT_DECORATION_LINE);
-            allowedPropreties.insert(RuleFilter::TEXT_DECORATION_STYLE);
+            allowedPropreties.insert(CSSConstants::TEXT_DECORATION);
+            allowedPropreties.insert(CSSConstants::TEXT_DECORATION_COLOR);
+            allowedPropreties.insert(CSSConstants::TEXT_DECORATION_LINE);
+            allowedPropreties.insert(CSSConstants::TEXT_DECORATION_STYLE);
             break;
         case RULE_SHORTLAND_TYPE::FONT:
-            allowedPropreties.insert(RuleFilter::FONT);
-            allowedPropreties.insert(RuleFilter::FONT_FAMILY);
-            allowedPropreties.insert(RuleFilter::FONT_LINE_HEIGHT);
-            allowedPropreties.insert(RuleFilter::FONT_SIZE);
-            allowedPropreties.insert(RuleFilter::FONT_STRETCH);
-            allowedPropreties.insert(RuleFilter::FONT_STYLE);
-            allowedPropreties.insert(RuleFilter::FONT_VARIANT);
-            allowedPropreties.insert(RuleFilter::FONT_WEIGHT);
+            allowedPropreties.insert(CSSConstants::FONT);
+            allowedPropreties.insert(CSSConstants::FONT_FAMILY);
+            allowedPropreties.insert(CSSConstants::FONT_LINE_HEIGHT);
+            allowedPropreties.insert(CSSConstants::FONT_SIZE);
+            allowedPropreties.insert(CSSConstants::FONT_STRETCH);
+            allowedPropreties.insert(CSSConstants::FONT_STYLE);
+            allowedPropreties.insert(CSSConstants::FONT_VARIANT);
+            allowedPropreties.insert(CSSConstants::FONT_WEIGHT);
             break;
         case RULE_SHORTLAND_TYPE::OUTLINE:
-            allowedPropreties.insert(RuleFilter::OUTLINE);
-            allowedPropreties.insert(RuleFilter::OUTLINE_COLOR);
-            allowedPropreties.insert(RuleFilter::OUTLINE_STYLE);
-            allowedPropreties.insert(RuleFilter::OUTLINE_WIDTH);
+            allowedPropreties.insert(CSSConstants::OUTLINE);
+            allowedPropreties.insert(CSSConstants::OUTLINE_COLOR);
+            allowedPropreties.insert(CSSConstants::OUTLINE_STYLE);
+            allowedPropreties.insert(CSSConstants::OUTLINE_WIDTH);
             break;
         case RULE_SHORTLAND_TYPE::TRANSITION:
-            allowedPropreties.insert(RuleFilter::TRANSITION);
-            allowedPropreties.insert(RuleFilter::TRANSITION_DELAY);
-            allowedPropreties.insert(RuleFilter::TRANSITION_DURATION);
-            allowedPropreties.insert(RuleFilter::TRANSITION_PROPERTY);
-            allowedPropreties.insert(RuleFilter::TRANSITION_TIMING_FUNCTION);
+            allowedPropreties.insert(CSSConstants::TRANSITION);
+            allowedPropreties.insert(CSSConstants::TRANSITION_DELAY);
+            allowedPropreties.insert(CSSConstants::TRANSITION_DURATION);
+            allowedPropreties.insert(CSSConstants::TRANSITION_PROPERTY);
+            allowedPropreties.insert(CSSConstants::TRANSITION_TIMING_FUNCTION);
             break;
         };
     };

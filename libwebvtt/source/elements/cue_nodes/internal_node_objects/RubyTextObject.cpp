@@ -1,4 +1,5 @@
-#include "elements/cue_node_objects/internal_node_objects/RubyTextObject.h"
+#include "elements/cue_nodes/internal_node_objects/RubyTextObject.h"
+#include "elements/visitors/ICueTreeVisitor.h"
 #include "logger/LoggingUtility.h"
 
 namespace WebVTT
@@ -29,5 +30,12 @@ namespace WebVTT
             return;
         }
     };
+
+    void RubyTextObject::accept(ICueTreeVisitor &visitor)
+    {
+        visitor.visitOnEntry(*this);
+        visitChildren(visitor);
+        visitor.visitOnExit(*this);
+    }
 
 } // namespace WebVTT

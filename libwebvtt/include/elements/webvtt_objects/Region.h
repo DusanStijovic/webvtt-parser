@@ -7,6 +7,7 @@
 #include <memory>
 #include <list>
 #include "Block.h"
+#include "buffer/UniquePtrSyncBuffer.h"
 
 namespace WebVTT
 {
@@ -25,19 +26,12 @@ namespace WebVTT
         };
 
         /**
-         *
-         * @param regions list of regions that will be searched
-         * @param identifier id of region that has been asked for
-         * @return region with given id from list of given regions, otherwise nullptr
-         */
-        static Region *
-        getRegionByIdentifier(const std::list<std::unique_ptr<Region>> &regions, std::u32string_view identifier);
-
-        /**
          * Set region identifier
          * @param newIdentifier new region identifier
          */
-        void setId(std::u32string_view newIdentifier);
+        void setIdentifier(const std::u32string_view newIdentifier);
+
+        const std::u32string_view getIdentifier() { return identifier; }
 
         /**
          * Set region width

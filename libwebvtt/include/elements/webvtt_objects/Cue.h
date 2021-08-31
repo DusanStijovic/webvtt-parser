@@ -1,7 +1,7 @@
 #ifndef WEBVTT_CUE_H
 #define WEBVTT_CUE_H
 
-#include "elements/cue_node_objects/NodeObject.h"
+#include "elements/cue_nodes/NodeObject.h"
 #include "Block.h"
 #include "Region.h"
 #include <string>
