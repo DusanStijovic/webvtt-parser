@@ -1,0 +1,3 @@
+[submodule "libwebvtt/lib/utfcpp"]
+	path = libwebvtt/lib/utfcpp
+	url = git@github.com:nemtrif/utfcpp.git
