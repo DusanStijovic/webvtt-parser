@@ -23,12 +23,12 @@ namespace WebVTT
   template <typename ptrElem>
   void UniquePtrSyncBuffer<ptrElem>::writeMultiple(std::list<std::unique_ptr<ptrElem>> &elements)
   {
-    // std::lock_guard<std::mutex> lock(this->mutexWrite);
-    // for (auto &elem : elements)
-    // {
-    //   this->buffer.push_back(std::move(elem));
-    // }
-    // elements.clear();
+    std::lock_guard<std::mutex> lock(this->mutexWrite);
+    for (auto &elem : elements)
+    {
+      this->buffer.push_back(std::move(elem));
+    }
+    elements.clear();
   }
 
   template <typename ptrElem>
