@@ -1,6 +1,6 @@
-#include "elements/style_selectors/ClassSelector.h"
+#include "elements/style_selectors/ClassSelector.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
     StyleSelector::SelectorType
     ClassSelector::getSelectorType() const
@@ -8,10 +8,6 @@ namespace WebVTT
         return StyleSelector::SelectorType::CLASS;
     }
 
-    bool
-    ClassSelector::shouldApply(const NodeObject &node, const Cue &cue) const
-    {
-        return false;
-    }
 
-} // namespace WebVTT
+
+} // namespace webvtt

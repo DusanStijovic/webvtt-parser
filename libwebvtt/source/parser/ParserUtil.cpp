@@ -1,15 +1,15 @@
-#include <exceptions/parser_util/PercentageFormatNotValid.h>
-#include "parser/ParserUtil.h"
-#include "logger/LoggingUtility.h"
-#include "exceptions/parser_util/ParsingFloatPointNumber.h"
-#include "exceptions/parser_util/ParsingCoordinatesError.h"
-#include "exceptions/parser_util/ParsingLongNumberError.h"
-#include "exceptions/parser_util/ParsingTimeStampException.h"
-#include "exceptions/parser_util/CollectingCharactersException.h"
-#include "exceptions/parser_util/IteratorsNotPointToGivenString.h"
-#include "exceptions/parser_util/PercentageFormatNotValid.h"
+#include "exceptions/parser_util/PercentageFormatNotValid.hpp"
+#include "parser/ParserUtil.hpp"
+#include "logger/LoggingUtility.hpp"
+#include "exceptions/parser_util/ParsingFloatPointNumber.hpp"
+#include "exceptions/parser_util/ParsingCoordinatesError.hpp"
+#include "exceptions/parser_util/ParsingLongNumberError.hpp"
+#include "exceptions/parser_util/ParsingTimeStampException.hpp"
+#include "exceptions/parser_util/CollectingCharactersException.hpp"
+#include "exceptions/parser_util/IteratorsNotPointToGivenString.hpp"
+#include "exceptions/parser_util/PercentageFormatNotValid.hpp"
 
-namespace WebVTT {
+namespace webvtt {
 
 void ParserUtil::checkIfIteratorPointToInput(std::u32string_view input, const std::u32string_view::iterator &position) {
   if (position < input.begin() || position > input.end())

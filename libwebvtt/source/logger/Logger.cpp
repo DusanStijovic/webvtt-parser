@@ -163,10 +163,10 @@ void Logger::always(std::ostringstream &stream) throw()
    always(text.data());
 }
 
-// Interface for Buffer Log
+// Interface for IBuffer Log
 void Logger::buffer(const char *text) throw()
 {
-   // Buffer is the special case. So don't add log level
+   // IBuffer is the special case. So don't add log level
    // and timestamp in the buffer message. Just log the raw bytes.
    std::lock_guard<std::mutex> lock(mutex);
    if ((m_LogType == FILE_LOG) && (m_LogLevel >= LOG_LEVEL_BUFFER))

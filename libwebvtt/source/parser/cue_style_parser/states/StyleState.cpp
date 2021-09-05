@@ -1,25 +1,25 @@
 
-#include "parser/cue_style_parser/states/StyleState.h"
-#include "parser/StyleSheetParser.h"
-#include "parser/cue_style_parser/states/StyleStartState.h"
-#include "parser/cue_style_parser/selectorStates/StyleAttributeSelectorState.h"
-#include "parser/cue_style_parser/selectorStates/StyleClassSelectorState.h"
-#include "parser/cue_style_parser/selectorStates/StyleEndSelectorState.h"
-#include "parser/cue_style_parser/selectorStates/StyleIDSelectorState.h"
-#include "parser/cue_style_parser/selectorStates/StylePseudoClassSelectorState.h"
-#include "parser/cue_style_parser/selectorStates/StylePseudoElementSelectorState.h"
-#include "parser/cue_style_parser/selectorStates/StylePseudoClassWithArgumentEndState.h"
-#include "parser/cue_style_parser/selectorStates/StylePseudoElementWithArgumentEndState.h"
-#include "parser/cue_style_parser/selectorStates/StyleStartPseudoState.h"
-#include "parser/cue_style_parser/ruleStates/StyleRulesState.h"
-#include "parser/cue_style_parser/cue_states/CueStyleStartSelectorState.h"
-#include "parser/cue_style_parser/cue_region_states/StartCueRegionStyleSelectorState.h"
-#include "parser/cue_style_parser/selectorStates/StyleTypeSelectorState.h"
-#include "parser/cue_style_parser/ruleStates/BeforeRuleStartState.h"
-#include "parser/cue_style_parser/states/EndStyleState.h"
-#include "parser/cue_style_parser/states/ErrorStyleState.h"
+#include "parser/cue_style_parser/states/StyleState.hpp"
+#include "parser/object_parser/StyleSheetParser.hpp"
+#include "parser/cue_style_parser/states/StyleStartState.hpp"
+#include "parser/cue_style_parser/selectorStates/StyleAttributeSelectorState.hpp"
+#include "parser/cue_style_parser/selectorStates/StyleClassSelectorState.hpp"
+#include "parser/cue_style_parser/selectorStates/StyleEndSelectorState.hpp"
+#include "parser/cue_style_parser/selectorStates/StyleIDSelectorState.hpp"
+#include "parser/cue_style_parser/selectorStates/StylePseudoClassSelectorState.hpp"
+#include "parser/cue_style_parser/selectorStates/StylePseudoElementSelectorState.hpp"
+#include "parser/cue_style_parser/selectorStates/StylePseudoClassWithArgumentEndState.hpp"
+#include "parser/cue_style_parser/selectorStates/StylePseudoElementWithArgumentEndState.hpp"
+#include "parser/cue_style_parser/selectorStates/StyleStartPseudoState.hpp"
+#include "parser/cue_style_parser/ruleStates/StyleRulesState.hpp"
+#include "parser/cue_style_parser/cue_states/CueStyleStartSelectorState.hpp"
+#include "parser/cue_style_parser/cue_region_states/StartCueRegionStyleSelectorState.hpp"
+#include "parser/cue_style_parser/selectorStates/StyleTypeSelectorState.hpp"
+#include "parser/cue_style_parser/ruleStates/BeforeRuleStartState.hpp"
+#include "parser/cue_style_parser/states/EndStyleState.hpp"
+#include "parser/cue_style_parser/states/ErrorStyleState.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
 
     std::map<StyleState::StyleStateType, std::unique_ptr<StyleState>> StyleState::statesInstance;
@@ -110,4 +110,4 @@ namespace WebVTT
         }
     }
 
-} // namespace WebVTT
+} // namespace webvtt

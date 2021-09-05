@@ -1,7 +1,7 @@
-#include "elements/cue_nodes/NodeObject.h"
-#include "logger/LoggingUtility.h"
+#include "elements/cue_nodes/NodeObject.hpp"
+#include "logger/LoggingUtility.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
     void NodeObject::setParent(const std::weak_ptr<NodeObject> &newParent)
     {
@@ -13,14 +13,14 @@ namespace WebVTT
         return this->parent;
     }
 
-    void NodeObject::processEndToken(std::shared_ptr<NodeObject> &nodeObejct, std::stack<std::u32string> &languages,
+    void NodeObject::processEndToken(std::shared_ptr<NodeObject> &nodeObject, std::stack<std::u32string> &languages,
                                      NodeType value)
     {
-        if (nodeObejct->getNodeType() == value)
+        if (nodeObject->getNodeType() == value)
         {
-            auto temp = nodeObejct->getParent().lock();
+            auto temp = nodeObject->getParent().lock();
             if (temp != nullptr)
-                nodeObejct = temp;
+              nodeObject = temp;
         }
         else
         {

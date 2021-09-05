@@ -1,61 +1,53 @@
-#include "parser/cue_style_parser/selectorStates/StyleTypeSelectorState.h"
-#include "elements/style_selectors/TypeSelector.h"
-#include "parser/StyleSheetParser.h"
-#include "parser/ParserUtil.h"
-#include "parser/CSSConstants.h"
+#include "parser/cue_style_parser/selectorStates/StyleTypeSelectorState.hpp"
+#include "elements/style_selectors/type_selectors/TypeSelector.hpp"
+#include "parser/object_parser/StyleSheetParser.hpp"
+#include "parser/ParserUtil.hpp"
+#include "parser/CSSConstants.hpp"
 
-namespace WebVTT
-{
+namespace webvtt {
 
-    bool StyleTypeSelectorState::checkIfTypeAllowed(std::u32string typeName)
-    {
-        if (typeName == CSSConstants::BOLD)
-            return true;
-        if (typeName == CSSConstants::ITALIC)
-            return true;
-        if (typeName == CSSConstants::CLASS)
-            return true;
-        if (typeName == CSSConstants::LANG)
-            return true;
-        if (typeName == CSSConstants::UNDERLINE)
-            return true;
-        if (typeName == CSSConstants::VOICE)
-            return true;
-        if (typeName == CSSConstants::RUBY)
-            return true;
-        if (typeName == CSSConstants::RUBY_TEXT)
-            return true;
-        return false;
-    }
+bool StyleTypeSelectorState::checkIfTypeAllowed(std::u32string_view typeName) {
+  if (typeName == CSSConstants::BOLD_TYPE)
+    return true;
+  if (typeName == CSSConstants::ITALIC_TYPE)
+    return true;
+  if (typeName == CSSConstants::CLASS_TYPE)
+    return true;
+  if (typeName == CSSConstants::LANG_TYPE)
+    return true;
+  if (typeName == CSSConstants::UNDERLINE_TYPE)
+    return true;
+  if (typeName == CSSConstants::VOICE_TYPE)
+    return true;
+  if (typeName == CSSConstants::RUBY_TYPE)
+    return true;
+  if (typeName == CSSConstants::RUBY_TEXT_TYPE)
+    return true;
+  return false;
+}
 
-    void
-    StyleTypeSelectorState::preprocessBuffer(StyleSheetParser &parser)
-    {
-        if (parser.getBuffer().empty())
-            parser.setState(StyleState::StyleStateType::ERROR);
+void
+StyleTypeSelectorState::preprocessBuffer(StyleSheetParser &parser) {
+  if (parser.getBuffer().empty())
+    parser.setState(StyleState::StyleStateType::ERROR);
 
-        if (!checkIfTypeAllowed(parser.getBuffer()))
-            parser.setState(StyleState::StyleStateType::ERROR);
-    }
+  if (!checkIfTypeAllowed(std::u32string_view()))
+    parser.setState(StyleState::StyleStateType::ERROR);
+}
 
-    std::unique_ptr<StyleSelector>
-    StyleTypeSelectorState::makeNewStyleSelector(StyleSheetParser &parser)
-    {
-        auto help = std::make_unique<TypeSelector>(parser.getBuffer());
-        parser.getBuffer().clear();
-        return help;
-    }
+std::unique_ptr<StyleSelector>
+StyleTypeSelectorState::makeNewStyleSelector(StyleSheetParser &parser) {
+  auto help = TypeSelector::makeNewTypeSelector(parser.getBuffer());
+  parser.getBuffer().clear();
+  return help;
+}
 
-    void StyleTypeSelectorState::foundDefaultBehaviour(StyleSheetParser &parser, uint32_t character)
-    {
-        if (character == ParserUtil::LEFT_SQUARE_BRACKET_C)
-        {
-            parser.setState(StyleState::StyleStateType::ATTRIBUTE_SELECTOR);
-        }
-        else
-        {
-            FetchSelectorState::foundDefaultBehaviour(parser, character);
-        }
-    }
+void StyleTypeSelectorState::foundDefaultBehaviour(StyleSheetParser &parser, uint32_t character) {
+  if (character == ParserUtil::LEFT_SQUARE_BRACKET_C) {
+    parser.setState(StyleState::StyleStateType::ATTRIBUTE_SELECTOR);
+  } else {
+    FetchSelectorState::foundDefaultBehaviour(parser, character);
+  }
+}
 
-} // namespace WebVTT
+} // namespace webvtt

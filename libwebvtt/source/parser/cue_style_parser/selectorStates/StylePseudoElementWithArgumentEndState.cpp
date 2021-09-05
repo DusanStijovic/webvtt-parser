@@ -1,12 +1,11 @@
-#include "parser/cue_style_parser/selectorStates/StylePseudoElementWithArgumentEndState.h"
-#include "elements/style_selectors/PseudoElementSelector.h"
-#include "parser/StyleSheetParser.h"
+#include "parser/cue_style_parser/selectorStates/StylePseudoElementWithArgumentEndState.hpp"
+#include "elements/style_selectors/pseudo_element_selectors/PseudoElementWithArgument.hpp"
+#include "parser/object_parser/StyleSheetParser.hpp"
 
-namespace WebVTT
-{
-    std::unique_ptr<StyleSelector>
-    StylePseudoElementWithArgumentEndState::makeNewPseudoStyleSelector(StyleSheetParser &parser)
-    {
-        return std::make_unique<PseudoElementSelector>(parser.getBuffer(), parser.getAdditionalBuffer());
-    }
-} // namespace WebVTT
+namespace webvtt {
+std::unique_ptr<StyleSelector>
+StylePseudoElementWithArgumentEndState::makeNewPseudoStyleSelector(StyleSheetParser &parser) {
+  return PseudoElementWithArgument::makeNewPseudoElementWithArgument(
+      parser.getBuffer(), parser.getAdditionalBuffer());
+}
+} // namespace webvtt

@@ -1,9 +1,9 @@
-#include "parser/Parser.h"
-#include "elements/webvtt_objects/Block.h"
-#include "elements/webvtt_objects/Cue.h"
-#include "parser/ParserUtil.h"
-#include "logger/LoggingUtility.h"
-#include "exceptions/FileFormatError.h"
+#include "parser/Parser.hpp"
+#include "elements/webvtt_objects/Block.hpp"
+#include "elements/webvtt_objects/Cue.hpp"
+#include "parser/ParserUtil.hpp"
+#include "logger/LoggingUtility.hpp"
+#include "exceptions/FileFormatError.hpp"
 #include <iostream>
 #include <chrono>
 #include <optional>
@@ -12,7 +12,7 @@
 #include <thread>
 #include <utility>
 
-namespace WebVTT {
+namespace webvtt {
 
 const std::shared_ptr<UniquePtrSyncBuffer<Cue>> Parser::getCueBuffer() {
   return cues;
@@ -35,6 +35,7 @@ Parser::Parser(std::shared_ptr<StringSyncBuffer<std::u32string, uint32_t>> input
   cues = std::make_shared<UniquePtrSyncBuffer<Cue>>();
   regions = std::make_shared<UniquePtrSyncBuffer<Region>>();
   styleSheets = std::make_shared<UniquePtrSyncBuffer<StyleSheet>>();
+
 };
 
 Parser::~Parser() {
@@ -187,7 +188,8 @@ bool Parser::collectBlock(bool inHeader) {
   }
   if (isNewStyleSheet) {
     styleSheetParser->parseCSSRules(buffer);
-    styleSheets->writeMultiple(styleSheetParser->getParsedStyleSheets());
+    styleSheets->writeMultiple(styleSheetParser->getStyleSheets());
+
     return true;
   }
 
@@ -215,7 +217,7 @@ void Parser::parsingLoop() {
     std::u32string readData;
     std::optional<uint32_t> readOneDataOptional;
 
-    //Read WebVTT at the beginning of file
+    //Read webvtt at the beginning of file
     readData = preprocessedStream->readMultiple(EXTENSION_NAME_LENGTH);
     if (readData != EXTENSION_NAME) {
       DILOGE("File need to start witg WEBVTT");
@@ -278,4 +280,4 @@ void Parser::parsingLoop() {
 void Parser::setPredefineLanguage(std::u32string_view language) {
   this->predefinedLanguage = language;
 }
-} // namespace WebVTT
+} // namespace webvtt

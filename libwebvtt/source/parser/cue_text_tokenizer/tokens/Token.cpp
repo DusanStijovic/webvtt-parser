@@ -1,6 +1,6 @@
-#include "parser/cue_text_tokenizer/tokens/Token.h"
+#include "parser/cue_text_tokenizer/tokens/Token.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
 
 }

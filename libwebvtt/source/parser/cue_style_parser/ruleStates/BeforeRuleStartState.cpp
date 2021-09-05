@@ -1,8 +1,8 @@
-#include "parser/cue_style_parser/ruleStates/BeforeRuleStartState.h"
-#include "parser/StyleSheetParser.h"
-#include "parser/ParserUtil.h"
+#include "parser/cue_style_parser/ruleStates/BeforeRuleStartState.hpp"
+#include "parser/object_parser/StyleSheetParser.hpp"
+#include "parser/ParserUtil.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
 
     void BeforeRuleStartState::processState(StyleSheetParser &parser)
@@ -30,4 +30,4 @@ namespace WebVTT
         }
     }
 
-} // namespace WebVTT
+} // namespace webvtt

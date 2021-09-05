@@ -1,10 +1,10 @@
-#include "elements/cue_nodes/internal_node_objects/LanguageObject.h"
-#include "elements/visitors/ICueTreeVisitor.h"
+#include "elements/cue_nodes/internal_node_objects/LanguageObject.hpp"
+#include "elements/visitors/ICueTreeVisitor.hpp"
 
 #include <stack>
 #include <string>
 
-namespace WebVTT
+namespace webvtt
 {
     void LanguageObject::processAnnotationString(std::stack<std::u32string> &languages, std::u32string &annotation)
     {
@@ -16,10 +16,10 @@ namespace WebVTT
         return NodeObject::NodeType::LANGUAGE;
     };
 
-    void LanguageObject::processEndToken(std::shared_ptr<NodeObject> &nodeObejct, std::stack<std::u32string> &languages, NodeObject::NodeType value)
+    void LanguageObject::processEndToken(std::shared_ptr<NodeObject> &nodeObject, std::stack<std::u32string> &languages, NodeObject::NodeType value)
     {
-        NodeObject::processEndToken(nodeObejct, languages, value);
-        if (nodeObejct->getNodeType() == value)
+        NodeObject::processEndToken(nodeObject, languages, value);
+        if (nodeObject->getNodeType() == value)
         {
             if (!languages.empty())
                 languages.pop();
@@ -28,11 +28,9 @@ namespace WebVTT
 
   
     void
-    LanguageObject ::accept(ICueTreeVisitor &visitor)
+    LanguageObject ::accept(ICueTreeVisitor &visitor) const
     {
-        visitor.visitOnEntry(*this);
-        visitChildren(visitor);
-        visitor.visitOnExit(*this);
+      visitor.visit(*this);
     }
 
-} // namespace WebVTT
+} // namespace webvtt

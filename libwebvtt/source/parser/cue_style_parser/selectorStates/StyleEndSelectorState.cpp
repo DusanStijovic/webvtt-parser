@@ -1,8 +1,8 @@
-#include "parser/cue_style_parser/selectorStates/StyleEndSelectorState.h"
-#include "parser/ParserUtil.h"
-#include "parser/StyleSheetParser.h"
+#include "parser/cue_style_parser/selectorStates/StyleEndSelectorState.hpp"
+#include "parser/ParserUtil.hpp"
+#include "parser/object_parser/StyleSheetParser.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
 
     void StyleEndSelectorState::processState(StyleSheetParser &parser)
@@ -22,4 +22,4 @@ namespace WebVTT
         }
     }
 
-} // namespace WebVTT
+} // namespace webvtt

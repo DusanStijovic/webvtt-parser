@@ -1,12 +1,12 @@
-#include "parser/cue_text_tokenizer/states/TagState.h"
-#include "parser/cue_text_tokenizer/tokens/StartTagToken.h"
-#include "parser/cue_text_tokenizer/CueTextTokenizer.h"
-#include "parser/ParserUtil.h"
+#include "parser/cue_text_tokenizer/states/TagState.hpp"
+#include "parser/cue_text_tokenizer/tokens/StartTagToken.hpp"
+#include "parser/cue_text_tokenizer/CueTextTokenizer.hpp"
+#include "parser/ParserUtil.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
 
-    std::shared_ptr<Token> TagState::process(CueTextTokenizer &tokenizer)
+    std::unique_ptr<Token> TagState::process(CueTextTokenizer &tokenizer)
     {
         uint32_t character = getNextCharacter(tokenizer);
         if (ParserUtil::isAsciiDecDigit(character))
@@ -35,7 +35,7 @@ namespace WebVTT
             tokenizer.getCurrentPosition()++;
             [[fallthrough]];
         case CueTextTokenizer::STOP_TOKENIZER:
-            return std::make_shared<StartTagToken>(tokenizer.getResult());
+          return std::make_unique<StartTagToken>(tokenizer.getResult());
         default:
             tokenizer.getResult().clear();
             tokenizer.getResult().push_back(character);

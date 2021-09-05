@@ -1,11 +1,11 @@
-#include "parser/cue_text_tokenizer/states/TimeStampTagState.h"
-#include "parser/cue_text_tokenizer/tokens/TimeStampTagToken.h"
-#include "parser/cue_text_tokenizer/CueTextTokenizer.h"
-#include "parser/ParserUtil.h"
+#include "parser/cue_text_tokenizer/states/TimeStampTagState.hpp"
+#include "parser/cue_text_tokenizer/tokens/TimeStampTagToken.hpp"
+#include "parser/cue_text_tokenizer/CueTextTokenizer.hpp"
+#include "parser/ParserUtil.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
-    std::shared_ptr<Token> TimpStampTagState::process(CueTextTokenizer &tokenizer)
+    std::unique_ptr<Token> TimpStampTagState::process(CueTextTokenizer &tokenizer)
     {
         uint32_t character = getNextCharacter(tokenizer);
         switch (character)
@@ -14,7 +14,7 @@ namespace WebVTT
             tokenizer.getCurrentPosition()++;
             [[fallthrough]];
         case CueTextTokenizer::STOP_TOKENIZER:
-            return std::make_shared<TimeStampTagToken>(tokenizer.getResult());
+          return std::make_unique<TimeStampTagToken>(tokenizer.getResult());
 
         default:
             tokenizer.getResult().push_back(character);
@@ -22,4 +22,4 @@ namespace WebVTT
         }
         return nullptr;
     }
-} // namespace WebVTT
+} // namespace webvtt

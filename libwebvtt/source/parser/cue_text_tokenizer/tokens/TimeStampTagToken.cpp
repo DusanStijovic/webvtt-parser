@@ -1,11 +1,11 @@
-#include "parser/cue_text_tokenizer/tokens/TimeStampTagToken.h"
-#include "parser/ParserUtil.h"
-#include "elements/cue_nodes/NodeObject.h"
-#include "elements/cue_nodes/leaf_node_objects/TimeStampObject.h"
-#include "logger/LoggingUtility.h"
-#include "exceptions/parser_util/ParsingTimeStampException.h"
+#include "parser/cue_text_tokenizer/tokens/TimeStampTagToken.hpp"
+#include "parser/ParserUtil.hpp"
+#include "elements/cue_nodes/NodeObject.hpp"
+#include "elements/cue_nodes/leaf_node_objects/TimeStampObject.hpp"
+#include "logger/LoggingUtility.hpp"
+#include "exceptions/parser_util/ParsingTimeStampException.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
 
     void TimeStampTagToken::process(std::shared_ptr<NodeObject> &nodeObject, std::stack<std::u32string> &language)

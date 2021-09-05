@@ -1,38 +1,39 @@
-#include "elements/webvtt_objects/StyleSheet.h"
-#include "elements/webvtt_objects/CueStyleSheet.h"
-#include "elements/webvtt_objects/RegionStyleSheet.h"
+#include "elements/webvtt_objects/StyleSheet.hpp"
+#include "elements/webvtt_objects/CueStyleSheet.hpp"
+#include "elements/webvtt_objects/RegionStyleSheet.hpp"
 
-namespace WebVTT
-{
-    void StyleSheet::addSelector(std::unique_ptr<StyleSelector> &&newSelectorr)
-    {
-        this->styleSelectors.push_back(std::move(newSelectorr));
-    }
+namespace webvtt {
+void StyleSheet::addSelector(std::unique_ptr<StyleSelector> &&newSelector) {
+  this->styleSelectors.push_back(std::move(newSelector));
+}
 
-    void StyleSheet::addCSSRule(std::string name, std::string value)
-    {
+void StyleSheet::addCSSRule(std::string_view name, std::string_view newValue) {
 
-        cssRules[name] = value;
-    }
+  cssRules[std::string(name)] = newValue;
+}
 
-    std::list<std::unique_ptr<StyleSelector>> &StyleSheet::getSelectors()
-    {
-        return styleSelectors;
-    }
+std::list<std::unique_ptr<StyleSelector>> &StyleSheet::getSelectors() {
+  return styleSelectors;
+}
 
-    std::unique_ptr<StyleSheet> StyleSheet::makeNewStyleSheet(StyleSheetType styleSheetType)
-    {
-        switch (styleSheetType)
-        {
-        case StyleSheetType::CUE:
-            return std::make_unique<CueStyleSheet>();
-            break;
-        case StyleSheetType::REGION:
-            return std::make_unique<RegionStyleSheet>();
-            break;
-        default:
-            return nullptr;
-            break;
-        }
-    }
-} // namespace WebVTT
+std::unique_ptr<StyleSheet> StyleSheet::makeNewStyleSheet(StyleSheetType styleSheetType) {
+  switch (styleSheetType) {
+    case StyleSheetType::CUE:return std::make_unique<CueStyleSheet>();
+      break;
+    case StyleSheetType::REGION:return std::make_unique<RegionStyleSheet>();
+      break;
+    default:return nullptr;
+      break;
+  }
+}
+
+
+void StyleSheet::setCurrentCue(const Cue &cue) {
+  connectedCue = &cue;
+};
+
+const std::map<std::string, std::string> &StyleSheet::getCSSRules() {
+  return cssRules;
+}
+
+} // namespace webvtt

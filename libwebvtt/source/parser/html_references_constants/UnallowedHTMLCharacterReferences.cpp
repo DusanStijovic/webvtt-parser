@@ -1,6 +1,6 @@
-#include "parser/ParserUtil.h"
+#include "parser/ParserUtil.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
 
         const std::set<uint32_t> ParserUtil::unallowedNumbers{
@@ -19,4 +19,4 @@ namespace WebVTT
         const std::array<uint32_t, 4>  ParserUtil::high_border = {
             0x0008, 0x001F, 0x009F, 0xFDEF};
 
-} // namespace WebVTT
+} // namespace webvtt

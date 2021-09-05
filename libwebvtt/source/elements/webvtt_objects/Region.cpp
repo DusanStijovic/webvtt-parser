@@ -1,8 +1,8 @@
-#include "elements/webvtt_objects/Region.h"
+#include "elements/webvtt_objects/Region.hpp"
 #include <algorithm>
 #include <iterator>
 
-namespace WebVTT
+namespace webvtt
 {
 
      void Region::setIdentifier(const std::u32string_view newIdentifier)

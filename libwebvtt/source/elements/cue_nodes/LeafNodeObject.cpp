@@ -1,6 +1,6 @@
-#include "elements/cue_nodes/LeafNodeObject.h"
+#include "elements/cue_nodes/LeafNodeObject.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
     void LeafNodeObject::appendChild(std::shared_ptr<NodeObject> nodeObject)
     {
@@ -11,4 +11,4 @@ namespace WebVTT
     {
         throw std::runtime_error("Visit children not supported to leaf node in tree");
     }
-} // namespace WebVTT
+} // namespace webvtt

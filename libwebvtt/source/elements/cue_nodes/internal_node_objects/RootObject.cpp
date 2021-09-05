@@ -1,7 +1,7 @@
-#include "elements/cue_nodes/internal_node_objects/RootObject.h"
-#include "elements/visitors/ICueTreeVisitor.h"
+#include "elements/cue_nodes/internal_node_objects/RootObject.hpp"
+#include "elements/visitors/ICueTreeVisitor.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
 
     NodeObject::NodeType RootObject::getNodeType() const
@@ -10,11 +10,9 @@ namespace WebVTT
     };
 
     void
-    RootObject::accept(ICueTreeVisitor &visitor)
+    RootObject::accept(ICueTreeVisitor &visitor) const
     {
-        visitor.visitOnEntry(*this);
-        visitChildren(visitor);
-        visitor.visitOnExit(*this);
+      visitor.visit(*this);
     }
 
-} // namespace WebVTT
+} // namespace webvtt

@@ -25,8 +25,8 @@
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _LOGGER_H_
-#define _LOGGER_H_
+#ifndef _LOGGER_HPP_
+#define _LOGGER_HPP_
 
 // C++ Header File(s)
 #include <iostream>
@@ -89,7 +89,7 @@ namespace CPlusPlusLogging
       void always(std::string &text) throw();
       void always(std::ostringstream &stream) throw();
 
-      // Interface for Buffer Log
+      // Interface for IBuffer Log
       void buffer(const char *text) throw();
       void buffer(std::string &text) throw();
       void buffer(std::ostringstream &stream) throw();
@@ -151,4 +151,4 @@ namespace CPlusPlusLogging
 
 } // End of namespace
 
-#endif // End of _LOGGER_H_
+#endif // End of _LOGGER_HPP_

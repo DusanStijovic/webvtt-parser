@@ -1,4 +1,4 @@
-namespace WebVTT{
+namespace webvtt{
 
 template<typename State, typename StateType>
 void StateMachineForParsingText<State, StateType>::setText(std::u32string_view newInput) {

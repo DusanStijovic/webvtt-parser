@@ -1,8 +1,8 @@
 #include <map>
 #include <string>
-#include "parser/ParserUtil.h"
+#include "parser/ParserUtil.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
 
     const std::map<uint32_t, std::u32string> ParserUtil::numberHTMLReferences{

@@ -1,18 +1,13 @@
-#include "elements/cue_nodes/internal_node_objects/RubyObject.h"
-#include "elements/visitors/ICueTreeVisitor.h"
+#include "elements/cue_nodes/internal_node_objects/RubyObject.hpp"
+#include "elements/visitors/ICueTreeVisitor.hpp"
 
-namespace WebVTT
-{
-    NodeObject::NodeType RubyObject::getNodeType() const
-    {
-        return NodeObject::NodeType::RUBY;
-    };
-    void
-    RubyObject::accept(ICueTreeVisitor &visitor)
-    {
-        visitor.visitOnEntry(*this);
-        visitChildren(visitor);
-        visitor.visitOnExit(*this);
-    }
+namespace webvtt {
+NodeObject::NodeType RubyObject::getNodeType() const {
+  return NodeObject::NodeType::RUBY;
+};
+void
+RubyObject::accept(ICueTreeVisitor &visitor) const  {
+  visitor.visit(*this);
+}
 
-} // namespace WebVTT
+} // namespace webvtt

@@ -1,12 +1,12 @@
-#include "parser/cue_text_tokenizer/states/StartTagClassState.h"
-#include "parser/cue_text_tokenizer/CueTextTokenizer.h"
-#include "parser/cue_text_tokenizer/tokens/StartTagToken.h"
-#include "parser/ParserUtil.h"
+#include "parser/cue_text_tokenizer/states/StartTagClassState.hpp"
+#include "parser/cue_text_tokenizer/CueTextTokenizer.hpp"
+#include "parser/cue_text_tokenizer/tokens/StartTagToken.hpp"
+#include "parser/ParserUtil.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
 
-    std::shared_ptr<Token> StartTagClassState::process(CueTextTokenizer &tokenizer)
+    std::unique_ptr<Token> StartTagClassState::process(CueTextTokenizer &tokenizer)
     {
         uint32_t character = getNextCharacter(tokenizer);
         switch (character)
@@ -34,12 +34,12 @@ namespace WebVTT
             break;
         case ParserUtil::HYPHEN_GREATER:
             tokenizer.getCurrentPosition()++;
-            [[fallthrough]]
+            [[fallthrough]];
 
         case CueTextTokenizer::STOP_TOKENIZER:
             DILOGI(utf8::utf32to8(tokenizer.getBuffer()));
             tokenizer.addBufferToClasses();
-            return std::make_shared<StartTagToken>(
+            return std::make_unique<StartTagToken>(
                 tokenizer.getResult(),
                 tokenizer.getClasses());
             break;

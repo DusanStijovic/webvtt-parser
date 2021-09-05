@@ -1,12 +1,12 @@
-#include "parser/cue_text_tokenizer/states/StartTagAnnotationState.h"
-#include "parser/cue_text_tokenizer/tokens/StartTagToken.h"
-#include "parser/cue_text_tokenizer/CueTextTokenizer.h"
-#include "parser/ParserUtil.h"
+#include "parser/cue_text_tokenizer/states/StartTagAnnotationState.hpp"
+#include "parser/cue_text_tokenizer/tokens/StartTagToken.hpp"
+#include "parser/cue_text_tokenizer/CueTextTokenizer.hpp"
+#include "parser/ParserUtil.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
 
-    std::shared_ptr<Token> StartTagAnnotationState::process(CueTextTokenizer &tokenizer)
+    std::unique_ptr<Token> StartTagAnnotationState::process(CueTextTokenizer &tokenizer)
     {
         uint32_t character = getNextCharacter(tokenizer);
         switch (character)
@@ -36,7 +36,7 @@ namespace WebVTT
 
             ParserUtil::replaceAllSequenceOfCharactersWithGivenCharacter(tokenizer.getBuffer(), ParserUtil::isASCIIWhiteSpaceCharacter, ParserUtil::SPACE_C);
 
-            return std::make_shared<StartTagToken>(
+            return std::make_unique<StartTagToken>(
                 tokenizer.getResult(),
                 tokenizer.getClasses(),
                 tokenizer.getBuffer());

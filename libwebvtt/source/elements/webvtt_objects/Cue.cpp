@@ -1,9 +1,9 @@
-#include "elements/webvtt_objects/Region.h"
-#include "elements/webvtt_objects/Cue.h"
-#include "parser/ParserUtil.h"
+#include "elements/webvtt_objects/Region.hpp"
+#include "elements/webvtt_objects/Cue.hpp"
+#include "parser/ParserUtil.hpp"
 #include "utf8.h"
 
-namespace WebVTT
+namespace webvtt
 {
     void Cue::setText(std::u32string newText)
     {

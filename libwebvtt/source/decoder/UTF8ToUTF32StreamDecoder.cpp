@@ -1,9 +1,9 @@
-#include "decoder/UTF8ToUTF32StreamDecoder.h"
+#include "decoder/UTF8ToUTF32StreamDecoder.hpp"
 #include "utf8.h"
 #include <thread>
-#include "logger/LoggingUtility.h"
+#include "logger/LoggingUtility.hpp"
 
-namespace WebVTT {
+namespace webvtt {
 UTF8ToUTF32StreamDecoder::UTF8ToUTF32StreamDecoder(std::shared_ptr<StringSyncBuffer<std::string, uint8_t>> inputStream)
     : inputStream(std::move(inputStream)) {
   outputStream = std::make_shared<StringSyncBuffer<std::u32string, uint32_t>>();

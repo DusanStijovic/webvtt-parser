@@ -1,11 +1,11 @@
-#include "parser/cue_style_parser/states/StyleStartState.h"
-#include "parser/StyleSheetParser.h"
-#include "parser/ParserUtil.h"
-#include "elements/webvtt_objects/RegionStyleSheet.h"
-#include "elements/webvtt_objects/CueStyleSheet.h"
-#include "elements/style_selectors/MatchAllSelector.h"
+#include "parser/cue_style_parser/states/StyleStartState.hpp"
+#include "parser/object_parser/StyleSheetParser.hpp"
+#include "parser/ParserUtil.hpp"
+#include "elements/webvtt_objects/RegionStyleSheet.hpp"
+#include "elements/webvtt_objects/CueStyleSheet.hpp"
+#include "elements/style_selectors/MatchAllSelector.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
 
     StyleSheet::StyleSheetType StyleStartState::decideStyleSheetType(std::u32string_view input)

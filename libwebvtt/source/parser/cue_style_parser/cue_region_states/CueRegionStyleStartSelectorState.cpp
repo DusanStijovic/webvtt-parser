@@ -1,10 +1,10 @@
-#include "parser/cue_style_parser/cue_region_states/StartCueRegionStyleSelectorState.h"
-#include "parser/StyleSheetParser.h"
-#include "parser/ParserUtil.h"
-#include "elements/style_selectors/MatchAllSelector.h"
-#include "exceptions/styleParserExceptions/StyleSheetFormatError.h"
+#include "parser/cue_style_parser/cue_region_states/StartCueRegionStyleSelectorState.hpp"
+#include "parser/object_parser/StyleSheetParser.hpp"
+#include "parser/ParserUtil.hpp"
+#include "elements/style_selectors/MatchAllSelector.hpp"
+#include "exceptions/styleParserExceptions/StyleSheetFormatError.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
     void StartCueRegionStyleSelectorState::processState(StyleSheetParser &parser)
     {
@@ -24,4 +24,4 @@ namespace WebVTT
         }
     }
 
-} // namespace WebVTT
+} // namespace webvtt

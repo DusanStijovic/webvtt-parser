@@ -1,13 +1,13 @@
-#include "parser/cue_text_tokenizer/CueTextTokenizer.h"
-#include "parser/cue_text_tokenizer/states/EndTagState.h"
-#include "parser/cue_text_tokenizer/tokens/EndTagToken.h"
-#include "parser/ParserUtil.h"
+#include "parser/cue_text_tokenizer/CueTextTokenizer.hpp"
+#include "parser/cue_text_tokenizer/states/EndTagState.hpp"
+#include "parser/cue_text_tokenizer/tokens/EndTagToken.hpp"
+#include "parser/ParserUtil.hpp"
 #include <memory>
 
-namespace WebVTT
+namespace webvtt
 {
 
-    std::shared_ptr<Token> EndTagState::process(CueTextTokenizer &tokenizer)
+    std::unique_ptr<Token> EndTagState::process(CueTextTokenizer &tokenizer)
     {
         uint32_t character = getNextCharacter(tokenizer);
 
@@ -17,7 +17,7 @@ namespace WebVTT
             tokenizer.getCurrentPosition()++;
             [[fallthrough]];
         case CueTextTokenizer::STOP_TOKENIZER:
-            return std::make_shared<EndTagToken>(tokenizer.getResult());
+          return std::make_unique<EndTagToken>(tokenizer.getResult());
             break;
         default:
             tokenizer.getResult().push_back(character);

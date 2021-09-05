@@ -1,6 +1,6 @@
-#include "parser/ParserUtil.h"
+#include "parser/ParserUtil.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
     const std::map<std::string, std::u32string> ParserUtil::namedHTMLREferences{
         {"Aacute;", {0x000C1}},                           //Á
@@ -2236,4 +2236,4 @@ namespace WebVTT
         {"zwnj;", {0x0200C}},                             //‌
     };
 
-} // namespace WebVTT
+} // namespace webvtt

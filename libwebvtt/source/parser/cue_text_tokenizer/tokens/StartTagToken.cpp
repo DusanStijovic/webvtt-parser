@@ -1,8 +1,8 @@
-#include "parser/cue_text_tokenizer/tokens/StartTagToken.h"
-#include "elements/cue_nodes/InternalNodeObject.h"
-#include "logger/LoggingUtility.h"
+#include "parser/cue_text_tokenizer/tokens/StartTagToken.hpp"
+#include "elements/cue_nodes/InternalNodeObject.hpp"
+#include "logger/LoggingUtility.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
 
     void StartTagToken::process(std::shared_ptr<NodeObject> &nodeObject, std::stack<std::u32string> &languages)

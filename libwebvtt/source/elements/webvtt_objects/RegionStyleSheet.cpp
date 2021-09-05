@@ -1,6 +1,7 @@
-#include "elements/webvtt_objects/RegionStyleSheet.h"
+#include "elements/webvtt_objects/RegionStyleSheet.hpp"
 
-namespace WebVTT
-{
-    StyleSheet::StyleSheetType RegionStyleSheet::getStyleSheetType() { return StyleSheetType::REGION; }
-} // namespace WebVTT
+namespace webvtt {
+StyleSheet::StyleSheetType RegionStyleSheet::getStyleSheetType() {
+  return StyleSheet::StyleSheetType::REGION;
+}
+} // namespace webvtt

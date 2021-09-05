@@ -1,6 +1,6 @@
-#include "elements/style_selectors/IDSelector.h"
+#include "elements/style_selectors/IDSelector.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
     StyleSelector::SelectorType
     IDSelector::getSelectorType() const
@@ -8,10 +8,5 @@ namespace WebVTT
         return StyleSelector::SelectorType::ID;
     }
 
-    bool
-    IDSelector::shouldApply(const NodeObject &node, const Cue &cue) const
-    {
-        return false;
-    }
 
 } // namespace name

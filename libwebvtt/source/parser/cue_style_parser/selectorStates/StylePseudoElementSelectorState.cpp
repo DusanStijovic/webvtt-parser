@@ -1,36 +1,27 @@
-#include "parser/cue_style_parser/selectorStates/StylePseudoElementSelectorState.h"
-#include "elements/style_selectors/PseudoElementSelector.h"
-#include "parser/StyleSheetParser.h"
-#include "parser/ParserUtil.h"
+#include "parser/cue_style_parser/selectorStates/StylePseudoElementSelectorState.hpp"
+#include "elements/style_selectors/pseudo_element_selectors/PseudoElementSelector.hpp"
+#include "parser/object_parser/StyleSheetParser.hpp"
+#include "parser/ParserUtil.hpp"
 
-namespace WebVTT
-{
-    void StylePseudoElementSelectorState::foundDefaultBehaviour(StyleSheetParser &parser, uint32_t character)
-    {
-        if (character == ParserUtil::LEFT_PARENTHESIS_C)
-        {
-            parser.setState(StyleState::StyleStateType::COLLECT_PSEUDO_ARGUMENT);
-            parser.savePseudoState(StyleState::StyleStateType::PSEDO_ELEMENT_ARGUMENT_END);
-        }
-        else
-        {
-            FetchSelectorState::foundDefaultBehaviour(parser, character);
-        }
-    };
+namespace webvtt {
+void StylePseudoElementSelectorState::foundDefaultBehaviour(StyleSheetParser &parser, uint32_t character) {
+  if (character == ParserUtil::LEFT_PARENTHESIS_C) {
+    parser.setState(StyleState::StyleStateType::COLLECT_PSEUDO_ARGUMENT);
+    parser.savePseudoState(StyleState::StyleStateType::PSEDO_ELEMENT_ARGUMENT_END);
+  } else {
+    FetchSelectorState::foundDefaultBehaviour(parser, character);
+  }
+};
 
-    void StylePseudoElementSelectorState::preprocessBuffer(StyleSheetParser &parser)
-    {
-        if (parser.getBuffer().empty())
-            parser.setState(StyleState::StyleStateType::ERROR);
-    };
+void StylePseudoElementSelectorState::preprocessBuffer(StyleSheetParser &parser) {
+  if (parser.getBuffer().empty())
+    parser.setState(StyleState::StyleStateType::ERROR);
+};
 
-    std::unique_ptr<StyleSelector> StylePseudoElementSelectorState::makeNewStyleSelector(StyleSheetParser &parser)
-    {
+std::unique_ptr<StyleSelector> StylePseudoElementSelectorState::makeNewStyleSelector(StyleSheetParser &parser) {
 
-        auto help = std::make_unique<PseudoElementSelector>(parser.getBuffer(),
-                                                            parser.getAdditionalBuffer());
-        parser.getBuffer().clear();
-        parser.getAdditionalBuffer().clear();
-        return help;
-    };
-} // namespace WebVTT
+  auto help = PseudoElementSelector::makeNewPseudoElementSelector(parser.getBuffer());
+  parser.getBuffer().clear();
+  return help;
+};
+} // namespace webvtt

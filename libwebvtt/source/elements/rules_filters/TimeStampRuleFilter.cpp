@@ -1,19 +1,19 @@
-#include "elements/rules_filters/TimeStampRuleFilter.h"
-#include "parser/CSSConstants.h"
+#include "elements/rules_filters/TimeStampRuleFilter.hpp"
+#include "parser/CSSConstants.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
     TimeStampRuleFilter::TimeStampRuleFilter()
     {
-        allowedPropreties.insert(CSSConstants::COLOR);
-        allowedPropreties.insert(CSSConstants::OPACITY);
-        allowedPropreties.insert(CSSConstants::VISIBILITY);
-        allowedPropreties.insert(CSSConstants::TEXT_SHADOW);
+        allowedProperties.insert(CSSConstants::COLOR);
+        allowedProperties.insert(CSSConstants::OPACITY);
+        allowedProperties.insert(CSSConstants::VISIBILITY);
+        allowedProperties.insert(CSSConstants::TEXT_SHADOW);
 
-        RuleFilter::addRuleGroupToAllowedRules(RULE_SHORTLAND_TYPE::ANIMATION);
-        RuleFilter::addRuleGroupToAllowedRules(RULE_SHORTLAND_TYPE::TRANSITION);
-        RuleFilter::addRuleGroupToAllowedRules(RULE_SHORTLAND_TYPE::DECORATION);
-        RuleFilter::addRuleGroupToAllowedRules(RULE_SHORTLAND_TYPE::BACKGROUND);
-        RuleFilter::addRuleGroupToAllowedRules(RULE_SHORTLAND_TYPE::OUTLINE);
+        RuleFilter::addRuleGroupToAllowedRules(RULE_SHORT_LAND_TYPE::ANIMATION);
+        RuleFilter::addRuleGroupToAllowedRules(RULE_SHORT_LAND_TYPE::TRANSITION);
+        RuleFilter::addRuleGroupToAllowedRules(RULE_SHORT_LAND_TYPE::DECORATION);
+        RuleFilter::addRuleGroupToAllowedRules(RULE_SHORT_LAND_TYPE::BACKGROUND);
+        RuleFilter::addRuleGroupToAllowedRules(RULE_SHORT_LAND_TYPE::OUTLINE);
     }
-} // namespace WebVTT
+} // namespace webvtt

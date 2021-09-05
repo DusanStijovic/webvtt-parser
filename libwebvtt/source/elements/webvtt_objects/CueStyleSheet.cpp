@@ -1,6 +1,8 @@
-#include "elements/webvtt_objects/CueStyleSheet.h"
+#include "elements/webvtt_objects/CueStyleSheet.hpp"
 
-namespace WebVTT
-{
-    StyleSheet::StyleSheetType CueStyleSheet::getStyleSheetType() { return StyleSheetType::CUE; }
-} // namespace WebVTT
+namespace webvtt {
+StyleSheet::StyleSheetType CueStyleSheet::getStyleSheetType() {
+  return StyleSheet::StyleSheetType::CUE;
+}
+
+} // namespace webvtt

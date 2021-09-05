@@ -1,24 +1,20 @@
-#include "parser/cue_style_parser/selectorStates/StyleStartPseudoState.h"
-#include "parser/ParserUtil.h"
-#include "parser/StyleSheetParser.h"
+#include "parser/cue_style_parser/selectorStates/StyleStartPseudoState.hpp"
+#include "parser/ParserUtil.hpp"
+#include "parser/object_parser/StyleSheetParser.hpp"
 
-namespace WebVTT
-{
+namespace webvtt {
 
-    void StyleStartPseudoState::processState(StyleSheetParser &parser)
-    {
-        uint32_t character = getNextCharacter(parser);
+void StyleStartPseudoState::processState(StyleSheetParser &parser) {
+  uint32_t character = getNextCharacter(parser);
 
-        switch (character)
-        {
-        case ParserUtil::COLON_C:
-            parser.setState(StyleState::StyleStateType::PSEUDO_ELEMENT_SELECTOR);
-            break;
+  switch (character) {
+    case ParserUtil::COLON_C:parser.setState(StyleState::StyleStateType::PSEUDO_ELEMENT_SELECTOR);
+      break;
 
-        default:
-            parser.setState(StyleState::StyleStateType::PSEUDO_CLASS_SELECTOR);
-            break;
-        }
-    }
+    default:parser.getBuffer().push_back(character);
+      parser.setState(StyleState::StyleStateType::PSEUDO_CLASS_SELECTOR);
+      break;
+  }
+}
 
-} // namespace WebVTT
+} // namespace webvtt

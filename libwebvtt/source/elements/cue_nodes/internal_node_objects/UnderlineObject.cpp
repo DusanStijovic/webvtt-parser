@@ -1,19 +1,13 @@
-#include "elements/cue_nodes/internal_node_objects/UnderlineObject.h"
-#include "elements/visitors/ICueTreeVisitor.h"
+#include "elements/cue_nodes/internal_node_objects/UnderlineObject.hpp"
+#include "elements/visitors/ICueTreeVisitor.hpp"
 
-namespace WebVTT
-{
+namespace webvtt {
 
-    NodeObject::NodeType UnderlineObject::getNodeType() const
-    {
-        return NodeObject::NodeType::UNDERLINE;
-    };
+NodeObject::NodeType UnderlineObject::getNodeType() const {
+  return NodeObject::NodeType::UNDERLINE;
+};
 
-
-    void UnderlineObject::accept(ICueTreeVisitor &visitor)
-    {
-        visitor.visitOnEntry(*this);
-        visitChildren(visitor);
-        visitor.visitOnExit(*this);
-    }
-} // namespace WebVTT
+void UnderlineObject::accept(ICueTreeVisitor &visitor) const {
+  visitor.visit(*this);
+}
+} // namespace webvtt

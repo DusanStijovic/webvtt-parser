@@ -1,6 +1,6 @@
-#include "elements/style_selectors/CompoundSelector.h"
+#include "elements/style_selectors/CompoundSelector.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
     StyleSelector::SelectorType
     CompoundSelector::getSelectorType() const
@@ -8,10 +8,6 @@ namespace WebVTT
         return StyleSelector::SelectorType::COMPOUND;
     }
 
-    bool
-    CompoundSelector::shouldApply(const NodeObject &node, const Cue &cue) const
-    {
-        return false;
-    }
 
-} // namespace WebVTT
+
+} // namespace webvtt

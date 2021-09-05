@@ -1,7 +1,7 @@
-#include "elements/cue_nodes/leaf_node_objects/TextObject.h"
-#include "elements/visitors/ICueTreeVisitor.h"
+#include "elements/cue_nodes/leaf_node_objects/TextObject.hpp"
+#include "elements/visitors/ICueTreeVisitor.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
     NodeObject::NodeType TextObject::getNodeType() const
     {
@@ -9,10 +9,9 @@ namespace WebVTT
     };
 
     void
-    TextObject::accept(ICueTreeVisitor &visitor)
+    TextObject::accept(ICueTreeVisitor &visitor) const
     {
-        visitor.visitOnEntry(*this);
-        visitor.visitOnExit(*this);
+      visitor.visit(*this);
     }
 
-} // namespace WebVTT
+} // namespace webvtt

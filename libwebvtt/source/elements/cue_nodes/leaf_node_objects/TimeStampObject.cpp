@@ -1,17 +1,13 @@
-#include "elements/cue_nodes/leaf_node_objects/TimeStampObject.h"
-#include "elements/visitors/ICueTreeVisitor.h"
+#include "elements/cue_nodes/leaf_node_objects/TimeStampObject.hpp"
+#include "elements/visitors/ICueTreeVisitor.hpp"
 
-namespace WebVTT
-{
-    NodeObject::NodeType TimeStampObject::getNodeType() const
-    {
-        return NodeObject::NodeType::TIME_STAMP;
-    };
-    void
-    TimeStampObject::accept(ICueTreeVisitor &visitor)
-    {
-        visitor.visitOnEntry(*this);
-        visitor.visitOnExit(*this);
-    }
+namespace webvtt {
+NodeObject::NodeType TimeStampObject::getNodeType() const {
+  return NodeObject::NodeType::TIME_STAMP;
+};
+void
+TimeStampObject::accept(ICueTreeVisitor &visitor) const  {
+  visitor.visit(*this);
+}
 
-} // namespace WebVTT
+} // namespace webvtt

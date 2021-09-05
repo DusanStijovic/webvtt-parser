@@ -1,6 +1,6 @@
-#include "elements/style_selectors/MatchAllSelector.h"
+#include "elements/style_selectors/MatchAllSelector.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
     StyleSelector::SelectorType
     MatchAllSelector::getSelectorType() const
@@ -8,10 +8,5 @@ namespace WebVTT
         return StyleSelector::SelectorType::MATCH_ALL;
     }
 
-    bool
-    MatchAllSelector::shouldApply(const NodeObject &node, const Cue &cue) const
-    {
-        return false;
-    }
 
-} // namespace WebVTT
+} // namespace webvtt

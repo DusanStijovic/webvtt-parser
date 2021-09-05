@@ -1,8 +1,8 @@
-#include "parser/cue_style_parser/selectorStates/StyleCollectPseudoClassArgument.h"
-#include "parser/ParserUtil.h"
-#include "parser/StyleSheetParser.h"
+#include "parser/cue_style_parser/selectorStates/StyleCollectPseudoClassArgument.hpp"
+#include "parser/ParserUtil.hpp"
+#include "parser/StyleSheetParser.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
     void
     StyleCollectPseudoArgument::processState(StyleSheetParser &parser)
@@ -18,4 +18,4 @@ namespace WebVTT
             break;
         }
     }
-} // namespace WebVTT
+} // namespace webvtt

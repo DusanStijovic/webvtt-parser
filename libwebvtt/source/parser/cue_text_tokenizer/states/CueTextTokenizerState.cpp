@@ -1,15 +1,15 @@
-#include "parser/cue_text_tokenizer/states/CueTextTokenizerState.h"
-#include "parser/cue_text_tokenizer/CueTextTokenizer.h"
-#include "parser/cue_text_tokenizer/states/DataState.h"
-#include "parser/cue_text_tokenizer/states/StartTagState.h"
-#include "parser/cue_text_tokenizer/states/StartTagAnnotationState.h"
-#include "parser/cue_text_tokenizer/states/StartTagClassState.h"
-#include "parser/cue_text_tokenizer/states/EndTagState.h"
-#include "parser/cue_text_tokenizer/states/TagState.h"
-#include "parser/cue_text_tokenizer/states/TimeStampTagState.h"
-#include "parser/ParserUtil.h"
+#include "parser/cue_text_tokenizer/states/CueTextTokenizerState.hpp"
+#include "parser/cue_text_tokenizer/CueTextTokenizer.hpp"
+#include "parser/cue_text_tokenizer/states/DataState.hpp"
+#include "parser/cue_text_tokenizer/states/StartTagState.hpp"
+#include "parser/cue_text_tokenizer/states/StartTagAnnotationState.hpp"
+#include "parser/cue_text_tokenizer/states/StartTagClassState.hpp"
+#include "parser/cue_text_tokenizer/states/EndTagState.hpp"
+#include "parser/cue_text_tokenizer/states/TagState.hpp"
+#include "parser/cue_text_tokenizer/states/TimeStampTagState.hpp"
+#include "parser/ParserUtil.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
 
   std::map<CueTextTokenizerState::TokenizerState, std::unique_ptr<CueTextTokenizerState>>

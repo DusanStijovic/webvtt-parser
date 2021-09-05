@@ -1,7 +1,7 @@
-#include "parser/cue_style_parser/selectorStates/StylePseudoWithArgumentEndState.h"
-#include "parser/StyleSheetParser.h"
+#include "parser/cue_style_parser/selectorStates/StylePseudoWithArgumentEndState.hpp"
+#include "parser/object_parser/StyleSheetParser.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
 
     void
@@ -18,4 +18,4 @@ namespace WebVTT
         parser.getAdditionalBuffer().clear();
         return help;
     }
-} // namespace WebVTT
+} // namespace webvtt

@@ -9,10 +9,9 @@ viewportanchor:10%,90%
 
 
 STYLE
-::cue(::past),
-::cue(i, c.belo#t5),
+::cue(i),
 ::cue(b),
-::cue(u+[voice]),
+::cue([voice]),
 ::cue(ruby),
 ::cue(rt),
 ::cue(v),

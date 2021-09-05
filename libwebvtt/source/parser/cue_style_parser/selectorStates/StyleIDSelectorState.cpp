@@ -1,9 +1,9 @@
-#include "parser/cue_style_parser/selectorStates/StyleIDSelectorState.h"
-#include "parser/StyleSheetParser.h"
-#include "parser/ParserUtil.h"
-#include "elements/style_selectors/IDSelector.h"
+#include "parser/cue_style_parser/selectorStates/StyleIDSelectorState.hpp"
+#include "parser/object_parser/StyleSheetParser.hpp"
+#include "parser/ParserUtil.hpp"
+#include "elements/style_selectors/IDSelector.hpp"
 
-namespace WebVTT
+namespace webvtt
 {
 
   void
@@ -27,4 +27,4 @@ namespace WebVTT
     return help;
   }
 
-} // namespace WebVTT
+} // namespace webvtt

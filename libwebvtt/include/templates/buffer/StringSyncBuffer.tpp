@@ -2,11 +2,9 @@
 #include "utf8.h"
 #include <optional>
 #include <list>
-#include "logger/LoggingUtility.h"
+#include "logger/LoggingUtility.hpp"
 
-namespace WebVTT {
-
-
+namespace webvtt {
 
 template<typename StringType, typename dataType>
 bool StringSyncBuffer<StringType, dataType>::writeMultiple(StringType input) {
@@ -19,8 +17,6 @@ bool StringSyncBuffer<StringType, dataType>::writeMultiple(StringType input) {
   }
   return true;
 }
-
-
 
 template<typename StringType, typename dataType>
 StringType StringSyncBuffer<StringType, dataType>::readMultiple(uint32_t number) {
@@ -64,10 +60,6 @@ StringType StringSyncBuffer<StringType, dataType>::readUntilSpecificData(dataTyp
   return values;
 }
 
-template<typename StringType, typename dataType>
-std::optional<dataType> StringSyncBuffer<StringType, dataType>::isReadDoneAndAdvancedIfNot() {
-  return this->readNext();
-}
 template<typename ContainerType, typename dataType>
 std::optional<dataType> StringSyncBuffer<ContainerType, dataType>::sendDataType() {
   return *this->readPosition;

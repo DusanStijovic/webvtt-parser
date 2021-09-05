@@ -1,120 +1,106 @@
-#include "parser/cue_style_parser/selectorStates/StyleAttributeSelectorState.h"
-#include "parser/StyleSheetParser.h"
-#include "parser/ParserUtil.h"
-#include "elements/style_selectors/AttributeSelector.h"
+#include "parser/cue_style_parser/selectorStates/StyleAttributeSelectorState.hpp"
+#include "parser/object_parser/StyleSheetParser.hpp"
+#include "parser/ParserUtil.hpp"
+#include "elements/style_selectors/attribute_selectors/AttributeSelector.hpp"
+#include "parser/CSSConstants.hpp"
 #include <tuple>
 #include <optional>
 
-namespace WebVTT
-{
+namespace webvtt {
 
-    AttributeSelector::StringMatchType StyleAttributeSelectorState::getStringMatchType(uint32_t mark)
-    {
-        AttributeSelector::StringMatchType retValue = AttributeSelector::StringMatchType::EXACT_MATCHING;
+AttributeSelector::StringMatchType StyleAttributeSelectorState::getStringMatchType(uint32_t mark) {
+  AttributeSelector::StringMatchType retValue = AttributeSelector::StringMatchType::EXACT_MATCHING;
 
-        switch (mark)
-        {
-        case STARTS_WITH_MARK:
-            retValue = AttributeSelector::StringMatchType::STARTS_WITH;
-            break;
-        case ENDS_WITH_MARK:
-            retValue = AttributeSelector::StringMatchType::ENDS_WITH;
-            break;
-        case WHITE_SPACE_SEPERATED_WORDS_MARK:
-            retValue = AttributeSelector::StringMatchType::WHITE_SPACE_SEPERATED_WORDS;
-            break;
-        case CONTAINS_SUBSTR_MARK:
-            retValue = AttributeSelector::StringMatchType::CONTAINS_SUBSTR;
-            break;
-        case EXACT_OR_FOLLOWED_BY_MINUS_MARK:
-            retValue = AttributeSelector::StringMatchType::EXACT_OR_FOLLOWED_BY_MINUS;
-            break;
-        }
-        return retValue;
-    }
+  switch (mark) {
+    case STARTS_WITH_MARK:retValue = AttributeSelector::StringMatchType::STARTS_WITH;
+      break;
+    case ENDS_WITH_MARK:retValue = AttributeSelector::StringMatchType::ENDS_WITH;
+      break;
+    case WHITE_SPACE_SEPERATED_WORDS_MARK:retValue = AttributeSelector::StringMatchType::WHITE_SPACE_SEPERATED_WORDS;
+      break;
+    case CONTAINS_SUBSTR_MARK:retValue = AttributeSelector::StringMatchType::CONTAINS_SUBSTR;
+      break;
+    case EXACT_OR_FOLLOWED_BY_MINUS_MARK:retValue = AttributeSelector::StringMatchType::EXACT_OR_FOLLOWED_BY_MINUS;
+      break;
+  }
+  return retValue;
+}
 
-    std::unique_ptr<StyleSelector>
-    StyleAttributeSelectorState::makeNewAttributeSelector(StyleSheetParser &parser, std::u32string_view attributeSpecfier,
-                                                          std::u32string_view attribute)
-    {
+std::unique_ptr<StyleSelector>
+StyleAttributeSelectorState::makeNewAttributeSelector(StyleSheetParser &parser, std::u32string_view attributeSpecifier,
+                                                      std::u32string_view attribute) {
 
-        if (attribute.empty())
-            parser.setState(StyleState::StyleStateType::ERROR);
+  if (attribute.empty())
+    parser.setState(StyleState::StyleStateType::ERROR);
 
-        auto split = ParserUtil::splitStringAroundCharacter(attribute, ParserUtil::EQUAL_C);
-        AttributeSelector::StringMatchType stringMatchType = AttributeSelector::StringMatchType::UNDEFINED;
-        std::u32string_view attributeName, attributeValue;
+  auto split = ParserUtil::splitStringAroundCharacter(attribute, ParserUtil::EQUAL_C);
+  AttributeSelector::StringMatchType stringMatchType = AttributeSelector::StringMatchType::UNDEFINED;
+  std::u32string_view attributeName, attributeValue;
 
-        if (!split.has_value())
-        {
-            stringMatchType = AttributeSelector::StringMatchType::NO_VALUE;
-            attributeName = attribute;
-        }
-        else
-        {
+  if (!split.has_value()) {
+    stringMatchType = AttributeSelector::StringMatchType::NO_VALUE;
+    attributeName = attribute;
+  } else {
 
-            attributeName = std::get<0>(split.value());
-            attributeValue = std::get<1>(split.value());
-            //TODO see if needed
-            ParserUtil::strip(attributeName, ParserUtil::isASCIIWhiteSpaceCharacter);
-            ParserUtil::strip(attributeValue, ParserUtil::isASCIIWhiteSpaceCharacter);
+    attributeName = std::get<0>(split.value());
+    attributeValue = std::get<1>(split.value());
 
-            if (attributeName.empty())
-                parser.setState(StyleState::StyleStateType::ERROR);
+    ParserUtil::strip(attributeName, ParserUtil::isASCIIWhiteSpaceCharacter);
+    ParserUtil::strip(attributeValue, ParserUtil::isASCIIWhiteSpaceCharacter);
 
-            stringMatchType = getStringMatchType(attributeName.back());
-            if (stringMatchType == AttributeSelector::StringMatchType::EXACT_MATCHING)
-                attributeName.remove_suffix(1);
-        }
+    if (attributeName.empty())
+      parser.setState(StyleState::StyleStateType::ERROR);
 
-        std::unique_ptr<AttributeSelector> attributeSelecotr = nullptr;
+    stringMatchType = getStringMatchType(attributeName.back());
+    if (stringMatchType == AttributeSelector::StringMatchType::EXACT_MATCHING)
+      attributeName.remove_suffix(1);
+  }
 
-        if (attributeSpecfier == ParserUtil::VOICE_TYPE_MARK && attributeName == ParserUtil::VOICE_ATRIBUTE_MARK)
-        {
-            attributeSelecotr = std::make_unique<AttributeSelector>(attributeName, attributeValue);
-        }
-        if (attributeSpecfier == ParserUtil::LANG_TYPE_MARK && attributeName == ParserUtil::LANG_ATTRIBUTE_MARK)
-        {
-            attributeSelecotr = std::make_unique<AttributeSelector>(attributeName, attributeValue);
-        }
-        if (attributeSpecfier.empty() && attributeName == ParserUtil::VOICE_ATRIBUTE_MARK)
-        {
-            attributeSelecotr = std::make_unique<AttributeSelector>(attributeName, attributeValue);
-        }
-        if (attributeSpecfier.empty() && attributeName == ParserUtil::LANG_ATTRIBUTE_MARK)
-        {
-            attributeSelecotr = std::make_unique<AttributeSelector>(attributeName, attributeValue);
-        }
-        if (attributeSelecotr == nullptr)
-            parser.setState(StyleState::StyleStateType::ERROR);
-        attributeSelecotr->setStringMatchingType(stringMatchType);
-        return attributeSelecotr;
-    }
+  std::unique_ptr<AttributeSelector> attributeSelecotr = nullptr;
 
-    void
+  if (attributeSpecifier == CSSConstants::VOICE_TYPE && attributeName == CSSConstants::VOICE_ATTRIBUTE) {
+    attributeSelecotr =
+        AttributeSelector::makeNewAttributeSelector(CSSConstants::VOICE_ATTRIBUTE, attributeValue);
+  }
+  if (attributeSpecifier == CSSConstants::LANG_TYPE && attributeName == CSSConstants::LANGUAGE_ATTRIBUTE) {
+    attributeSelecotr =
+        AttributeSelector::makeNewAttributeSelector(CSSConstants::LANGUAGE_ATTRIBUTE, attributeValue);
+  }
+  if (attributeSpecifier.empty() && attributeName == CSSConstants::VOICE_ATTRIBUTE) {
+    attributeSelecotr =
+        AttributeSelector::makeNewAttributeSelector(CSSConstants::VOICE_ATTRIBUTE, attributeValue);
+  }
+  if (attributeSpecifier.empty() && attributeName == CSSConstants::LANGUAGE_ATTRIBUTE) {
+    attributeSelecotr =
+        AttributeSelector::makeNewAttributeSelector(CSSConstants::LANGUAGE_ATTRIBUTE, attributeValue);
+  }
+  if (attributeSelecotr == nullptr)
+    parser.setState(StyleState::StyleStateType::ERROR);
+  attributeSelecotr->setStringMatchingType(stringMatchType);
+  return attributeSelecotr;
+}
 
-    StyleAttributeSelectorState::preprocessBuffer(StyleSheetParser &parser)
-    {
-        if (parser.getAdditionalBuffer().size() < 2)
-            parser.setState(StyleState::StyleStateType::ERROR);
+void
 
-        if (parser.getAdditionalBuffer().back() != ParserUtil::RIGHT_SQUARE_BRACKET_C)
-            parser.setState(StyleState::StyleStateType::ERROR);
+StyleAttributeSelectorState::preprocessBuffer(StyleSheetParser &parser) {
+  if (parser.getAdditionalBuffer().size() < 2)
+    parser.setState(StyleState::StyleStateType::ERROR);
 
-        parser.getAdditionalBuffer().pop_back();
-    }
+  if (parser.getAdditionalBuffer().back() != ParserUtil::RIGHT_SQUARE_BRACKET_C)
+    parser.setState(StyleState::StyleStateType::ERROR);
 
-    void
-    StyleAttributeSelectorState::foundDefaultBehaviour(StyleSheetParser &parser, uint32_t character)
-    {
-        parser.getAdditionalBuffer().push_back(character);
-    }
+  parser.getAdditionalBuffer().pop_back();
+}
 
-    std::unique_ptr<StyleSelector>
-    StyleAttributeSelectorState::makeNewStyleSelector(StyleSheetParser &parser)
-    {
+void
+StyleAttributeSelectorState::foundDefaultBehaviour(StyleSheetParser &parser, uint32_t character) {
+  parser.getAdditionalBuffer().push_back(character);
+}
 
-        return makeNewAttributeSelector(parser, parser.getBuffer(), parser.getAdditionalBuffer());
-    }
+std::unique_ptr<StyleSelector>
+StyleAttributeSelectorState::makeNewStyleSelector(StyleSheetParser &parser) {
 
-} // namespace WebVTT
+  return makeNewAttributeSelector(parser, parser.getBuffer(), parser.getAdditionalBuffer());
+}
+
+} // namespace webvtt

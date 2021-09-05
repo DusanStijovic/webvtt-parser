@@ -1,9 +1,9 @@
-#include "parser/cue_style_parser/ruleStates/StyleRulesState.h"
-#include "parser/StyleSheetParser.h"
-#include "parser/ParserUtil.h"
+#include "parser/cue_style_parser/ruleStates/StyleRulesState.hpp"
+#include "parser/object_parser/StyleSheetParser.hpp"
+#include "parser/ParserUtil.hpp"
 #include <tuple>
 
-namespace WebVTT
+namespace webvtt
 {
 
     void StyleRulesState::processRule(StyleSheetParser &parser, std::u32string_view rule)
@@ -53,4 +53,4 @@ namespace WebVTT
             break;
         }
     }
-} // namespace WebVTT
+} // namespace webvtt
