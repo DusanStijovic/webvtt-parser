@@ -7,6 +7,7 @@
 #include "elements/style_selectors/type_selectors/RubyTypeSelector.hpp"
 #include "elements/style_selectors/type_selectors/VoiceTypeSelector.hpp"
 #include "elements/style_selectors/type_selectors/UnderlineTypeSelector.hpp"
+
 #include "parser/CSSConstants.hpp"
 
 namespace webvtt {
@@ -14,7 +15,6 @@ StyleSelector::SelectorType
 TypeSelector::getSelectorType() const {
   return StyleSelector::SelectorType::TYPE;
 }
-
 
 std::unique_ptr <StyleSelector> TypeSelector::makeNewTypeSelector(std::u32string_view type) {
   if (type == CSSConstants::VOICE_TYPE) {

@@ -30,8 +30,10 @@ class StyleSheetParser : public ObjectParser<StyleSheet>,
   void parseCSSRules(std::u32string_view input);
   void addCSSRule(std::string_view name, std::string_view value);
 
+  void addSelectorToCurrentCombinatorSelectorList();
+  void addSelectorToCurrentCompoundSelectorList(std::unique_ptr<StyleSelector> styleSelector);
   void addSelectorToCurrentObject();
-  void addSelectorToCurrentSelectorList(std::unique_ptr<StyleSelector> styleSelector);
+
   void setCombinatorToMostRecentSelector(StyleSelector::StyleSelectorCombinator styleSelectorCombinator);
 
   void addCurrentObjectToStyleSheetList();
@@ -68,6 +70,7 @@ class StyleSheetParser : public ObjectParser<StyleSheet>,
   StyleState::StyleStateType savedPseudoState = StyleState::StyleStateType::NONE;
 
   std::list<std::unique_ptr<StyleSheet>> styleSheets;
+  std::list<std::unique_ptr<StyleSelector>> combinatorSelectorList;
   std::list<std::unique_ptr<StyleSelector>> compoundSelectorList;
 
 };

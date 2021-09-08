@@ -11,8 +11,6 @@ class AttributeSelector : public StyleSelector {
     this->stringMatchType = StringMatchType::UNDEFINED;
   }
 
-
-
   enum class StringMatchType {
     UNDEFINED,
     NO_VALUE,
@@ -26,13 +24,18 @@ class AttributeSelector : public StyleSelector {
   };
   void setStringMatchingType(StringMatchType newStringMatchType);
   [[nodiscard]] StringMatchType getStringMatchingType() const;
-  static std::unique_ptr <AttributeSelector> makeNewAttributeSelector(std::u32string_view type,
-                                                                   std::u32string_view value);
+
+  [[nodiscard]] std::u32string_view getAttributeValue() const;
+
+  static std::unique_ptr<AttributeSelector> makeNewAttributeSelector(std::u32string_view type,
+                                                                     std::u32string_view value);
   [[nodiscard]] SelectorType getSelectorType() const override;
 
+  bool isValueMatch(std::u32string_view valueToMatch) const;
  protected:
   std::u32string attributeValue;
   StringMatchType stringMatchType;
+
 };
 
 } // namespace webvtt

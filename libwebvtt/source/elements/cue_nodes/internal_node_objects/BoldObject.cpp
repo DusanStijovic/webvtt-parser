@@ -6,8 +6,12 @@ NodeObject::NodeType BoldObject::getNodeType() const {
 };
 
 void
-BoldObject::accept(ICueTreeVisitor &visitor) const  {
+BoldObject::accept(ICueTreeVisitor &visitor) const {
   visitor.visit(*this);
+}
+
+void BoldObject::visit(const BoldTypeSelector &selector) {
+  shouldApplyLastVisitedStyleSheet = true;
 }
 
 } // namespace webvtt

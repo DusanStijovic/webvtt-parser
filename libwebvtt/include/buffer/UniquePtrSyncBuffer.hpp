@@ -1,28 +1,43 @@
 #ifndef LIBWEBVTT_INCLUDE_BUFFER_UNIQUE_PTR_SYNC_BUFFER_HPP_
 #define LIBWEBVTT_INCLUDE_BUFFER_UNIQUE_PTR_SYNC_BUFFER_HPP_
-#include "buffer/SyncBuffer.hpp"
 #include <memory>
 #include <list>
+#include <mutex>
+#include <condition_variable>
+
 namespace webvtt {
 
-template<typename ptrElem>
-class UniquePtrSyncBuffer : public SyncBuffer<
-    std::unique_ptr<ptrElem>, const ptrElem &,
-    std::unique_ptr<ptrElem> &&, const ptrElem *,
-    std::list<std::unique_ptr<ptrElem>> &, std::list<const ptrElem *>
-> {
+template<typename Elem>
+class UniquePtrSyncBuffer {
  public:
-  ptrElem *getElemByID(std::u32string_view id);
-  bool writeMultiple(std::list<std::unique_ptr<ptrElem>> &input) override;
-  std::list<const ptrElem *> readMultiple(uint32_t number) override;
+  const Elem *getElemByID(std::u32string_view id) const;
 
-  std::list<const ptrElem *> readUntilSpecificData(const ptrElem &specificData) override;
-  std::list<const ptrElem *> readWhileSpecificData(const ptrElem &specificData) override;
+  virtual const Elem *readOne();
+  virtual bool writeOne(std::unique_ptr<Elem> oneElem);
+
+  bool writeMultiple(std::list<std::unique_ptr<Elem>> &list);
+
+  virtual const Elem *peekOne();
+
+  bool isInputEnded();
+  void setInputEnded();
+  bool isReadDone();
+
+  void clearBuffer();
+  void setReadPositionToBeginning();
 
  protected:
-  ptrElem *sendDataType() override;
-  void acceptDataToBuffer(std::unique_ptr<ptrElem> &&) override;
-  ptrElem *sendDataTypeNoValue() override;
+
+  mutable std::mutex mutex;
+  std::condition_variable emptyCV;
+
+  std::mutex mutexWrite;
+
+  std::list<std::unique_ptr<Elem>> buffer;
+  typename std::list<std::unique_ptr<Elem>>::const_iterator readPosition;
+
+  bool inputEnded = false;
+
 };
 
 } // End of namespace webvtt

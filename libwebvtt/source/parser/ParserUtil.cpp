@@ -46,17 +46,26 @@ inline bool ParserUtil::isAsciiAlphaNumeric(uint32_t character) {
 
 std::string
 ParserUtil::collectCharacters(std::u32string_view input, std::u32string_view::iterator &position,
-                              const std::function<bool(uint32_t character)> &isLookedCharacter) {
-
-  checkIfIteratorPointToInput(input, position);
-
-  std::string collectedCharacters;
-  while (isLookedCharacter(*position) && position != input.end()) {
-    utf8::append(*position, collectedCharacters);
-    position++;
-  }
-  return collectedCharacters;
+    const
+std::function<
+bool(uint32_t
+character)> &isLookedCharacter) {
+checkIfIteratorPointToInput(input, position
+);
+std::string collectedCharacters;
+while (
+isLookedCharacter(*position)
+&& position != input.
+end()
+) {
+utf8::append(*position, collectedCharacters
+);
+position++;
 }
+return
+collectedCharacters;
+}
+
 double
 ParserUtil::parsePercentage(std::u32string_view input) {
   try {
@@ -138,7 +147,7 @@ ParserUtil::parseUntilCharacter(std::u32string_view input, uint32_t character,
   auto endPosition = input.find(character, startPosition);
 
   if (endPosition == std::u32string_view::npos) {
-    endPosition = input.length() - 1;
+    endPosition = input.length();
   }
 
   position = position + endPosition - startPosition;
@@ -162,7 +171,7 @@ ParserUtil::parseUntilAnyOfGivenCharacters(std::u32string_view input, std::u32st
   return input.substr(startPosition, endPosition - startPosition);
 }
 
-std::optional<std::tuple<std::u32string_view, std::u32string_view>>
+std::optional <std::tuple<std::u32string_view, std::u32string_view>>
 ParserUtil::splitStringAroundCharacter(std::u32string_view input, uint32_t character) {
   auto charPos = input.find(character);
 
@@ -285,7 +294,7 @@ ParserUtil::parseHTMLNumberReference(std::u32string_view input,
   auto position = currentPosition;
 
   uint8_t base;
-  std::optional<std::string> result;
+  std::optional <std::string> result;
 
   position++;
   if (position == input.end()) {
@@ -320,12 +329,12 @@ ParserUtil::parseHTMLNumberReference(std::u32string_view input,
 
   auto iter = numberHTMLReferences.find(number);
   if (iter != numberHTMLReferences.end()) {
-    DILOGE("Parsing HTML number reference, references found in table of forbiden references");
+    DILOGE("Parsing HTML number reference, references found in table of forbidden references");
     parsingError = true;
     return iter->second;
   }
   if ((number >= 0xD800 && number <= 0xDFFF) || number > 0x10FFFF) {
-    DILOGE("Parsing HTML number reference, the reference number forbiden");
+    DILOGE("Parsing HTML number reference, the reference number forbidden");
     parsingError = true;
     return {ParserUtil::REPLACEMENT_C};
   }
@@ -333,13 +342,13 @@ ParserUtil::parseHTMLNumberReference(std::u32string_view input,
   for (uint32_t i = 0; i < std::size(low_border); i++) {
     if (number >= low_border[i] && number <= high_border[i]) {
       parsingError = true;
-      DILOGE("Parsing HTML number reference, the reference number forbiden");
+      DILOGE("Parsing HTML number reference, the reference number forbidden");
     }
   }
 
   if (unallowedNumbers.find(number) != unallowedNumbers.end()) {
     parsingError = true;
-    DILOGE("Parsing HTML number reference, the reference number forbiden");
+    DILOGE("Parsing HTML number reference, the reference number forbidden");
   }
   return {number};
 }
@@ -390,7 +399,7 @@ ParserUtil::parseHTMLNamedReference(std::u32string_view input, std::u32string_vi
       }
       if (potentialError) {
         parsingError = true;
-        DILOGE("Parsing HTML named reference, can not found name in table of character references");
+        DILOGE("Parsing HTML named reference, can not found voiceName in table of character references");
       }
       return U"";
     }
@@ -423,7 +432,7 @@ ParserUtil::parseHTMLNamedReference(std::u32string_view input, std::u32string_vi
 
 std::u32string
 ParserUtil::consumeHTMLCharacter(std::u32string_view input, std::u32string_view::iterator &currentPosition,
-                                 std::optional<uint32_t> additionalCharacter, bool isInAttribute, bool &parsingError) {
+                                 std::optional <uint32_t> additionalCharacter, bool isInAttribute, bool &parsingError) {
   try {
 
     checkIfIteratorPointToInput(input, currentPosition);
@@ -472,31 +481,55 @@ std::u32string ParserUtil::convertCSSEscapedString(std::u32string_view input) {
   while (position != input.end()) {
     try {
       convertedString.append(ParserUtil::parseUntilCharacter(input, ParserUtil::BACK_SLASH_C, position));
+
+      // Not found
       if (position == input.end())
         break;
+
       position++;
+
+      // Backslash on the end
+      if (position == input.end()) {
+        convertedString.push_back(ParserUtil::BACK_SLASH_C);
+        break;
+      }
+      char32_t character = *position;
+
+      if (!ParserUtil::isAsciiHexDigit(character) &&
+          ParserUtil::CR_C != character && ParserUtil::LF_C != character && ParserUtil::FF_C != character) {
+        convertedString.push_back(character);
+        position++;
+        continue;
+      }
 
       std::u32string_view parsedString = ParserUtil::parseWhileCondition(
           input, position,
           [](uint32_t character) {
-            return ParserUtil::isAsciiHexDigit(character) &&
+            return ParserUtil::isAsciiHexDigit(character) ||
                 !ParserUtil::isASCIIWhiteSpaceCharacter(character);
           },
           ParserUtil::MAX_NUMBER_OF_CSS_ESCAPED_CHARACTER);
 
+      if (position != input.end() && ParserUtil::isASCIIWhiteSpaceCharacter(*position)) {
+        position++;
+      }
+
       if (parsedString.empty())
         break;
 
-      uint32_t number = std::stoi(utf8::utf32to8(parsedString), nullptr, 16);
+      char32_t number = ParserUtil::parseLongNumber(utf8::utf32to8(parsedString), 16);
+
       convertedString.push_back(number);
     }
-    catch (const std::out_of_range &error) {
+    catch (const ParsingLongNumberError &error) {
       DILOGE(error.what());
     }
     catch (const IteratorsNotPointToGivenString &error) {
       DILOGE(error.what());
     }
   }
+
+  DILOGI("Converted string:" + utf8::utf32to8(convertedString));
   return convertedString;
 }
 
@@ -513,6 +546,8 @@ bool ParserUtil::checkIfCSSSIdentifierRightFormat(std::u32string_view input) {
   }
 
   for (const auto &one : input) {
+    if (ParserUtil::isAsciiAlphaNumeric(one))
+      continue;
     if (one > ParserUtil::NO_BREAK_SPACE_C)
       continue;
     if (one == ParserUtil::HYPHEN_MINUS)
@@ -532,7 +567,7 @@ ParserUtil::parseWhileCondition(std::u32string_view input, std::u32string_view::
   checkIfIteratorPointToInput(input, position);
 
   long startPosition = position - input.begin();
-  int length;
+  size_t length = 0;
   uint8_t iteration = 0;
   while (position != input.end() && condition(*position) &&
       iteration < maxNumberOfCharacters) {
@@ -600,18 +635,4 @@ void ParserUtil::replaceAllSequenceOfCharactersWithGivenCharacter(std::u32string
   }
 }
 
-std::u32string_view ParserUtil::makeStringViewFromIterator(const std::u32string_view input,
-                                                           const std::u32string_view::iterator &begin,
-                                                           const std::u32string_view::iterator &end) {
-  checkIfIteratorPointToInput(input, begin);
-  checkIfIteratorPointToInput(input, end);
-
-  auto beginIndex = begin - input.begin();
-  auto endIndex = end - input.begin();
-  auto size = endIndex - beginIndex;
-  if (beginIndex > endIndex || beginIndex < 0 || endIndex < 0)
-    return ParserUtil::EMPTY_STRING_VIEW;
-
-  return input.substr(beginIndex, size);
-}
 };

@@ -7,13 +7,14 @@ namespace webvtt {
 
 class LanguageObject : public InternalNodeObject {
  public:
-  virtual NodeType getNodeType() const override;
-  virtual void processAnnotationString(std::stack<std::u32string> &languages, std::u32string &annotation) override;
-  virtual void processEndToken(std::shared_ptr<NodeObject> &nodeObject,
-                               std::stack<std::u32string> &languages,
-                               NodeType value) override;
-  void accept(ICueTreeVisitor &visitor) const  override;
-
+  [[nodiscard]] NodeType getNodeType() const override;
+  void processAnnotationString(std::stack<std::u32string> &languages, std::u32string &annotation) override;
+  void processEndToken(std::shared_ptr<NodeObject> &nodeObject,
+                       std::stack<std::u32string> &languages,
+                       NodeType value) override;
+  void accept(ICueTreeVisitor &visitor) const override;
+  void visit(const LanguageTypeSelector &selector) override;
+  void visit(const LanguageSelector &selector) override;
  private:
 };
 } // namespace webvtt

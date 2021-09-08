@@ -6,8 +6,12 @@ NodeObject::NodeType RubyObject::getNodeType() const {
   return NodeObject::NodeType::RUBY;
 };
 void
-RubyObject::accept(ICueTreeVisitor &visitor) const  {
+RubyObject::accept(ICueTreeVisitor &visitor) const {
   visitor.visit(*this);
+}
+
+void RubyObject::visit(const RubyTypeSelector &selector) {
+  shouldApplyLastVisitedStyleSheet = true;
 }
 
 } // namespace webvtt

@@ -8,7 +8,9 @@ namespace webvtt {
 class ClassObject : public InternalNodeObject {
  public:
   virtual NodeType getNodeType() const override;
-  void accept(ICueTreeVisitor &visitor) const  override;
+  void accept(ICueTreeVisitor &visitor) const override;
+  void visit(const ClassTypeSelector &selector) override;
+
 };
 } // namespace webvtt
 

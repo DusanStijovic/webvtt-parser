@@ -83,7 +83,7 @@ class Cue : public Block {
    *
    * @param region region of cue
    */
-  void setRegion(Region *newRegion);
+  void setRegion(const Region *newRegion);
 
   /**
    * Set cue text alignment
@@ -159,7 +159,7 @@ class Cue : public Block {
   static constexpr double POSITION_DEFAULT_VALUE = -1;
 
   std::u32string identifier;
-  Region *region = nullptr;
+  const Region *region = nullptr;
   WritingDirection writingDirection = WritingDirection::HORIZONTAL;
   double lineNumber = LINE_DEFAULT_VALUE;
   double position = POSITION_DEFAULT_VALUE;

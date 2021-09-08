@@ -5,26 +5,46 @@
 #include <condition_variable>
 #include <list>
 #include <optional>
-#include "buffer/SyncBuffer.hpp"
+#include "buffer/IStringBuffer.hpp"
 
 namespace webvtt {
-template<typename ContainerType, typename dataType>
-class StringSyncBuffer : public SyncBuffer<
-    dataType, dataType,
-    dataType, std::optional<dataType>,
-    ContainerType, ContainerType> {
+template<typename OneElemType>
+class StringSyncBuffer : public IStringBuffer<OneElemType> {
  public:
+  bool isInputEnded() override;
+  void setInputEnded() override;
+  bool isReadDone() override;
 
-  bool writeMultiple(ContainerType input) override;
-  ContainerType readMultiple(uint32_t number) override;
+  std::optional<OneElemType> peekOne() override;
 
-  ContainerType readUntilSpecificData(dataType specificData) override;
-  ContainerType readWhileSpecificData(dataType specificData) override;
+  bool writeNext(OneElemType x) override;
+  std::optional<OneElemType> readNext() override;
+
+  bool writeMultiple(std::basic_string<OneElemType> &input) override;
+  std::basic_string<OneElemType> readMultiple(uint32_t number) override;
+
+  std::basic_string<OneElemType> readUntilSpecificData(OneElemType specificData) override;
+  std::basic_string<OneElemType> readWhileSpecificData(OneElemType specificData) override;
+
+  std::optional<OneElemType> isReadDoneAndAdvancedIfNot() override;
+
+  size_t getReadPosition() override;
+  bool setReadPosition(size_t position) override;
+
+  void clearBufferUntilReadPosition() override;
+  void resetBuffer() override;
 
  protected:
-  std::optional<dataType> sendDataType() override;
-  void acceptDataToBuffer(dataType) override;
-  std::optional<dataType> sendDataTypeNoValue() override;
+
+  bool writeOne(OneElemType x);
+  std::optional<OneElemType> readOne();
+
+  std::mutex mutex;
+  std::condition_variable emptyCV;
+
+  std::mutex mutexWrite;
+  std::mutex mutexRead;
+
 };
 
 } // end of namespace

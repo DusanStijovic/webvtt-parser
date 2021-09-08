@@ -1,5 +1,4 @@
 
-#include "../../parser/object_parser/ObjectParser.hpp"
 
 namespace webvtt {
 
@@ -10,14 +9,7 @@ std::unique_ptr<Object> ObjectParser<Object>::collectCurrentObject() {
   return temp;
 };
 
-// template <typename Object>
-// bool ObjectParser<Object>::setNewObjectForParsing()
-// {
-//     if (currentObject != nullptr)
-//         return false;
-//     currentObject = std::make_unique<Object>();
-//     return true;
-// };
+
 
 template<typename Object>
 bool ObjectParser<Object>::setNewObjectForParsing(std::unique_ptr<Object> newObject) {
@@ -28,6 +20,6 @@ bool ObjectParser<Object>::setNewObjectForParsing(std::unique_ptr<Object> newObj
 };
 
 template<typename Object>
-ObjectParser<Object>::~ObjectParser<Object>() {}
+ObjectParser<Object>::~ObjectParser<Object>() = default;
 
 }

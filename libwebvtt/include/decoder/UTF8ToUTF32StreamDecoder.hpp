@@ -1,6 +1,7 @@
 #ifndef LIBWEBVTT_INCLUDE_DECODER_UTF8_TO_UTF32_STREAM_DECODER_HPP_
 #define LIBWEBVTT_INCLUDE_DECODER_UTF8_TO_UTF32_STREAM_DECODER_HPP_
 
+#include "buffer/IStringBuffer.hpp"
 #include "buffer/StringSyncBuffer.hpp"
 #include <memory>
 #include <string>
@@ -14,7 +15,8 @@ namespace webvtt {
 class UTF8ToUTF32StreamDecoder {
 
  public:
-  explicit UTF8ToUTF32StreamDecoder(std::shared_ptr<StringSyncBuffer<std::string, uint8_t>> inputStream);
+  explicit UTF8ToUTF32StreamDecoder(std::shared_ptr<IStringBuffer < char8_t>>
+  inputStream);
 
   UTF8ToUTF32StreamDecoder() = default;
   UTF8ToUTF32StreamDecoder(const UTF8ToUTF32StreamDecoder &) = delete;
@@ -34,14 +36,14 @@ class UTF8ToUTF32StreamDecoder {
    *
    * @return Pointer to buffer that contain decoded data
    */
-  std::shared_ptr<StringSyncBuffer<std::u32string, uint32_t>> getDecodedStream();
+  std::shared_ptr<StringSyncBuffer < char32_t>> getDecodedStream();
 
  private:
   constexpr static int DEFAULT_READ_NUMBER = 10;
   bool decodingStarted = false;
 
-  std::shared_ptr<StringSyncBuffer<std::string, uint8_t>> inputStream;
-  std::shared_ptr<StringSyncBuffer<std::u32string, uint32_t>> outputStream;
+  std::shared_ptr<IStringBuffer < char8_t>> inputStream;
+  std::shared_ptr<StringSyncBuffer < char32_t>> outputStream;
 
   std::unique_ptr<std::thread> decoderThread;
 
@@ -51,7 +53,7 @@ class UTF8ToUTF32StreamDecoder {
    * @param readBytes string to be converted
    * @return
    */
-  static std::u32string decodeReadBytes(std::string &readBytes);
+  static std::u32string decodeReadBytes(std::u8string &readBytes);
 
   /**
    * Use as run method for thread that is decoding input stream.

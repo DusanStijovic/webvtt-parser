@@ -3,17 +3,13 @@
 #include "elements/webvtt_objects/RegionStyleSheet.hpp"
 
 namespace webvtt {
-void StyleSheet::addSelector(std::unique_ptr<StyleSelector> &&newSelector) {
-  this->styleSelectors.push_back(std::move(newSelector));
+void StyleSheet::setSelector(std::unique_ptr<StyleSelector> newSelector) {
+  this->styleSelector = std::move(newSelector);
 }
 
 void StyleSheet::addCSSRule(std::string_view name, std::string_view newValue) {
-
-  cssRules[std::string(name)] = newValue;
-}
-
-std::list<std::unique_ptr<StyleSelector>> &StyleSheet::getSelectors() {
-  return styleSelectors;
+  auto temp = std::string(name);
+  cssRules[temp] = newValue;
 }
 
 std::unique_ptr<StyleSheet> StyleSheet::makeNewStyleSheet(StyleSheetType styleSheetType) {
@@ -27,13 +23,12 @@ std::unique_ptr<StyleSheet> StyleSheet::makeNewStyleSheet(StyleSheetType styleSh
   }
 }
 
-
-void StyleSheet::setCurrentCue(const Cue &cue) {
-  connectedCue = &cue;
-};
-
 const std::map<std::string, std::string> &StyleSheet::getCSSRules() {
   return cssRules;
+}
+
+const StyleSelector &StyleSheet::getSelector() const {
+  return *styleSelector;
 }
 
 } // namespace webvtt

@@ -8,6 +8,7 @@
 #include "elements/cue_nodes/internal_node_objects/RubyTextObject.hpp"
 #include "elements/cue_nodes/internal_node_objects/UnderlineObject.hpp"
 #include "elements/cue_nodes/internal_node_objects/VoiceObject.hpp"
+#include "elements/style_selectors/StyleSelector.hpp"
 
 #include <stack>
 #include <string>
@@ -15,6 +16,15 @@
 namespace webvtt {
 void InternalNodeObject::appendChild(std::shared_ptr<NodeObject> nodeObject) {
   children.push_back(nodeObject);
+}
+
+void InternalNodeObject::visitAllDirectAncestors(const StyleSelector &selector) {
+  std::weak_ptr helpParent = this->parent;
+  while (helpParent.lock() != nullptr) {
+    selector.accept(*helpParent.lock());
+    if (shouldApplyLastVisitedStyleSheet) return;
+    helpParent = helpParent.lock()->getParent();
+  }
 }
 
 NodeObject::NodeType
@@ -83,6 +93,15 @@ const std::list<std::u32string> &InternalNodeObject::getClasses() {
 
 std::u32string_view InternalNodeObject::getLanguage() {
   return language;
+}
+void InternalNodeObject::visit(const ClassSelector &selector) {
+  shouldApplyLastVisitedStyleSheet = false;
+  for (const auto &oneClass: this->getClasses()) {
+    if (selector.getClassName() == oneClass) {
+      shouldApplyLastVisitedStyleSheet = true;
+      break;
+    }
+  }
 }
 
 } // namespace webvtt

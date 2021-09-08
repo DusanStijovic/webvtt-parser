@@ -10,4 +10,9 @@ NodeObject::NodeType UnderlineObject::getNodeType() const {
 void UnderlineObject::accept(ICueTreeVisitor &visitor) const {
   visitor.visit(*this);
 }
+
+void UnderlineObject::visit(const UnderlineTypeSelector &selector) {
+  shouldApplyLastVisitedStyleSheet = true;
+}
+
 } // namespace webvtt

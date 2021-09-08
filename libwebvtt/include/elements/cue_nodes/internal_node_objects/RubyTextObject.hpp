@@ -12,6 +12,7 @@ class RubyTextObject : public InternalNodeObject {
                        std::stack<std::u32string> &languages,
                        NodeObject::NodeType value) override;
   void accept(ICueTreeVisitor &visitor)  const override;
+  void visit(const RubyTextTypeSelector &selector) override;
 };
 
 } // namespace webvtt

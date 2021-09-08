@@ -1,6 +1,7 @@
 #include "parser/Parser.hpp"
 #include "parser/ParserUtil.hpp"
 #include "buffer/StringSyncBuffer.hpp"
+#include "buffer/NonSyncBuffer.hpp"
 #include "decoder/UTF8ToUTF32StreamDecoder.hpp"
 #include <string>
 #include <fstream>
@@ -13,7 +14,7 @@
 
 using namespace std::chrono_literals;
 
-void writeToBuffer(const std::shared_ptr<webvtt::StringSyncBuffer<std::string, uint8_t>> &buffer,
+void writeToBuffer(const std::shared_ptr<webvtt::StringSyncBuffer<char8_t>> &buffer,
                    const std::string &input) {
   for (auto oneChar : input) {
     buffer->writeNext(oneChar);
@@ -26,12 +27,12 @@ int main(int argc, char *argv[]) {
   std::ifstream t("../example/sample.vtt", std::ios_base::in);
 
   if (!t.is_open()) {
-    DILOGE("Error in file name");
+    DILOGE("Error in file open");
     return -1;
   }
   std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 
-  auto buffer = std::make_shared<webvtt::StringSyncBuffer<std::string, uint8_t>>();
+  auto buffer = std::make_shared<webvtt::StringSyncBuffer<char8_t>>();
 
   auto decoder = webvtt::UTF8ToUTF32StreamDecoder(buffer);
   decoder.startDecoding();

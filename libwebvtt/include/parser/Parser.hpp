@@ -2,6 +2,7 @@
 #define LIBWEBVTT_INCLUDE_PARSER_OBJECT_PARSER_PARSER_HPP_
 
 #include "utf8.h"
+#include "buffer/IStringBuffer.hpp"
 #include "buffer/StringSyncBuffer.hpp"
 #include "buffer/UniquePtrSyncBuffer.hpp"
 #include "elements/webvtt_objects/Cue.hpp"
@@ -16,19 +17,20 @@
 #include <list>
 #include <memory.h>
 #include <thread>
+#include <atomic>
 
 namespace webvtt {
 
 class Parser {
 
  public:
-  explicit Parser(std::shared_ptr<StringSyncBuffer<std::u32string, uint32_t>> inputStream);
+  explicit Parser(std::shared_ptr<IStringBuffer<char32_t>> inputStream);
   void setPredefineLanguage(std::u32string_view language);
   bool startParsing();
 
-  const std::shared_ptr<UniquePtrSyncBuffer<Region>> getRegionBuffer();
-  const std::shared_ptr<UniquePtrSyncBuffer<Cue>> getCueBuffer();
-  const std::shared_ptr<UniquePtrSyncBuffer<StyleSheet>> getStyleSheetBuffer();
+  [[nodiscard]] std::shared_ptr<UniquePtrSyncBuffer<Region>> getRegionBuffer();
+  [[nodiscard]] std::shared_ptr<UniquePtrSyncBuffer<Cue>> getCueBuffer();
+  [[nodiscard]] std::shared_ptr<UniquePtrSyncBuffer<StyleSheet>> getStyleSheetBuffer();
 
   Parser() = default;
   Parser(const Parser &) = delete;
@@ -49,11 +51,14 @@ class Parser {
 
   bool lastReadCR = false;
   bool seenCue = false;
+  bool seenFirstCue = false;
+
+  std::atomic_flag stopDecoding;
 
   bool parsingStarted = false;
 
-  std::shared_ptr<StringSyncBuffer<std::u32string, uint32_t>> inputStream;
-  std::unique_ptr<StringSyncBuffer<std::u32string, uint32_t>> preprocessedStream;
+  std::shared_ptr<IStringBuffer<char32_t>> inputStream;
+  std::unique_ptr<StringSyncBuffer<char32_t>> preprocessedStream;
 
   std::unique_ptr<std::thread> preProcessingThread;
   std::unique_ptr<std::thread> parsingThread;

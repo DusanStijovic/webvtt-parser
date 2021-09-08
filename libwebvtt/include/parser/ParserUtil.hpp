@@ -74,7 +74,9 @@ class ParserUtil {
     SMALL_LETTER_Z_C = 0x007A,
     UNDERSCORE_C = 0x005f,
     NO_BREAK_SPACE_C = 0x00A0,
-    ASTERIX_C = 0x002A
+    ASTERIX_C = 0x002A,
+    DOUBLE_QUOTE = 0x0022,
+    SINGLE_QUOTE = 0x0027
 
   };
 

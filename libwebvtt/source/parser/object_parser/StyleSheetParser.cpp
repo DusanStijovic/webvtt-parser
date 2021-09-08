@@ -4,11 +4,13 @@
 #include "exceptions/styleParserExceptions/StyleSheetFormatError.hpp"
 #include "logger/LoggingUtility.hpp"
 #include "elements/style_selectors/CompoundSelector.hpp"
+#include "elements/style_selectors/CombinatorSelector.hpp"
 
 namespace webvtt {
 
 void StyleSheetParser::addCSSRule(std::string_view name, std::string_view value) {
   for (auto &one : styleSheets) {
+
     one->addCSSRule(name, value);
   }
 }
@@ -38,35 +40,47 @@ void StyleSheetParser::parseCSSRules(std::u32string_view newInput) {
 }
 
 void
-StyleSheetParser::addSelectorToCurrentSelectorList(std::unique_ptr<StyleSelector> styleSelector) {
+StyleSheetParser::addSelectorToCurrentCompoundSelectorList(std::unique_ptr<StyleSelector> styleSelector) {
 
   compoundSelectorList.push_back(std::move(styleSelector));
 }
 
-void StyleSheetParser::addSelectorToCurrentObject() {
+void StyleSheetParser::addSelectorToCurrentCombinatorSelectorList() {
   if (currentObject == nullptr)
     return;
   if (compoundSelectorList.size() == 1) {
-    currentObject->addSelector(std::move(compoundSelectorList.back()));
+    combinatorSelectorList.push_back(std::move(compoundSelectorList.back()));
     compoundSelectorList.pop_back();
   } else {
-    std::unique_ptr<StyleSelector> help = std::make_unique<CompoundSelector>(std::move(compoundSelectorList));
+    std::unique_ptr<StyleSelector> help = std::make_unique<CompoundSelector>(compoundSelectorList);
     compoundSelectorList.clear();
-    currentObject->addSelector(std::move(help));
+    combinatorSelectorList.push_back(std::move(help));
   }
 }
 
 void
 StyleSheetParser::setCombinatorToMostRecentSelector(StyleSelector::StyleSelectorCombinator styleSelectorCombinator) {
-  if (currentObject->getSelectors().empty())
+  if (combinatorSelectorList.empty())
     return;
-  currentObject->getSelectors().back()->setStyleSelectorCombinator(styleSelectorCombinator);
+  combinatorSelectorList.back()->setStyleSelectorCombinator(styleSelectorCombinator);
 }
 void StyleSheetParser::setCurrentStyleSheetType(StyleSheet::StyleSheetType type) {
   this->currentSheetType = type;
 }
 void StyleSheetParser::addCurrentObjectToStyleSheetList() {
   styleSheets.push_back(std::move(currentObject));
+}
+
+void StyleSheetParser::addSelectorToCurrentObject() {
+
+  if (combinatorSelectorList.size() == 1) {
+    currentObject->setSelector(std::move(combinatorSelectorList.back()));
+    combinatorSelectorList.clear();
+  } else {
+    auto help = std::make_unique<CombinatorSelector>(combinatorSelectorList);
+    currentObject->setSelector(std::move(help));
+  }
+  combinatorSelectorList.clear();
 }
 
 }

@@ -5,7 +5,7 @@
 #include "parser/cue_style_parser/selectorStates/StyleAttributeSelectorState.hpp"
 #include "parser/cue_style_parser/selectorStates/StyleClassSelectorState.hpp"
 #include "parser/cue_style_parser/selectorStates/StyleEndSelectorState.hpp"
-#include "parser/cue_style_parser/selectorStates/StyleIDSelectorState.hpp"
+#include "parser/cue_style_parser/selectorStates/StyleIdSelectorState.hpp"
 #include "parser/cue_style_parser/selectorStates/StylePseudoClassSelectorState.hpp"
 #include "parser/cue_style_parser/selectorStates/StylePseudoElementSelectorState.hpp"
 #include "parser/cue_style_parser/selectorStates/StylePseudoClassWithArgumentEndState.hpp"
@@ -83,7 +83,7 @@ namespace webvtt
             return std::make_unique<StyleTypeSelectorState>();
             break;
         case StyleStateType::ID_SELECTOR:
-            return std::make_unique<StyleIDSelectorState>();
+            return std::make_unique<StyleIdSelectorState>();
             break;
         case StyleStateType::END_STATE:
             return std::make_unique<EndStyleState>();

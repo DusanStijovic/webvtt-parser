@@ -8,7 +8,9 @@ class UnderlineObject : public InternalNodeObject {
  public:
   [[nodiscard]] NodeType getNodeType() const override;
   void accept(ICueTreeVisitor &visitor) const  override;
+  void visit(const UnderlineTypeSelector &selector) override;
 };
+
 
 } // namespace webvtt
 

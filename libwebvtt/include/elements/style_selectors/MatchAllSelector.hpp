@@ -6,8 +6,8 @@
 namespace webvtt {
 class MatchAllSelector : public StyleSelector {
  public:
-  MatchAllSelector() : StyleSelector() {}
 
+  void accept(IStyleSelectorVisitor &visitor) const override;
   SelectorType getSelectorType() const override;
 };
 } // namespace webvtt

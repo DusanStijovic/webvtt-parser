@@ -1,13 +1,13 @@
-#include "parser/cue_style_parser/selectorStates/StyleIDSelectorState.hpp"
+#include "parser/cue_style_parser/selectorStates/StyleIdSelectorState.hpp"
 #include "parser/object_parser/StyleSheetParser.hpp"
 #include "parser/ParserUtil.hpp"
-#include "elements/style_selectors/IDSelector.hpp"
+#include "elements/style_selectors/IdSelector.hpp"
 
 namespace webvtt
 {
 
   void
-  StyleIDSelectorState::preprocessBuffer(StyleSheetParser &parser)
+  StyleIdSelectorState::preprocessBuffer(StyleSheetParser &parser)
   {
     if (parser.getBuffer().empty())
       parser.setState(StyleState::StyleStateType::ERROR);
@@ -20,9 +20,9 @@ namespace webvtt
   }
 
   std::unique_ptr<StyleSelector>
-  StyleIDSelectorState::makeNewStyleSelector(StyleSheetParser &parser)
+  StyleIdSelectorState::makeNewStyleSelector(StyleSheetParser &parser)
   {
-    auto help = std::make_unique<IDSelector>(parser.getBuffer());
+    auto help = std::make_unique<IdSelector>(parser.getBuffer());
     parser.getBuffer().clear();
     return help;
   }

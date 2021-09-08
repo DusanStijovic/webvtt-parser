@@ -1,5 +1,5 @@
-#ifndef LIBWEBVTT_INCLUDE_PARSER_OBJECT_PARSER_CUE_PARSER_H
-#define LIBWEBVTT_INCLUDE_PARSER_OBJECT_PARSER_CUE_PARSER_H
+#ifndef LIBWEBVTT_INCLUDE_PARSER_OBJECT_PARSER_CUE_PARSER_HPP_
+#define LIBWEBVTT_INCLUDE_PARSER_OBJECT_PARSER_CUE_PARSER_HPP_
 
 #include "elements/webvtt_objects/Cue.hpp"
 #include "parser/object_parser/ObjectParser.hpp"
@@ -8,6 +8,7 @@
 #include "buffer/UniquePtrSyncBuffer.hpp"
 #include <list>
 #include <memory>
+#include <utility>
 
 namespace webvtt {
 
@@ -48,7 +49,7 @@ class CueParser : public ObjectParser<Cue> {
   /**
  * @param regions Reference to the List of regions that has been parsed until now
  */
-  explicit CueParser(const std::shared_ptr<UniquePtrSyncBuffer<Region>> regions) : currentRegions(regions) {}
+  explicit CueParser(std::shared_ptr<UniquePtrSyncBuffer<Region>>  regions) : currentRegions(std::move(regions)) {}
 
   /**
  *  Needed because super class destructor is pure virtual function
@@ -58,7 +59,7 @@ class CueParser : public ObjectParser<Cue> {
   CueParser(CueParser &&) = delete;
   CueParser &operator=(const CueParser &) = delete;
   CueParser &operator=(CueParser &&) = delete;
-  virtual ~CueParser() override = default;
+  ~CueParser() override = default;
 
  private:
   const std::shared_ptr<UniquePtrSyncBuffer<Region>> currentRegions;
@@ -79,13 +80,13 @@ class CueParser : public ObjectParser<Cue> {
   constexpr static std::u32string_view ALIGN_SETTING = U"align";
 
   /**
- * Constexpresions for parsing vertical settings
+ * Const expressions for parsing vertical settings
  */
   static constexpr std::u32string_view VERTICAL_LEFT_TO_RIGHT = U"lr";
   static constexpr std::u32string_view VERTICAL_RIGHT_TO_LEFT = U"rl";
 
   /**
- * Constexpresions for parsing alignment
+ * Const expressions for parsing alignment
  */
   static constexpr std::u32string_view START_ALIGNMENT = U"start";
   static constexpr std::u32string_view END_ALIGNMENT = U"end";
@@ -94,7 +95,7 @@ class CueParser : public ObjectParser<Cue> {
   static constexpr std::u32string_view LEFT_ALIGNMENT = U"left";
 
   /**
- * Constexpresions for parsing line settings
+ * Const expressions for parsing line settings
  */
   static constexpr std::u32string_view LINE_LEFT = U"line-left";
   static constexpr std::u32string_view LINE_CENTER = U"center";
@@ -170,4 +171,4 @@ class CueParser : public ObjectParser<Cue> {
 
 } // namespace webvtt
 
-#endif // LIBWEBVTT_INCLUDE_PARSER_OBJECT_PARSER_CUE_PARSER
+#endif // LIBWEBVTT_INCLUDE_PARSER_OBJECT_PARSER_CUE_PARSER_HPP_

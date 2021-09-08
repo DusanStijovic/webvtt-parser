@@ -52,7 +52,7 @@ class CSSConstants {
 
   //Animation rules
   static constexpr std::string_view ANIMATION = "animation";
-  static constexpr std::string_view ANIMATION_NAME = "animation-name";
+  static constexpr std::string_view ANIMATION_NAME = "animation-voiceName";
   static constexpr std::string_view ANIMATION_DURATION = "animation-duration";
   static constexpr std::string_view ANIMATION_TIMING_FNCTION = "animation-timing-function";
   static constexpr std::string_view ANIMATION_DELAY = "animation-delay";

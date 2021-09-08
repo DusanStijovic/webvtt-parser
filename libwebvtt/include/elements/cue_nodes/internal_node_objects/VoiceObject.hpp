@@ -10,9 +10,10 @@ class VoiceObject : public InternalNodeObject {
   [[nodiscard]] NodeType getNodeType() const override;
   void processAnnotationString(std::stack<std::u32string> &languages, std::u32string &annotation) override;
   void accept(ICueTreeVisitor &visitor) const override;
-
+  void visit(const VoiceTypeSelector &selector) override;
+  void visit(const VoiceSelector &selector) override;
  private:
-  std::u32string name;
+  std::u32string voiceName;
 };
 
 } // namespace webvtt

@@ -1,18 +1,20 @@
 #include "decoder/UTF8ToUTF32StreamDecoder.hpp"
 #include "utf8.h"
 #include <thread>
+#include <utility>
 #include "logger/LoggingUtility.hpp"
+#include "buffer/StringSyncBuffer.hpp"
 
 namespace webvtt {
-UTF8ToUTF32StreamDecoder::UTF8ToUTF32StreamDecoder(std::shared_ptr<StringSyncBuffer<std::string, uint8_t>> inputStream)
-    : inputStream(std::move(inputStream)) {
-  outputStream = std::make_shared<StringSyncBuffer<std::u32string, uint32_t>>();
+UTF8ToUTF32StreamDecoder::UTF8ToUTF32StreamDecoder(std::shared_ptr<IStringBuffer<char8_t>> newInputStream)
+    : inputStream(std::move(newInputStream)) {
+  outputStream = std::make_shared<StringSyncBuffer<char32_t>>();
 }
 
-std::u32string UTF8ToUTF32StreamDecoder::decodeReadBytes(std::string &readBytes) {
+std::u32string UTF8ToUTF32StreamDecoder::decodeReadBytes(std::u8string &readBytes) {
   auto positionInvalid = utf8::find_invalid(readBytes);
 
-  auto validUTF8 = std::string_view(readBytes);
+  auto validUTF8 = std::u8string_view(readBytes);
   std::u32string utf_32;
 
   if (positionInvalid == std::string::npos) {
@@ -26,8 +28,8 @@ std::u32string UTF8ToUTF32StreamDecoder::decodeReadBytes(std::string &readBytes)
 }
 
 void UTF8ToUTF32StreamDecoder::decodeInputStream() {
-  std::string buffer;
-  std::string bytes;
+  std::u8string buffer;
+  std::u8string bytes;
 
   try {
 
@@ -60,7 +62,7 @@ bool UTF8ToUTF32StreamDecoder::startDecoding() {
   return true;
 };
 
-std::shared_ptr<StringSyncBuffer<std::u32string, uint32_t>> UTF8ToUTF32StreamDecoder::getDecodedStream() {
+std::shared_ptr<StringSyncBuffer<char32_t>> UTF8ToUTF32StreamDecoder::getDecodedStream() {
   if (not decodingStarted)
     return nullptr;
   return outputStream;
@@ -70,5 +72,6 @@ UTF8ToUTF32StreamDecoder::~UTF8ToUTF32StreamDecoder() {
   if (not decodingStarted)
     return;
   decoderThread->join();
+  decodingStarted = false;
 }
 }

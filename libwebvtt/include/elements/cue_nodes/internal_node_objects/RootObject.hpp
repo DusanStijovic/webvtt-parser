@@ -7,7 +7,14 @@ namespace webvtt {
 class RootObject : public InternalNodeObject {
  public:
   [[nodiscard]] NodeType getNodeType() const override;
-  void accept(ICueTreeVisitor &visitor) const  override;
+
+  void setCueId(std::u32string_view);
+  [[nodiscard]]std::u32string_view getCueId() const;
+  void accept(ICueTreeVisitor &visitor) const override;
+  void visit(const IdSelector &selector) override;
+  void visit(const LanguageSelector &selector) override;
+ private:
+  std::u32string_view cueId;
 };
 
 } // namespace webvtt

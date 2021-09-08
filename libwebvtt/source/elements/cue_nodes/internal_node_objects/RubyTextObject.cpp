@@ -27,8 +27,12 @@ void RubyTextObject::processEndToken(std::shared_ptr<NodeObject> &nodeObject,
   }
 };
 
-void RubyTextObject::accept(ICueTreeVisitor &visitor) const  {
+void RubyTextObject::accept(ICueTreeVisitor &visitor) const {
   visitor.visit(*this);
+}
+
+void RubyTextObject::visit(const RubyTextTypeSelector &selector) {
+  shouldApplyLastVisitedStyleSheet = true;
 }
 
 } // namespace webvtt

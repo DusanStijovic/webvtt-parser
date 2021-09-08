@@ -49,29 +49,31 @@ void FetchSelectorState::processState(StyleSheetParser &parser) {
   }
 }
 
-void FetchSelectorState::foundCommaCharacter(StyleSheetParser &parser, std::unique_ptr<StyleSelector> &&styleSelector) {
+void FetchSelectorState::foundCommaCharacter(StyleSheetParser &parser,
+                                             std::unique_ptr <StyleSelector> &&styleSelector) {
 
-  parser.addSelectorToCurrentSelectorList(std::move(styleSelector));
-  parser.addSelectorToCurrentObject();
+  parser.addSelectorToCurrentCompoundSelectorList(std::move(styleSelector));
+  parser.addSelectorToCurrentCombinatorSelectorList();
   parser.goToSavedState();
 }
 
 void FetchSelectorState::foundCombinatorCharacter(StyleSheetParser &parser,
-                                                  std::unique_ptr<StyleSelector> &&styleSelector) {
-  parser.addSelectorToCurrentSelectorList(std::move(styleSelector));
-  parser.addSelectorToCurrentObject();
+                                                  std::unique_ptr <StyleSelector> &&styleSelector) {
+  parser.addSelectorToCurrentCompoundSelectorList(std::move(styleSelector));
+  parser.addSelectorToCurrentCombinatorSelectorList();
 }
 
 void FetchSelectorState::foundCompoundCharacter(StyleSheetParser &parser,
-                                                std::unique_ptr<StyleSelector> &&styleSelector) {
-  parser.addSelectorToCurrentSelectorList(std::move(styleSelector));
+                                                std::unique_ptr <StyleSelector> &&styleSelector) {
+  parser.addSelectorToCurrentCompoundSelectorList(std::move(styleSelector));
   parser.goToSavedState();
   parser.getCurrentPosition()--;
 }
 
 void FetchSelectorState::foundRightParenthesis(StyleSheetParser &parser,
-                                               std::unique_ptr<StyleSelector> &&styleSelector) {
-  parser.addSelectorToCurrentSelectorList(std::move(styleSelector));
+                                               std::unique_ptr <StyleSelector> &&styleSelector) {
+  parser.addSelectorToCurrentCompoundSelectorList(std::move(styleSelector));
+  parser.addSelectorToCurrentCombinatorSelectorList();
   parser.addSelectorToCurrentObject();
   parser.setState(StyleState::StyleStateType::END_SELECTOR);
   parser.getCurrentPosition()--;
@@ -86,7 +88,48 @@ void FetchSelectorState::foundDefaultBehaviour(StyleSheetParser &parser, uint32_
 };
 
 bool FetchSelectorState::additionalBehaviour(StyleSheetParser &parser, uint32_t character) {
-  return false;
+
+  if (escapedSequence) {
+
+    //Escape one css special character, need to be immediately after backslash.
+    if (counterOfEscapedSequence == 0) {
+      if (!ParserUtil::isAsciiHexDigit(character) &&
+          ParserUtil::CR_C != character && ParserUtil::LF_C != character && ParserUtil::FF_C != character) {
+        escapedSequence = false;
+        parser.getBuffer().push_back(character);
+        return true;
+      }
+    }
+
+    //Multiple character, all need to be hexadecimal
+    if (counterOfEscapedSequence >= ParserUtil::MAX_NUMBER_OF_CSS_ESCAPED_CHARACTER ||
+        !ParserUtil::isAsciiHexDigit(character) || ParserUtil::isASCIIWhiteSpaceCharacter(character)
+        ) {
+      escapedSequence = false;
+      counterOfEscapedSequence = 0;
+
+      //First space after escaped sequence need to be skipped
+      if (ParserUtil::isASCIIWhiteSpaceCharacter(character)) {
+        parser.getBuffer().push_back(character);
+        return true;
+      } else
+        return false;
+    } else {
+      counterOfEscapedSequence++;
+      parser.getBuffer().push_back(character);
+      return true;
+    }
+  } else {
+
+    if (ParserUtil::BACK_SLASH_C == character) {
+      escapedSequence = true;
+      counterOfEscapedSequence = 0;
+      parser.getBuffer().push_back(character);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 void FetchSelectorState::foundCombinatorCharacter(StyleSheetParser &parser,
@@ -109,6 +152,7 @@ void FetchSelectorState::foundRightParenthesis(StyleSheetParser &parser) {
   preprocessBuffer(parser);
   foundRightParenthesis(parser, makeNewStyleSelector(parser));
   parser.setCombinatorToMostRecentSelector(StyleSelector::StyleSelectorCombinator::NONE);
+  parser.addCurrentObjectToStyleSheetList();
 };
 
 void FetchSelectorState::foundCommaCharacter(StyleSheetParser &parser) {

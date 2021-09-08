@@ -8,6 +8,8 @@ class ItalicObject : public InternalNodeObject {
  public:
   virtual NodeType getNodeType() const override;
   void accept(ICueTreeVisitor &visitor) const override;
+  void visit(const ItalicTypeSelector &selector) override;
+
 };
 
 } // namespace webvtt

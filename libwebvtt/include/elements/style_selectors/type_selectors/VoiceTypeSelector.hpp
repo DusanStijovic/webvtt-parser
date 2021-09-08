@@ -4,6 +4,7 @@
 
 namespace webvtt {
 class VoiceTypeSelector : public TypeSelector {
+  void accept(IStyleSelectorVisitor &visitor) const override;
 
 };
 

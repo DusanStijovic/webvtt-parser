@@ -1,217 +1,147 @@
 #ifndef LIBWEBVTT_INCLUDE_BUFFER_NON_SYNC_BUFFER_HPP_
 #define LIBWEBVTT_INCLUDE_BUFFER_NON_SYNC_BUFFER_HPP_
-#include "buffer/IBuffer.hpp"
+#include "buffer/IStringBuffer.hpp"
 
 namespace webvtt {
-template<
-    typename StoredDataType, typename DataTypeToCompare,
-    typename ReceivedDataType, typename SendDataType,
-    typename ReceivedMultipleType, typename SendMultipleType
->
-class NonSyncBuffer : public IBuffer<
-    StoredDataType, DataTypeToCompare,
-    ReceivedDataType, SendDataType,
-    ReceivedMultipleType, SendMultipleType> {
+template<typename OneElemType>
+class NonSyncBuffer : public IStringBuffer<OneElemType> {
  public:
-
-  bool writeNext(ReceivedDataType x) override;
-  SendDataType readNext() override;
-
-  virtual SendDataType isReadDoneAndAdvancedIfNot();
-
-  void clearBufferUntilReadPosition() override;
-  void resetBuffer() override;
-
-  bool setReadPosition(typename std::list<StoredDataType>::const_iterator position) override;
-  typename std::list<StoredDataType>::const_iterator &getReadPosition() override;
 
   bool isInputEnded() override;
   void setInputEnded() override;
   bool isReadDone() override;
 
-  SendDataType peekOne();
+  std::optional <OneElemType> peekOne() override;
+
+  bool writeNext(OneElemType x) override;
+  std::optional <OneElemType> readNext() override;
+
+  bool writeMultiple(std::basic_string <OneElemType> &input) override;
+  std::basic_string <OneElemType> readMultiple(uint32_t number) override;
+
+  std::basic_string <OneElemType> readUntilSpecificData(OneElemType specificData) override;
+  std::basic_string <OneElemType> readWhileSpecificData(OneElemType specificData) override;
+
+  std::optional <OneElemType> isReadDoneAndAdvancedIfNot() override;
+
+  size_t getReadPosition() override;
+  bool setReadPosition(size_t position) override;
+
+  void clearBufferUntilReadPosition() override;
+  void resetBuffer() override;
 
  protected:
 
-  virtual void acceptDataToBuffer(ReceivedDataType x);
-  virtual SendDataType sendDataType();
-  virtual SendDataType sendDataTypeNoValue();
+  std::optional <OneElemType> readOne() override;
+  bool writeOne(const OneElemType &x) override;
 
-  SendDataType readOne() override;
-  bool writeOne(ReceivedDataType x) override;
-
-  bool inputEnded = false;
 };
-template<
-    typename StoredDataType, typename DataTypeToCompare, typename ReceivedDataType, typename SendDataType, typename ReceivedMultipleType, typename SendMultipleType>
-bool NonSyncBuffer<StoredDataType,
-                   DataTypeToCompare,
-                   ReceivedDataType,
-                   SendDataType,
-                   ReceivedMultipleType,
-                   SendMultipleType>::writeNext(ReceivedDataType x) {
-  return writeOne(std::forward<ReceicedDataType>(x));
+template<typename OneElemType>
+bool NonSyncBuffer<OneElemType>::isInputEnded() {
+  return this->inputEnded;
 }
-
-template<
-    typename StoredDataType, typename DataTypeToCompare, typename ReceivedDataType, typename SendDataType, typename ReceivedMultipleType, typename SendMultipleType>
-SendDataType NonSyncBuffer<StoredDataType,
-                           DataTypeToCompare,
-                           ReceivedDataType,
-                           SendDataType,
-                           ReceivedMultipleType,
-                           SendMultipleType>::readNext() {
-  return readOne();
+template<typename OneElemType>
+void NonSyncBuffer<OneElemType>::setInputEnded() {
+  this->inputEnded = true;
 }
-
-template<
-    typename StoredDataType, typename DataTypeToCompare, typename ReceivedDataType, typename SendDataType, typename ReceivedMultipleType, typename SendMultipleType>
-SendDataType NonSyncBuffer<StoredDataType,
-                           DataTypeToCompare,
-                           ReceivedDataType,
-                           SendDataType,
-                           ReceivedMultipleType,
-                           SendMultipleType>::isReadDoneAndAdvancedIfNot() {
-  return readNext();
-}
-
-template<
-    typename StoredDataType, typename DataTypeToCompare, typename ReceivedDataType, typename SendDataType, typename ReceivedMultipleType, typename SendMultipleType>
-void NonSyncBuffer<StoredDataType,
-                   DataTypeToCompare,
-                   ReceivedDataType,
-                   SendDataType,
-                   ReceivedMultipleType,
-                   SendMultipleType>::clearBufferUntilReadPosition() {
-  this->buffer.erase(this->buffer.begin(), this->readPosition);
-}
-
-template<
-    typename StoredDataType, typename DataTypeToCompare, typename ReceivedDataType, typename SendDataType, typename ReceivedMultipleType, typename SendMultipleType>
-void NonSyncBuffer<StoredDataType,
-                   DataTypeToCompare,
-                   ReceivedDataType,
-                   SendDataType,
-                   ReceivedMultipleType,
-                   SendMultipleType>::resetBuffer() {
+template<typename OneElemType>
+void NonSyncBuffer<OneElemType>::resetBuffer() {
   this->buffer.clear();
-  this->readPosition = this->buffer.begin();
+  this->readPosition = 0;
   this->inputEnded = false;
 }
-
-template<
-    typename StoredDataType, typename DataTypeToCompare, typename ReceivedDataType, typename SendDataType, typename ReceivedMultipleType, typename SendMultipleType>
-bool NonSyncBuffer<StoredDataType,
-                   DataTypeToCompare,
-                   ReceivedDataType,
-                   SendDataType,
-                   ReceivedMultipleType,
-                   SendMultipleType>::setReadPosition(std::list<StoredDataType>::const_iterator position) {
+template<typename OneElemType>
+void NonSyncBuffer<OneElemType>::clearBufferUntilReadPosition() {
+  this->buffer.erase(this->buffer.begin(), this->buffer.begin() + this->readPosition);
+}
+template<typename OneElemType>
+bool NonSyncBuffer<OneElemType>::setReadPosition(size_t position) {
+  if (position > this->buffer.length()) return false;
   this->readPosition = position;
   return true;
 }
-
-template<
-    typename StoredDataType, typename DataTypeToCompare, typename ReceivedDataType, typename SendDataType, typename ReceivedMultipleType, typename SendMultipleType>
-std::list<StoredDataType>::const_iterator &NonSyncBuffer<StoredDataType,
-                                                         DataTypeToCompare,
-                                                         ReceivedDataType,
-                                                         SendDataType,
-                                                         ReceivedMultipleType,
-                                                         SendMultipleType>::getReadPosition() {
+template<typename OneElemType>
+size_t NonSyncBuffer<OneElemType>::getReadPosition() {
   return this->readPosition;
 }
-
-template<
-    typename StoredDataType, typename DataTypeToCompare, typename ReceivedDataType, typename SendDataType, typename ReceivedMultipleType, typename SendMultipleType>
-bool NonSyncBuffer<StoredDataType,
-                   DataTypeToCompare,
-                   ReceivedDataType,
-                   SendDataType,
-                   ReceivedMultipleType,
-                   SendMultipleType>::isInputEnded() {
-  return this->inputEnded;
+template<typename OneElemType>
+std::optional <OneElemType> NonSyncBuffer<OneElemType>::isReadDoneAndAdvancedIfNot() {
+  return readNext();
 }
+template<typename OneElemType>
+std::basic_string <OneElemType> NonSyncBuffer<OneElemType>::readWhileSpecificData(OneElemType specificData) {
+  std::basic_string <OneElemType> values;
 
-template<
-    typename StoredDataType, typename DataTypeToCompare, typename ReceivedDataType, typename SendDataType, typename ReceivedMultipleType, typename SendMultipleType>
-void NonSyncBuffer<StoredDataType,
-                   DataTypeToCompare,
-                   ReceivedDataType,
-                   SendDataType,
-                   ReceivedMultipleType,
-                   SendMultipleType>::setInputEnded() {
-  this->inputEnded = true;
-}
-template<
-    typename StoredDataType, typename DataTypeToCompare, typename ReceivedDataType, typename SendDataType, typename ReceivedMultipleType, typename SendMultipleType>
-bool NonSyncBuffer<StoredDataType,
-                   DataTypeToCompare,
-                   ReceivedDataType,
-                   SendDataType,
-                   ReceivedMultipleType,
-                   SendMultipleType>::isReadDone() {
-  if (this->readPosition == this->buffer.end() && isInputEnded) return true;
-  return false;
-}
-
-template<
-    typename StoredDataType, typename DataTypeToCompare, typename ReceivedDataType, typename SendDataType, typename ReceivedMultipleType, typename SendMultipleType>
-SendDataType NonSyncBuffer<StoredDataType,
-                           DataTypeToCompare,
-                           ReceivedDataType,
-                           SendDataType,
-                           ReceivedMultipleType,
-                           SendMultipleType>::peekOne() {
-  if (this->readPosition != this->buffer.end()) {
-    return sendDataType();
+  auto result = this->peekOne();
+  while (result.has_value() && result.value() == specificData) {
+    result = this->readOne();
+    values.push_back(result.value());
+    result = this->peekOne();
   }
-  return sendDataTypeNoValue();
+  return values;
 }
+template<typename OneElemType>
+std::basic_string <OneElemType> NonSyncBuffer<OneElemType>::readUntilSpecificData(OneElemType specificData) {
+  std::basic_string <OneElemType> values;
 
-template<
-    typename StoredDataType, typename DataTypeToCompare, typename ReceivedDataType, typename SendDataType, typename ReceivedMultipleType, typename SendMultipleType>
-void NonSyncBuffer<StoredDataType,
-                   DataTypeToCompare,
-                   ReceivedDataType,
-                   SendDataType,
-                   ReceivedMultipleType,
-                   SendMultipleType>::acceptDataToBuffer(ReceivedDataType x) {
-  this->buffer.push_back(x);
+  auto result = this->peekOne();
+  while (result.has_value() && result.value() != specificData) {
+    result = this->readOne();
+    values.push_back(result.value());
+    result = this->peekOne();
+  }
+  return values;
 }
-
-template<
-    typename StoredDataType, typename DataTypeToCompare, typename ReceivedDataType, typename SendDataType, typename ReceivedMultipleType, typename SendMultipleType>
-SendDataType NonSyncBuffer<StoredDataType,
-                           DataTypeToCompare,
-                           ReceivedDataType,
-                           SendDataType,
-                           ReceivedMultipleType,
-                           SendMultipleType>::sendDataType() {
-  return *this->readPosition;
+template<typename OneElemType>
+std::basic_string <OneElemType> NonSyncBuffer<OneElemType>::readMultiple(uint32_t number) {
+  std::basic_string <OneElemType> values;
+  for (uint32_t i = 0; i < number; i++) {
+    auto result = this->readOne();
+    if (result.has_value()) {
+      values.push_back(result.value());
+    } else
+      return values;
+  }
+  return values;
 }
+template<typename OneElemType>
+bool NonSyncBuffer<OneElemType>::writeMultiple(std::basic_string <OneElemType> &input) {
+  bool success;
+  for (auto one : input) {
+    success = this->writeOne(one);
+    if (!success)
+      return false;
+  }
+  return true;
+}
+template<typename OneElemType>
+std::optional <OneElemType> NonSyncBuffer<OneElemType>::peekOne() {
 
-template<
-    typename StoredDataType, typename DataTypeToCompare, typename ReceivedDataType, typename SendDataType, typename ReceivedMultipleType, typename SendMultipleType>
-bool NonSyncBuffer<StoredDataType,
-                   DataTypeToCompare,
-                   ReceivedDataType,
-                   SendDataType,
-                   ReceivedMultipleType,
-                   SendMultipleType>::writeOne(ReceivedDataType x) {
+  if (this->readPosition == this->buffer.length())
+    return std::nullopt;
+
+  return this->buffer[this->readPosition];
+}
+template<typename OneElemType>
+bool NonSyncBuffer<OneElemType>::writeNext(OneElemType x) {
+  return writeOne(x);
+}
+template<typename OneElemType>
+std::optional <OneElemType> NonSyncBuffer<OneElemType>::readNext() {
+  return readOne();
+}
+template<typename OneElemType>
+bool NonSyncBuffer<OneElemType>::isReadDone() {
+  return this->readPosition == this->buffer.end() && this->inputEnded;
+
+}
+template<typename OneElemType>
+bool NonSyncBuffer<OneElemType>::writeOne(const OneElemType &elem) {
   try {
-    bool shouldRetBack = false;
     if (this->inputEnded)
       return false;
 
-    //All data already read
-    if (this->readPosition == this->buffer.end())
-      shouldRetBack = true;
-
-    acceptDataToBuffer(std::forward<ReceivedDataType>(x));
-
-    if (shouldRetBack)
-      this->readPosition = --this->buffer.end();
+    this->buffer.push_back(elem);
 
     return true;
   }
@@ -221,36 +151,38 @@ bool NonSyncBuffer<StoredDataType,
     throw;
   }
 }
+template<typename OneElemType>
+std::optional <OneElemType> NonSyncBuffer<OneElemType>::readOne() {
 
-template<
-    typename StoredDataType, typename DataTypeToCompare, typename ReceivedDataType, typename SendDataType, typename ReceivedMultipleType, typename SendMultipleType>
-SendDataType NonSyncBuffer<StoredDataType,
-                           DataTypeToCompare,
-                           ReceivedDataType,
-                           SendDataType,
-                           ReceivedMultipleType,
-                           SendMultipleType>::readOne() {
-  SendDataType res = this->sendDataTypeNoValue();
+  if (this->readPosition == this->buffer.length())
+    return std::nullopt;
 
-  if (this->readPosition == this->buffer.end())
-    return this->sendDataTypeNoValue();
+  return this->buffer[this->readPosition++];
 
-  res = this->sendDataType();
-  std::advance(this->readPosition, 1);
-
-  return res;
 }
 
-template<
-    typename StoredDataType, typename DataTypeToCompare, typename ReceivedDataType, typename SendDataType, typename ReceivedMultipleType, typename SendMultipleType>
-SendDataType NonSyncBuffer<StoredDataType,
-                           DataTypeToCompare,
-                           ReceivedDataType,
-                           SendDataType,
-                           ReceivedMultipleType,
-                           SendMultipleType>::sendDataTypeNoValue() {
-  return std::nullopt;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+//template<
+//    typename StoredDataType, typename DataTypeToCompare, typename ReceivedDataType, typename SendDataType, typename ReceivedMultipleType, typename SendMultipleType>
+//SendDataType NonSyncBuffer<StoredDataType,
+//                           DataTypeToCompare,
+//                           ReceivedDataType,
+//                           SendDataType,
+//                           ReceivedMultipleType,
+//                           SendMultipleType>::sendDataTypeNoValue() {
+//  return std::nullopt;
+//}
 
 } // end of namespace
 /**

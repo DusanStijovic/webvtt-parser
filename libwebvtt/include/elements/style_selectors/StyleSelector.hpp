@@ -1,17 +1,19 @@
 #ifndef LIBWEBVTT_INCLUDE_ELEMENTS_STYLE_SELECTORS_STYLE_SELECTOR_HPP_
 #define LIBWEBVTT_INCLUDE_ELEMENTS_STYLE_SELECTORS_STYLE_SELECTOR_HPP_
 #include "elements/rules_filters/RuleFilter.hpp"
-#include "elements/cue_nodes/NodeObject.hpp"
-#include "elements/visitors/ICueTreeVisitor.hpp"
 #include <set>
 #include <string>
 #include <map>
+
 namespace webvtt {
-class StyleSelector : public ICueTreeVisitor {
+class IStyleSelectorVisitor;
+
+class StyleSelector {
 
  public:
   StyleSelector() {
     this->styleSelectorCombinator = StyleSelectorCombinator::NONE;
+    this->retValue = false;
   };
   enum class SelectorType {
     ID,
@@ -21,7 +23,8 @@ class StyleSelector : public ICueTreeVisitor {
     PSEUDO_CLASS,
     PSEUDO_ELEMENT,
     MATCH_ALL,
-    COMPOUND
+    COMPOUND,
+    COMBINATOR
   };
 
   enum class StyleSelectorCombinator {
@@ -36,12 +39,9 @@ class StyleSelector : public ICueTreeVisitor {
 
   void setStyleSelectorCombinator(StyleSelectorCombinator styleSelectorCombinator);
   [[nodiscard]] StyleSelectorCombinator getStyleSelectorCombinator() const;
-
   [[nodiscard]] virtual SelectorType getSelectorType() const = 0;
 
-  void connectCue(const Cue &cue);
-  void disconnectCue();
-
+  virtual void accept(IStyleSelectorVisitor &) const = 0;
 
   StyleSelector(const StyleSelector &) = delete;
   StyleSelector(StyleSelector &&) = delete;
@@ -49,23 +49,9 @@ class StyleSelector : public ICueTreeVisitor {
   StyleSelector &operator=(StyleSelector &&) = delete;
   virtual ~StyleSelector() = default;
 
-  void visit(const TimeStampObject &object) override;
-  void visit(const TextObject &object) override;
-
-  void visit(const BoldObject &object) override;
-  void visit(const ItalicObject &object) override;
-  void visit(const ClassObject &object) override;
-  void visit(const RubyObject &object) override;
-  void visit(const RubyTextObject &object) override;
-  void visit(const UnderlineObject &object) override;
-  void visit(const VoiceObject &object) override;
-  void visit(const LanguageObject &object) override;
-  void visit(const RootObject &object) override;
-
  protected:
   StyleSelectorCombinator styleSelectorCombinator;
-  const Cue *connectedCue;
-  bool retValue;
+  bool retValue = false;
 };
 
 } // namespace webvtt

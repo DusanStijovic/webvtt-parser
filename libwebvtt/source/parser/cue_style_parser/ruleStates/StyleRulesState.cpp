@@ -1,6 +1,7 @@
 #include "parser/cue_style_parser/ruleStates/StyleRulesState.hpp"
 #include "parser/object_parser/StyleSheetParser.hpp"
 #include "parser/ParserUtil.hpp"
+#include "logger/LoggingUtility.hpp"
 #include <tuple>
 
 namespace webvtt
@@ -20,6 +21,7 @@ namespace webvtt
             auto value = std::get<1>(result.value());
             ParserUtil::strip(name, ParserUtil::isASCIIWhiteSpaceCharacter);
             ParserUtil::strip(value, ParserUtil::isASCIIWhiteSpaceCharacter);
+
 
             parser.addCSSRule(utf8::utf32to8(name), utf8::utf32to8(value));
             parser.getBuffer().clear();

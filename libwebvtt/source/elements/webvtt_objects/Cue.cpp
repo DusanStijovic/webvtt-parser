@@ -29,7 +29,7 @@ namespace webvtt
         this->writingDirection = newWritingDirection;
     }
 
-    void Cue::setRegion(Region *newRegion)
+    void Cue::setRegion(const Region *newRegion)
     {
         this->region = newRegion;
     }

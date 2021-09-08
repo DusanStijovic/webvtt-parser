@@ -7,8 +7,10 @@ namespace webvtt {
 
 class BoldObject : public InternalNodeObject {
  public:
-  virtual NodeType getNodeType() const override;
+  [[nodiscard]]NodeType getNodeType() const override;
   void accept(ICueTreeVisitor &visitor) const override;
+
+  void visit(const BoldTypeSelector &selector) override;
 };
 
 } // namespace webvtt

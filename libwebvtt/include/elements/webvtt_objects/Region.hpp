@@ -8,13 +8,14 @@
 #include <list>
 #include "elements/webvtt_objects/Block.hpp"
 #include "buffer/UniquePtrSyncBuffer.hpp"
+#include "elements/visitors/IStyleSelectorVisitor.hpp"
 
 namespace webvtt {
 
 /**
  * Class representing region in webvtt. It contains region id and region settings
  */
-class Region : public Block {
+class Region : public Block, public IStyleSelectorVisitor {
 
  public:
   enum ScrollType {
@@ -62,21 +63,44 @@ class Region : public Block {
    */
   void setScrollValue(ScrollType newScrollValue);
 
+  [[nodiscard]] bool IsShouldApplyLastVisitedStyleSheet() const;
+
+  void visit(const MatchAllSelector &selector) override;
+  void visit(const IdSelector &selector) override;
+  void visit(const ClassSelector &selector) override;
+  void visit(const CompoundSelector &selector) override;
+  void visit(const CombinatorSelector &selector) override;
+  void visit(const BoldTypeSelector &selector) override;
+  void visit(const ClassTypeSelector &selector) override;
+  void visit(const ItalicTypeSelector &selector) override;
+  void visit(const LanguageTypeSelector &selector) override;
+  void visit(const RubyTypeSelector &selector) override;
+  void visit(const RubyTextTypeSelector &selector) override;
+  void visit(const UnderlineTypeSelector &selector) override;
+  void visit(const VoiceTypeSelector &selector) override;
+  void visit(const LanguageSelector &selector) override;
+  void visit(const VoiceSelector &selector) override;
+
  private:
   /**
    * Const expressions for region settings default values
    */
   constexpr static double DEFAULT_WIDTH = 100;
   constexpr static uint32_t DEFAULT_NUM_OF_LINES = 3;
+
+ private:
   constexpr static double DEFAULT_ANCHOR_PORT_X = 0;
   constexpr static double DEFAULT_ANCHOR_PORT_Y = 100;
 
   std::u32string identifier;
-  uint32_t width = DEFAULT_WIDTH;
+  double width = DEFAULT_WIDTH;
   uint32_t lines = DEFAULT_NUM_OF_LINES;
   std::tuple<double, double> anchor{DEFAULT_ANCHOR_PORT_X, DEFAULT_ANCHOR_PORT_Y};
   std::tuple<double, double> viewPortAnchor{DEFAULT_ANCHOR_PORT_X, DEFAULT_ANCHOR_PORT_Y};
   ScrollType scrollValue = NONE;
+
+  bool shouldApplyLastVisitedStyleSheet = false;
+
 };
 
 } // namespace webvtt

@@ -4,6 +4,7 @@
 
 namespace webvtt {
 class RubyTextTypeSelector : public TypeSelector {
+  void accept(IStyleSelectorVisitor &visitor) const override;
 
 };
 } // namespace webvtt

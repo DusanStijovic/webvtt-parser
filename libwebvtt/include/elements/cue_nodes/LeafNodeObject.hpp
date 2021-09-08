@@ -9,8 +9,8 @@ namespace webvtt {
 class LeafNodeObject : public NodeObject {
 
  public:
-  void appendChild(std::shared_ptr<NodeObject> nodeObject) final ;
-  void visitChildren(ICueTreeVisitor &visitor) final ;
+  void appendChild(std::shared_ptr<NodeObject> nodeObject) final;
+  void visitChildren(ICueTreeVisitor &visitor) final;
 };
 
 } // namespace webvtt

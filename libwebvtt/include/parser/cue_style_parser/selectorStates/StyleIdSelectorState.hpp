@@ -4,10 +4,10 @@
 namespace webvtt
 {
 
-    class StyleIDSelectorState : public FetchSelectorState
+    class StyleIdSelectorState : public FetchSelectorState
     {
     public:
-        StyleIDSelectorState() = default;
+        StyleIdSelectorState() = default;
      
 
     private:

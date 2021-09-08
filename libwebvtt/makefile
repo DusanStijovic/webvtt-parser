@@ -37,7 +37,7 @@ source/parser/cue_style_parser/states/ErrorStyleState.cpp\
 
 # [STYLE PARSING] SELECTOR STATES
 SOURCE_CPP_LIST += \
-source/parser/cue_style_parser/selectorStates/StyleIDSelectorState.cpp\
+source/parser/cue_style_parser/selectorStates/StyleIdSelectorState.cpp\
 source/parser/cue_style_parser/selectorStates/StyleClassSelectorState.cpp\
 source/parser/cue_style_parser/selectorStates/StyleAttributeSelectorState.cpp\
 source/parser/cue_style_parser/selectorStates/StyleTypeSelectorState.cpp\
@@ -111,9 +111,10 @@ source/elements/cue_nodes/leaf_node_Objects/TimeStampObject.cpp\
 SOURCE_CPP_LIST += \
 source/elements/style_selectors/StyleSelector.cpp\
 source/elements/style_selectors/ClassSelector.cpp\
-source/elements/style_selectors/IDSelector.cpp\
+source/elements/style_selectors/IdSelector.cpp\
 source/elements/style_selectors/MatchAllSelector.cpp\
 source/elements/style_selectors/CompoundSelector.cpp\
+source/elements/style_selectors/CombinatorSelector.cpp\
 
 
 # TYPE SELECTORS
@@ -126,6 +127,7 @@ source/elements/style_selectors/type_selectors/LanguageTypeSelector.cpp\
 source/elements/style_selectors/type_selectors/RubyTypeSelector.cpp\
 source/elements/style_selectors/type_selectors/RubyTextTypeSelector.cpp\
 source/elements/style_selectors/type_selectors/UnderlineTypeSelector.cpp\
+source/elements/style_selectors/type_selectors/VoiceTypeSelector.cpp\
 
 
 
@@ -192,7 +194,7 @@ LD = g++
 SHARED = 0
 
 CXXFLAGS = -MD -MP
-CXXFLAGS += -g --std=c++17
+CXXFLAGS += -g -std=c++20
 CXXFLAGS += -Wall -Wextra 
 CXXFLAGS += $(INCLUDE_CPP_LIST)
 ifeq ($(SHARED), 1)

@@ -4,12 +4,10 @@
 STYLE
 ::cue(i),
 ::cue(b),
-::cue(u+[v]),
 ::cue(ruby),
 ::cue(rt),
 ::cue(v),
 ::cue(lang),
-::cue(::past)
 ::cue(c) {
   color: yellow;
   background: red;

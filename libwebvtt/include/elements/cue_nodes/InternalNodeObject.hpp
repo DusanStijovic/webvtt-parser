@@ -25,6 +25,12 @@ class InternalNodeObject : public NodeObject {
 
   void appendChild(std::shared_ptr<NodeObject> nodeObject) override;
   void visitChildren(ICueTreeVisitor &visitor) override;
+
+  void visit(const ClassSelector &selector) override;
+
+  void visitAllDirectAncestors(const StyleSelector &selector);
+
+
  protected:
   std::list<std::shared_ptr<NodeObject>> children;
   std::list<std::u32string> classes;

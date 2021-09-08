@@ -29,6 +29,9 @@ class FetchSelectorState : public StyleState {
 
   virtual std::unique_ptr<StyleSelector> makeNewStyleSelector(StyleSheetParser &parser) = 0;
   virtual void preprocessBuffer(StyleSheetParser &parser) = 0;
+
+  bool escapedSequence = false;
+  uint8_t counterOfEscapedSequence = 0;
 };
 
 } // namespace webvtt

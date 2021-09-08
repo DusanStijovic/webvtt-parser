@@ -7,11 +7,14 @@ namespace webvtt {
 
 class ClassSelector : public StyleSelector {
  public:
-  ClassSelector(std::u32string_view className) : StyleSelector() {
+  explicit ClassSelector(std::u32string_view className) {
     this->className = className;
   }
-  SelectorType getSelectorType() const override;
+  [[nodiscard]] SelectorType getSelectorType() const override;
 
+  void accept(IStyleSelectorVisitor &visitor) const override;
+
+  [[nodiscard]]std::u32string_view getClassName() const;
  private:
   std::u32string className;
 };

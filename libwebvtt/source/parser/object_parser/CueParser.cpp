@@ -165,8 +165,7 @@ namespace webvtt
 
   void CueParser::parseAndSetRegionSetting(std::u32string_view value)
   {
-
-    Region *foundRegion = currentRegions->getElemByID(value);
+    const Region *foundRegion = currentRegions->getElemByID(value);
     if (foundRegion == nullptr)
       return;
     currentObject->setRegion(foundRegion);
@@ -254,7 +253,7 @@ namespace webvtt
 
         if (linePos.empty() || lineAlign.empty())
         {
-          DILOGE("Line setting not parsed succesffuly");
+          DILOGE("Line setting not parsed successfully");
           throw CueParsingError();
         }
       }

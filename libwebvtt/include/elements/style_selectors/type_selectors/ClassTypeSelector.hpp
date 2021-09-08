@@ -4,6 +4,7 @@
 
 namespace webvtt {
 class ClassTypeSelector : public TypeSelector {
+  void accept(IStyleSelectorVisitor &visitor) const override;
 
 };
 

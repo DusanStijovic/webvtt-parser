@@ -8,6 +8,8 @@ class LanguageSelector : public AttributeSelector {
 
  public:
   explicit LanguageSelector(std::u32string_view value) : AttributeSelector(value) {};
+  void accept(IStyleSelectorVisitor &visitor) const override;
+
 };
 
 } // namespace webvtt

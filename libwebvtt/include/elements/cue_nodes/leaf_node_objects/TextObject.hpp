@@ -6,10 +6,10 @@
 namespace webvtt {
 class TextObject : public LeafNodeObject {
  public:
-  TextObject(std::u32string_view input) {
+  explicit TextObject(std::u32string_view input) {
     this->text = input;
   }
-  NodeObject::NodeType getNodeType() const override;
+  [[nodiscard]] NodeObject::NodeType getNodeType() const override;
   void accept(ICueTreeVisitor &visitor) const override;
 
  private:

@@ -1,5 +1,6 @@
 #ifndef LIBWEBVTT_INCLUDE_ELEMENTS_CUE_NODES_NODE_OBJECT_HPP_
 #define LIBWEBVTT_INCLUDE_ELEMENTS_CUE_NODES_NODE_OBJECT_HPP_
+#include "elements/visitors/IStyleSelectorVisitor.hpp"
 
 #include <list>
 #include <stack>
@@ -10,7 +11,7 @@ namespace webvtt {
 class Cue;
 class ICueTreeVisitor;
 
-class NodeObject {
+class NodeObject : public IStyleSelectorVisitor {
  public:
 
   NodeObject() = default;
@@ -18,7 +19,7 @@ class NodeObject {
   NodeObject(NodeObject &&) = delete;
   NodeObject &operator=(const NodeObject &) = delete;
   NodeObject &operator=(NodeObject &&) = delete;
-  virtual ~NodeObject() = default;
+  virtual ~  NodeObject() = default;
 
   enum class NodeType {
     //Internal NodeTypes
@@ -50,8 +51,25 @@ class NodeObject {
   virtual void accept(ICueTreeVisitor &visitor) const = 0;
   virtual void visitChildren(ICueTreeVisitor &visitor) = 0;
 
+  void visit(const MatchAllSelector &selector) override;
+  void visit(const IdSelector &selector) override;
+  void visit(const ClassSelector &selector) override;
+  void visit(const CompoundSelector &selector) override;
+  void visit(const CombinatorSelector &selector) override;
+  void visit(const BoldTypeSelector &selector) override;
+  void visit(const ClassTypeSelector &selector) override;
+  void visit(const ItalicTypeSelector &selector) override;
+  void visit(const LanguageTypeSelector &selector) override;
+  void visit(const RubyTypeSelector &selector) override;
+  void visit(const RubyTextTypeSelector &selector) override;
+  void visit(const UnderlineTypeSelector &selector) override;
+  void visit(const VoiceTypeSelector &selector) override;
+  void visit(const LanguageSelector &selector) override;
+  void visit(const VoiceSelector &selector) override;
+  bool IsShouldApplyLastVisitedStyleSheet() const;
  protected:
   std::weak_ptr<NodeObject> parent;
+  bool shouldApplyLastVisitedStyleSheet = false;
 
 };
 

@@ -7,8 +7,9 @@ namespace webvtt {
 
 class RubyObject : public InternalNodeObject {
  public:
-  virtual NodeType getNodeType() const override;
-  void accept(ICueTreeVisitor &visitor) const  override;
+  [[nodiscard]] NodeType getNodeType() const override;
+  void accept(ICueTreeVisitor &visitor) const override;
+  void visit(const RubyTypeSelector &selector) override;
 };
 
 } // namespace webvtt

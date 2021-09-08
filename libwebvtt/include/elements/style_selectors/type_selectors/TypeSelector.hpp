@@ -7,9 +7,7 @@
 namespace webvtt {
 class TypeSelector : public StyleSelector {
  public:
-
   [[nodiscard]] SelectorType getSelectorType() const override;
-
   static std::unique_ptr<StyleSelector> makeNewTypeSelector(std::u32string_view type);
 
 };

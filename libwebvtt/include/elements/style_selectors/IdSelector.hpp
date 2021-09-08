@@ -4,12 +4,14 @@
 #include <string>
 
 namespace webvtt {
-class IDSelector : public StyleSelector {
+class IdSelector : public StyleSelector {
  public:
-  IDSelector(std::u32string_view new_id) : StyleSelector() {
+  explicit IdSelector(std::u32string_view new_id) {
     this->id = new_id;
   }
-  SelectorType getSelectorType() const override;
+  [[nodiscard]]std::u32string_view getId() const;
+  [[nodiscard]]SelectorType getSelectorType() const override;
+  void accept(IStyleSelectorVisitor &visitor) const override;
 
  private:
   std::u32string id;

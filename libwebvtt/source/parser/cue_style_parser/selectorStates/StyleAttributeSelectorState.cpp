@@ -56,40 +56,51 @@ StyleAttributeSelectorState::makeNewAttributeSelector(StyleSheetParser &parser, 
       attributeName.remove_suffix(1);
   }
 
-  std::unique_ptr<AttributeSelector> attributeSelecotr = nullptr;
+  std::unique_ptr<AttributeSelector> attributeSelector = nullptr;
 
   if (attributeSpecifier == CSSConstants::VOICE_TYPE && attributeName == CSSConstants::VOICE_ATTRIBUTE) {
-    attributeSelecotr =
+    attributeSelector =
         AttributeSelector::makeNewAttributeSelector(CSSConstants::VOICE_ATTRIBUTE, attributeValue);
   }
   if (attributeSpecifier == CSSConstants::LANG_TYPE && attributeName == CSSConstants::LANGUAGE_ATTRIBUTE) {
-    attributeSelecotr =
+    attributeSelector =
         AttributeSelector::makeNewAttributeSelector(CSSConstants::LANGUAGE_ATTRIBUTE, attributeValue);
   }
   if (attributeSpecifier.empty() && attributeName == CSSConstants::VOICE_ATTRIBUTE) {
-    attributeSelecotr =
+    attributeSelector =
         AttributeSelector::makeNewAttributeSelector(CSSConstants::VOICE_ATTRIBUTE, attributeValue);
   }
   if (attributeSpecifier.empty() && attributeName == CSSConstants::LANGUAGE_ATTRIBUTE) {
-    attributeSelecotr =
+    attributeSelector =
         AttributeSelector::makeNewAttributeSelector(CSSConstants::LANGUAGE_ATTRIBUTE, attributeValue);
   }
-  if (attributeSelecotr == nullptr)
+  if (attributeSelector == nullptr)
     parser.setState(StyleState::StyleStateType::ERROR);
-  attributeSelecotr->setStringMatchingType(stringMatchType);
-  return attributeSelecotr;
+  attributeSelector->setStringMatchingType(stringMatchType);
+  return attributeSelector;
 }
 
 void
+StyleAttributeSelectorState::checkIfValueGivenAsString(StyleSheetParser &parser) {
 
+
+}
+
+void
 StyleAttributeSelectorState::preprocessBuffer(StyleSheetParser &parser) {
-  if (parser.getAdditionalBuffer().size() < 2)
+  if (parser.getAdditionalBuffer().size() < 2) {
     parser.setState(StyleState::StyleStateType::ERROR);
-
-  if (parser.getAdditionalBuffer().back() != ParserUtil::RIGHT_SQUARE_BRACKET_C)
+    return;
+  }
+  if (parser.getAdditionalBuffer().back() != ParserUtil::RIGHT_SQUARE_BRACKET_C) {
     parser.setState(StyleState::StyleStateType::ERROR);
+    return;
+  }
 
   parser.getAdditionalBuffer().pop_back();
+
+  ParserUtil::strip(parser.getAdditionalBuffer(), ParserUtil::isASCIIWhiteSpaceCharacter);
+
 }
 
 void

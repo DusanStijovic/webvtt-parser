@@ -129,7 +129,7 @@ namespace CPlusPlusLogging
       ~Logger();
 
    protected:
-      // Log file name. File name should be change from here only
+      // Log file voiceName. File voiceName should be change from here only
       const std::string logFileName = "MyLogFile.log";
 
       std::string getCurrentTime();

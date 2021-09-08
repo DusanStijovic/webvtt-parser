@@ -4,6 +4,7 @@
 
 namespace webvtt {
 class BoldTypeSelector : public TypeSelector {
+  void accept(IStyleSelectorVisitor &visitor) const override;
 
 };
 

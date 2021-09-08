@@ -13,6 +13,7 @@ namespace webvtt {
 class Cue;
 class NodeObject;
 class Region;
+class ICueTreeVisitor;
 
 class StyleSheet : public Block {
  public:
@@ -22,22 +23,21 @@ class StyleSheet : public Block {
     REGION
   };
 
-  void addSelector(std::unique_ptr<StyleSelector> &&newSelector);
-  std::list<std::unique_ptr<StyleSelector>> &getSelectors();
+  void setSelector(std::unique_ptr<StyleSelector> newSelector);
+  [[nodiscard]] const StyleSelector &getSelector() const;
 
   void addCSSRule(std::string_view name, std::string_view newValue);
-  const std::map<std::string, std::string> &getCSSRules();
+  [[maybe_unused]] const std::map<std::string, std::string> &getCSSRules();
 
   virtual StyleSheetType getStyleSheetType() = 0;
   static std::unique_ptr<StyleSheet> makeNewStyleSheet(StyleSheetType styleSheetType);
 
-  void setCurrentCue(const Cue &cue);
+
+
 
  protected:
   std::map<std::string, std::string> cssRules;
-  std::list<std::unique_ptr<StyleSelector>> styleSelectors;
-  bool retShouldApply = false;
-  const Cue *connectedCue = nullptr;
+  std::unique_ptr<StyleSelector> styleSelector;
 
 };
 

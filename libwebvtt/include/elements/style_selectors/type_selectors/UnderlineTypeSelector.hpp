@@ -4,6 +4,7 @@
 
 namespace webvtt {
 class UnderlineTypeSelector : public TypeSelector {
+  void accept(IStyleSelectorVisitor &visitor) const override;
 
 };
 
