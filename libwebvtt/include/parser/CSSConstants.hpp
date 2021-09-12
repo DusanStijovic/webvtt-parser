@@ -39,22 +39,22 @@ class CSSConstants {
   static constexpr std::string_view FONT_FAMILY = "font-family";
   //Outline
   static constexpr std::string_view OUTLINE = "outline";
-  static constexpr std::string_view OUTLINE_COLOR = "font";
-  static constexpr std::string_view OUTLINE_STYLE = "font";
-  static constexpr std::string_view OUTLINE_WIDTH = "font";
+  static constexpr std::string_view OUTLINE_COLOR = "outline-color";
+  static constexpr std::string_view OUTLINE_STYLE = "outline-style";
+  static constexpr std::string_view OUTLINE_WIDTH = "outline-width";
 
   //Transition rules
   static constexpr std::string_view TRANSITION = "transition";
   static constexpr std::string_view TRANSITION_PROPERTY = "transition-property";
   static constexpr std::string_view TRANSITION_DURATION = "transition-duration";
   static constexpr std::string_view TRANSITION_TIMING_FUNCTION = "transition-timing-function";
-  static constexpr std::string_view TRANSITION_DELAY = "transition-deley";
+  static constexpr std::string_view TRANSITION_DELAY = "transition-delay";
 
   //Animation rules
   static constexpr std::string_view ANIMATION = "animation";
   static constexpr std::string_view ANIMATION_NAME = "animation-voiceName";
   static constexpr std::string_view ANIMATION_DURATION = "animation-duration";
-  static constexpr std::string_view ANIMATION_TIMING_FNCTION = "animation-timing-function";
+  static constexpr std::string_view ANIMATION_TIMING_FUNCTION = "animation-timing-function";
   static constexpr std::string_view ANIMATION_DELAY = "animation-delay";
   static constexpr std::string_view ANIMATION_ITERATION_COUNT = "animation-iteration-count";
   static constexpr std::string_view ANIMATION_DIRECTION = "animation-direction";

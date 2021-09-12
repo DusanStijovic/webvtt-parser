@@ -23,12 +23,13 @@ void StyleSheetParser::parseCSSRules(std::u32string_view newInput) {
   this->buffer.clear();
   this->additionalBuffer.clear();
   this->compoundSelectorList.clear();
+  this->combinatorSelectorList.clear();
   try {
     while (true) {
       currentState->processState(*this);
       if (endParsing)
         break;
-      currentPosition++;
+      if (currentPosition != input.end()) currentPosition++;
     }
   }
   catch (const StyleSheetFormatError &error) {

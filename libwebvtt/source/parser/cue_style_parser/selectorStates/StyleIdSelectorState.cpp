@@ -3,28 +3,28 @@
 #include "parser/ParserUtil.hpp"
 #include "elements/style_selectors/IdSelector.hpp"
 
-namespace webvtt
-{
+namespace webvtt {
 
-  void
-  StyleIdSelectorState::preprocessBuffer(StyleSheetParser &parser)
-  {
-    if (parser.getBuffer().empty())
-      parser.setState(StyleState::StyleStateType::ERROR);
-    parser.getBuffer() = ParserUtil::convertCSSEscapedString(parser.getBuffer());
-    if (!ParserUtil::checkIfCSSSIdentifierRightFormat(parser.getBuffer()))
-    {
-      DILOGE("ID format not right");
-      parser.setState(StyleState::StyleStateType::ERROR);
-    }
-  }
+void
+StyleIdSelectorState::preprocessBuffer(StyleSheetParser &parser) {
+  if (parser.getBuffer().empty())
+    parser.setState(StyleState::StyleStateType::ERROR);
 
-  std::unique_ptr<StyleSelector>
-  StyleIdSelectorState::makeNewStyleSelector(StyleSheetParser &parser)
-  {
-    auto help = std::make_unique<IdSelector>(parser.getBuffer());
-    parser.getBuffer().clear();
-    return help;
+  bool error = false;
+  if (!ParserUtil::checkIfCSSSIdentifierBeginningRightFormat(parser.getBuffer())) error = true;
+  parser.getBuffer() = ParserUtil::convertCSSEscapedString(parser.getBuffer());
+
+  if (error) {
+    DILOGE("ID format not right");
+    parser.setState(StyleState::StyleStateType::ERROR);
   }
+}
+
+std::unique_ptr <StyleSelector>
+StyleIdSelectorState::makeNewStyleSelector(StyleSheetParser &parser) {
+  auto help = std::make_unique<IdSelector>(parser.getBuffer());
+  parser.getBuffer().clear();
+  return help;
+}
 
 } // namespace webvtt

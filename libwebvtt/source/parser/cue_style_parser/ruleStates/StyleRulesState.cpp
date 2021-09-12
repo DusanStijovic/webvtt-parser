@@ -40,7 +40,7 @@ namespace webvtt
         switch (character)
         {
         case ParserUtil::RIGHT_CURLY_BRACKET_C:
-            parser.setState(StyleState::StyleStateType::END_STATE);
+            parser.setState(StyleState::StyleStateType::START);
             break;
         case ParserUtil::SEMI_COLON:
             processRule(parser, parser.getBuffer());

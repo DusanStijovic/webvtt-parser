@@ -66,7 +66,7 @@ class NodeObject : public IStyleSelectorVisitor {
   void visit(const VoiceTypeSelector &selector) override;
   void visit(const LanguageSelector &selector) override;
   void visit(const VoiceSelector &selector) override;
-  bool IsShouldApplyLastVisitedStyleSheet() const;
+  [[nodiscard]] bool IsShouldApplyLastVisitedStyleSheet() const;
  protected:
   std::weak_ptr<NodeObject> parent;
   bool shouldApplyLastVisitedStyleSheet = false;

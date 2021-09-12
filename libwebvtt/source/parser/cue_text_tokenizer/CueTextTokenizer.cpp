@@ -15,9 +15,8 @@ std::unique_ptr<Token> CueTextTokenizer::getNextToken() {
     std::unique_ptr<Token> token = currentState->process(*this);
     if (token != nullptr)
       return token;
-    currentPosition++;
+    if (currentPosition != input.end()) currentPosition++;
   }
 }
-
 
 }

@@ -30,69 +30,39 @@ bool StringSyncBuffer<OneElemType>::isReadDone() {
   return retVal;
 }
 template<typename OneElemType>
-bool StringSyncBuffer<OneElemType>::writeNext(OneElemType x) {
+bool StringSyncBuffer<OneElemType>::writeNext(const OneElemType &elem) {
   std::lock_guard<std::mutex> lock(this->mutexWrite);
-  return writeOne(x);
+  return StringBuffer<OneElemType>::writeNext(elem);
 }
 template<typename OneElemType>
 std::optional<OneElemType> StringSyncBuffer<OneElemType>::readNext() {
   std::lock_guard<std::mutex> lock(this->mutexRead);
-  return this->readOne();
+  return StringBuffer<OneElemType>::readNext();
 }
 template<typename OneElemType>
-bool StringSyncBuffer<OneElemType>::writeMultiple(std::basic_string<OneElemType> &input) {
+bool StringSyncBuffer<OneElemType>::writeMultiple(const std::basic_string<OneElemType> &input) {
   std::lock_guard<std::mutex> lock(this->mutexWrite);
-  bool success;
-  for (auto one : input) {
-    success = this->writeOne(one);
-    if (!success)
-      return false;
-  }
-  return true;
+  return StringBuffer<OneElemType>::writeMultiple(input);
 }
 template<typename OneElemType>
 std::basic_string<OneElemType> StringSyncBuffer<OneElemType>::readMultiple(uint32_t number) {
   std::lock_guard<std::mutex> lock(this->mutexRead);
+  return StringBuffer<OneElemType>::readMultiple(number);
 
-  std::basic_string<OneElemType> values;
-  for (uint32_t i = 0; i < number; i++) {
-    auto result = this->readOne();
-    if (result.has_value()) {
-      values.push_back(result.value());
-    } else
-      return values;
-  }
-  return values;
 }
 template<typename OneElemType>
-std::basic_string<OneElemType> StringSyncBuffer<OneElemType>::readUntilSpecificData(OneElemType specificData) {
+std::basic_string<OneElemType> StringSyncBuffer<OneElemType>::readUntilSpecificData(const OneElemType &specificData) {
   std::lock_guard<std::mutex> lock(this->mutexRead);
-  std::basic_string<OneElemType> values;
-
-  auto result = this->peekOne();
-  while (result.has_value() && result.value() != specificData) {
-    result = this->readOne();
-    values.push_back(result.value());
-    result = this->peekOne();
-  }
-  return values;
+  return StringBuffer<OneElemType>::readUntilSpecificData(specificData);
 }
 template<typename OneElemType>
-std::basic_string<OneElemType> StringSyncBuffer<OneElemType>::readWhileSpecificData(OneElemType specificData) {
+std::basic_string<OneElemType> StringSyncBuffer<OneElemType>::readWhileSpecificData(const OneElemType &specificData) {
   std::lock_guard<std::mutex> lock(this->mutexRead);
-  std::basic_string<OneElemType> values;
-
-  auto result = this->peekOne();
-  while (result.has_value() && result.value() == specificData) {
-    result = this->readOne();
-    values.push_back(result.value());
-    result = this->peekOne();
-  }
-  return values;
+  return StringBuffer<OneElemType>::readWhileSpecificData(specificData);
 }
 template<typename OneElemType>
 std::optional<OneElemType> StringSyncBuffer<OneElemType>::isReadDoneAndAdvancedIfNot() {
-  return readNext();
+  return StringBuffer<OneElemType>::isReadDoneAndAdvancedIfNot();
 }
 template<typename OneElemType>
 size_t StringSyncBuffer<OneElemType>::getReadPosition() {
@@ -102,23 +72,18 @@ size_t StringSyncBuffer<OneElemType>::getReadPosition() {
 template<typename OneElemType>
 bool StringSyncBuffer<OneElemType>::setReadPosition(size_t position) {
   std::lock_guard<std::mutex> lock(this->mutex);
-  if (position > this->buffer.length()) return false;
-  this->readPosition = position;
-  return true;
+  return StringBuffer<OneElemType>::setReadPosition(position);
 }
 template<typename OneElemType>
 void StringSyncBuffer<OneElemType>::clearBufferUntilReadPosition() {
   std::lock_guard<std::mutex> lock(this->mutex);
-  this->buffer.erase(this->buffer.begin(), this->buffer.begin() + this->readPosition);
-  this->readPosition = 0;
+  StringBuffer<OneElemType>::clearBufferUntilReadPosition();
 
 }
 template<typename OneElemType>
 void StringSyncBuffer<OneElemType>::resetBuffer() {
   std::lock_guard<std::mutex> lock(this->mutex);
-  this->buffer.clear();
-  this->readPosition = 0;
-  this->inputEnded = false;
+  StringBuffer<OneElemType>::resetBuffer();
 }
 template<typename OneElemType>
 std::optional<OneElemType> StringSyncBuffer<OneElemType>::readOne() {
@@ -136,7 +101,7 @@ std::optional<OneElemType> StringSyncBuffer<OneElemType>::readOne() {
   return res;
 }
 template<typename OneElemType>
-bool StringSyncBuffer<OneElemType>::writeOne(OneElemType elem) {
+bool StringSyncBuffer<OneElemType>::writeOne(const OneElemType &elem) {
   try {
     std::unique_lock<std::mutex> lock(this->mutex);
 

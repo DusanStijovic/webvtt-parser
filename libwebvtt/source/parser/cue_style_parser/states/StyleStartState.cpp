@@ -65,14 +65,18 @@ namespace webvtt
         case ParserUtil::COMMA_C:
         {
             makeAndSetNewStyleSheetForParsing(parser);
-          parser.addSelectorToCurrentCompoundSelectorList(std::make_unique<MatchAllSelector>());
-          parser.addSelectorToCurrentCombinatorSelectorList();
+            parser.addSelectorToCurrentCompoundSelectorList(std::make_unique<MatchAllSelector>());
+            parser.addSelectorToCurrentCombinatorSelectorList();
             parser.getCurrentPosition()--;
             parser.setState(StyleState::StyleStateType::BEFORE_RULE_STATE);
             break;
         }
         case StyleSheetParser::STOP_PARSER:
-            parser.setState(StyleState::StyleStateType::ERROR);
+            ParserUtil::strip(parser.getBuffer(), ParserUtil::isASCIIWhiteSpaceCharacter);
+            if (!parser.getBuffer().empty())
+                parser.setState(StyleState::StyleStateType::ERROR);
+            else
+                parser.setState(StyleState::StyleStateType::END_STATE);
             break;
 
         default:

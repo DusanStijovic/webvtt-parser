@@ -5,11 +5,11 @@
 #include <condition_variable>
 #include <list>
 #include <optional>
-#include "buffer/IStringBuffer.hpp"
+#include "buffer/StringBuffer.hpp"
 
 namespace webvtt {
 template<typename OneElemType>
-class StringSyncBuffer : public IStringBuffer<OneElemType> {
+class StringSyncBuffer : public StringBuffer<OneElemType> {
  public:
   bool isInputEnded() override;
   void setInputEnded() override;
@@ -17,14 +17,14 @@ class StringSyncBuffer : public IStringBuffer<OneElemType> {
 
   std::optional<OneElemType> peekOne() override;
 
-  bool writeNext(OneElemType x) override;
+  bool writeNext(const OneElemType &elem) override;
   std::optional<OneElemType> readNext() override;
 
-  bool writeMultiple(std::basic_string<OneElemType> &input) override;
+  bool writeMultiple(const std::basic_string<OneElemType> &input) override;
   std::basic_string<OneElemType> readMultiple(uint32_t number) override;
 
-  std::basic_string<OneElemType> readUntilSpecificData(OneElemType specificData) override;
-  std::basic_string<OneElemType> readWhileSpecificData(OneElemType specificData) override;
+  std::basic_string<OneElemType> readUntilSpecificData(const OneElemType &specificData) override;
+  std::basic_string<OneElemType> readWhileSpecificData(const OneElemType &specificData) override;
 
   std::optional<OneElemType> isReadDoneAndAdvancedIfNot() override;
 
@@ -36,8 +36,8 @@ class StringSyncBuffer : public IStringBuffer<OneElemType> {
 
  protected:
 
-  bool writeOne(OneElemType x);
-  std::optional<OneElemType> readOne();
+  bool writeOne(const OneElemType &elem) override;
+  std::optional<OneElemType> readOne() override;
 
   std::mutex mutex;
   std::condition_variable emptyCV;

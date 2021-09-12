@@ -50,7 +50,7 @@ void FetchSelectorState::processState(StyleSheetParser &parser) {
 }
 
 void FetchSelectorState::foundCommaCharacter(StyleSheetParser &parser,
-                                             std::unique_ptr <StyleSelector> &&styleSelector) {
+                                             std::unique_ptr<StyleSelector> &&styleSelector) {
 
   parser.addSelectorToCurrentCompoundSelectorList(std::move(styleSelector));
   parser.addSelectorToCurrentCombinatorSelectorList();
@@ -58,20 +58,20 @@ void FetchSelectorState::foundCommaCharacter(StyleSheetParser &parser,
 }
 
 void FetchSelectorState::foundCombinatorCharacter(StyleSheetParser &parser,
-                                                  std::unique_ptr <StyleSelector> &&styleSelector) {
+                                                  std::unique_ptr<StyleSelector> &&styleSelector) {
   parser.addSelectorToCurrentCompoundSelectorList(std::move(styleSelector));
   parser.addSelectorToCurrentCombinatorSelectorList();
 }
 
 void FetchSelectorState::foundCompoundCharacter(StyleSheetParser &parser,
-                                                std::unique_ptr <StyleSelector> &&styleSelector) {
+                                                std::unique_ptr<StyleSelector> &&styleSelector) {
   parser.addSelectorToCurrentCompoundSelectorList(std::move(styleSelector));
   parser.goToSavedState();
   parser.getCurrentPosition()--;
 }
 
 void FetchSelectorState::foundRightParenthesis(StyleSheetParser &parser,
-                                               std::unique_ptr <StyleSelector> &&styleSelector) {
+                                               std::unique_ptr<StyleSelector> &&styleSelector) {
   parser.addSelectorToCurrentCompoundSelectorList(std::move(styleSelector));
   parser.addSelectorToCurrentCombinatorSelectorList();
   parser.addSelectorToCurrentObject();
@@ -84,6 +84,11 @@ void FetchSelectorState::foundStopTokenizer(StyleSheetParser &parser) {
 }
 
 void FetchSelectorState::foundDefaultBehaviour(StyleSheetParser &parser, uint32_t character) {
+  if (!ParserUtil::checkIfCSSIdentifierAllowedCharacter(character)) {
+    DILOGE("css ident name format not right");
+    parser.setState(StyleState::StyleStateType::ERROR);
+    return;
+  }
   parser.getBuffer().push_back(character);
 };
 

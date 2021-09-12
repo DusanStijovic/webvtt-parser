@@ -2,6 +2,7 @@
 #include "parser/object_parser/StyleSheetParser.hpp"
 #include "parser/ParserUtil.hpp"
 #include "elements/style_selectors/attribute_selectors/AttributeSelector.hpp"
+#include "exceptions/styleParserExceptions/StyleSheetFormatError.hpp"
 #include "parser/CSSConstants.hpp"
 #include <tuple>
 #include <optional>
@@ -52,7 +53,7 @@ StyleAttributeSelectorState::makeNewAttributeSelector(StyleSheetParser &parser, 
       parser.setState(StyleState::StyleStateType::ERROR);
 
     stringMatchType = getStringMatchType(attributeName.back());
-    if (stringMatchType == AttributeSelector::StringMatchType::EXACT_MATCHING)
+    if (stringMatchType != AttributeSelector::StringMatchType::EXACT_MATCHING)
       attributeName.remove_suffix(1);
   }
 
@@ -74,15 +75,17 @@ StyleAttributeSelectorState::makeNewAttributeSelector(StyleSheetParser &parser, 
     attributeSelector =
         AttributeSelector::makeNewAttributeSelector(CSSConstants::LANGUAGE_ATTRIBUTE, attributeValue);
   }
-  if (attributeSelector == nullptr)
+  if (attributeSelector == nullptr) {
     parser.setState(StyleState::StyleStateType::ERROR);
+    DILOGE("Not suported attribute");
+    throw StyleSheetFormatError();
+  }
   attributeSelector->setStringMatchingType(stringMatchType);
   return attributeSelector;
 }
 
 void
 StyleAttributeSelectorState::checkIfValueGivenAsString(StyleSheetParser &parser) {
-
 
 }
 

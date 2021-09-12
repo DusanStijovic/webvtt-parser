@@ -54,7 +54,7 @@ namespace webvtt
             allowedProperties.insert(CSSConstants::ANIMATION_ITERATION_COUNT);
             allowedProperties.insert(CSSConstants::ANIMATION_NAME);
             allowedProperties.insert(CSSConstants::ANIMATION_PLAY_STATE);
-            allowedProperties.insert(CSSConstants::ANIMATION_TIMING_FNCTION);
+            allowedProperties.insert(CSSConstants::ANIMATION_TIMING_FUNCTION);
             break;
         case RULE_SHORT_LAND_TYPE::BACKGROUND:
             allowedProperties.insert(CSSConstants::BACKGROUND);

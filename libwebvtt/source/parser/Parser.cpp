@@ -23,7 +23,7 @@ std::shared_ptr <UniquePtrSyncBuffer<StyleSheet>> Parser::getStyleSheetBuffer() 
   return styleSheets;
 }
 
-Parser::Parser(std::shared_ptr <IStringBuffer<char32_t>> inputStream) : inputStream(std::move(
+Parser::Parser(std::shared_ptr <StringBuffer<char32_t>> inputStream) : inputStream(std::move(
     inputStream)) {
   preprocessedStream = std::make_unique < StringSyncBuffer < char32_t >> ();
 
@@ -106,7 +106,7 @@ bool Parser::collectBlock(bool inHeader) {
 
   uint32_t lineCount = 0;
   auto previousPosition = preprocessedStream->getReadPosition();
-  std::u32string_view line;
+  std::u32string line;
   std::u32string buffer;
 
   bool seenEOF = false, seenArrow = false;
@@ -136,7 +136,7 @@ bool Parser::collectBlock(bool inHeader) {
         DILOGI("FOUND CUE");
         isNewCue = true;
 
-        auto position = line.begin();
+        auto position = std::u32string_view(line).begin();
         bool success = cueParser->setNewObjectForParsing(std::make_unique<Cue>(buffer));
         success = cueParser->parseTimingAndSettings(line, position);
 

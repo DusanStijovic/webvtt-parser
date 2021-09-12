@@ -49,6 +49,7 @@ source/parser/cue_style_parser/selectorStates/StylePseudoClassSelectorState.cpp\
 source/parser/cue_style_parser/selectorStates/StylePseudoElementWithArgumentEndState.cpp\
 source/parser/cue_style_parser/selectorStates/StylePseudoClassWithArgumentEndState.cpp\
 source/parser/cue_style_parser/selectorStates/StylePseudoWithArgumentEndState.cpp\
+source/parser/cue_style_parser/states/StyleEscapedSequenceState.cpp\
 
 
 # [STYLE PARSING] RULE STATES

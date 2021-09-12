@@ -1,4 +1,5 @@
 #include "decoder/UTF8ToUTF32StreamDecoder.hpp"
+#include "parser/ParserUtil.hpp"
 #include "utf8.h"
 #include <thread>
 #include <utility>
@@ -6,7 +7,7 @@
 #include "buffer/StringSyncBuffer.hpp"
 
 namespace webvtt {
-UTF8ToUTF32StreamDecoder::UTF8ToUTF32StreamDecoder(std::shared_ptr<IStringBuffer<char8_t>> newInputStream)
+UTF8ToUTF32StreamDecoder::UTF8ToUTF32StreamDecoder(std::shared_ptr<StringBuffer<char8_t>> newInputStream)
     : inputStream(std::move(newInputStream)) {
   outputStream = std::make_shared<StringSyncBuffer<char32_t>>();
 }
@@ -18,10 +19,10 @@ std::u32string UTF8ToUTF32StreamDecoder::decodeReadBytes(std::u8string &readByte
   std::u32string utf_32;
 
   if (positionInvalid == std::string::npos) {
-    utf_32 = utf8::utf8to32(validUTF8);
+    utf_32 = ParserUtil::utf8to32(validUTF8);
     readBytes.clear();
   } else {
-    utf_32 = utf8::utf8to32(validUTF8.substr(0, positionInvalid));
+    utf_32 = ParserUtil::utf8to32(validUTF8.substr(0, positionInvalid));
     readBytes.erase(readBytes.begin(), readBytes.begin() + positionInvalid);
   }
   return utf_32;

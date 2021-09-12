@@ -2,7 +2,7 @@
 #define LIBWEBVTT_INCLUDE_PARSER_OBJECT_PARSER_PARSER_HPP_
 
 #include "utf8.h"
-#include "buffer/IStringBuffer.hpp"
+#include "buffer/StringBuffer.hpp"
 #include "buffer/StringSyncBuffer.hpp"
 #include "buffer/UniquePtrSyncBuffer.hpp"
 #include "elements/webvtt_objects/Cue.hpp"
@@ -24,7 +24,7 @@ namespace webvtt {
 class Parser {
 
  public:
-  explicit Parser(std::shared_ptr<IStringBuffer<char32_t>> inputStream);
+  explicit Parser(std::shared_ptr<StringBuffer<char32_t>> inputStream);
   void setPredefineLanguage(std::u32string_view language);
   bool startParsing();
 
@@ -57,7 +57,7 @@ class Parser {
 
   bool parsingStarted = false;
 
-  std::shared_ptr<IStringBuffer<char32_t>> inputStream;
+  std::shared_ptr<StringBuffer<char32_t>> inputStream;
   std::unique_ptr<StringSyncBuffer<char32_t>> preprocessedStream;
 
   std::unique_ptr<std::thread> preProcessingThread;
