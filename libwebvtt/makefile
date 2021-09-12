@@ -1,6 +1,6 @@
-PROGRAM = webvtt
+PROGRAM = libwebvtt
 BUILD_DIR = build
-EXTENSION = o
+EXTENSION = so
 OUTPUT_DIR = output_dir
 
 SOURCE_CPP_LIST = \
@@ -198,21 +198,10 @@ CXXFLAGS = -MD -MP
 CXXFLAGS += -g -std=c++20
 CXXFLAGS += -Wall -Wextra 
 CXXFLAGS += $(INCLUDE_CPP_LIST)
-ifeq ($(SHARED), 1)
-	CXXFLAGS += -fPIC
-endif
+CXXFLAGS += -fPIC
 
-FLAGS_LD =
+FLAGS_LD += -shared -fPIC -pie
 
-ifeq ($(SHARED), 1)
-	FLAGS_LD += -shared -fPIC -pie
-endif
-
-
-ifeq ($(SHARED), 1)
-	EXTENSION = so
-	PROGRAM = libwebvtt
-endif
 
 .phony: all
 all :  $(OUTPUT_DIR)/$(PROGRAM).$(EXTENSION) $(OUTPUT_DIR)
