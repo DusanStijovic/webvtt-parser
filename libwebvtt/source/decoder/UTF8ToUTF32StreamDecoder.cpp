@@ -13,7 +13,7 @@ UTF8ToUTF32StreamDecoder::UTF8ToUTF32StreamDecoder(std::shared_ptr<StringBuffer<
 }
 
 std::u32string UTF8ToUTF32StreamDecoder::decodeReadBytes(std::u8string &readBytes) {
-  auto positionInvalid = utf8::find_invalid(readBytes);
+  auto positionInvalid = ParserUtil::find_invalid(readBytes);
 
   auto validUTF8 = std::u8string_view(readBytes);
   std::u32string utf_32;
