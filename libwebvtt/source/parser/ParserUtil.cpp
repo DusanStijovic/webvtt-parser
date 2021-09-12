@@ -13,6 +13,12 @@
 namespace webvtt
 {
 
+  inline std::size_t ParserUtil::find_invalid(std::u8string_view s)
+  {
+    std::u8string_view::const_iterator invalid = utf8::find_invalid(s.begin(), s.end());
+    return (invalid == s.end()) ? std::u8string_view::npos : (invalid - s.begin());
+  }
+
   std::u32string ParserUtil::utf8to32(std::u8string_view s)
   {
     std::u32string result;

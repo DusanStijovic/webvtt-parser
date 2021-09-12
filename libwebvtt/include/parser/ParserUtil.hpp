@@ -105,6 +105,9 @@ namespace webvtt
       SECONDS
     };
 
+
+    static std::size_t find_invalid(std::u8string_view s);
+
     static std::u32string utf8to32(std::u8string_view s);
 
     static constexpr std::u32string_view TIME_STAMP_SEPARATOR = U"-->";
