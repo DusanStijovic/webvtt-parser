@@ -1,7 +1,5 @@
-
-**/build
-**/.idea
-**/.vscode
+libwebvtt/.idea
+libwebvtt/.vscode
 libwebvtt/.editorconfig
+libwebvtt/build
 libwebvtt/output_dir
-**/vttexample
