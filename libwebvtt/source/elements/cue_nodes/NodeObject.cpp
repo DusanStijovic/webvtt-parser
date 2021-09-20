@@ -72,4 +72,18 @@ bool NodeObject::IsShouldApplyLastVisitedStyleSheet() const {
   return shouldApplyLastVisitedStyleSheet;
 }
 
+void NodeObject::visitAllDirectAncestors(const StyleSelector &selector) {
+  std::weak_ptr helpParent = this->parent;
+  levelFromCurrentNode = 1;
+  while (helpParent.lock() != nullptr) {
+    selector.accept(*helpParent.lock());
+    if (shouldApplyLastVisitedStyleSheet) return;
+    helpParent = helpParent.lock()->getParent();
+    levelFromCurrentNode++;
+  }
+}
+uint32_t NodeObject::getLevelFromCurrentNode() const {
+  return levelFromCurrentNode;
+}
+
 } //Enf of namespace

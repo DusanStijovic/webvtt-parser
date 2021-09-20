@@ -1,13 +1,14 @@
-PROGRAM = libwebvtt
+SHARED_LIB_NAME = libwebvtt
 BUILD_DIR = build
 EXTENSION = so
 OUTPUT_DIR = output_dir
+EXEC = webvtt
+
+MAIN_CPP = source/main.cpp
 
 SOURCE_CPP_LIST = \
-source/main.cpp\
 source/logger/Logger.cpp\
 source/decoder/UTF8ToUTF32StreamDecoder.cpp\
-
 
 # WEBVTT OBJECTS
 SOURCE_CPP_LIST += \
@@ -60,8 +61,7 @@ source/parser/cue_style_parser/ruleStates/StyleRulesState.cpp\
 
 # [STYLE PARSING] START STATE BY TYPE OF STYLE
 SOURCE_CPP_LIST += \
-source/parser/cue_style_parser/cue_states/CueStyleStartSelectorState.cpp\
-source/parser/cue_style_parser/cue_region_states/CueRegionStyleStartSelectorState.cpp\
+source/parser/cue_style_parser/cue_states/StyleStartSelectorState.cpp\
 
 
 # [PARSING CUE TEXT] STATES
@@ -174,41 +174,48 @@ INCLUDE_CPP_LIST =\
 
 
 LIB_CPP_LIST = \
--lpthread
+-pthread
 
-OBJECTS_LIST = 
-OBJECTS_LIST += $(addprefix $(BUILD_DIR)/, $(notdir $(SOURCE_CPP_LIST:.cpp=.o)))
+
+OBJECTS_LIST_FOR_SHARED = $(addprefix $(BUILD_DIR)/, $(notdir $(SOURCE_CPP_LIST:.cpp=.o)))
+
+MAIN_OBJECT = $(addprefix $(BUILD_DIR)/, $(notdir $(MAIN_CPP:.cpp=.o)))
+
+
 
 SOURCE_CPP_PATH =  $(sort $(dir $(SOURCE_CPP_LIST)))
-
+SOURCE_CPP_PATH += $(dir $(MAIN_CPP))
 
 vpath %.cpp  $(SOURCE_CPP_PATH)
 
 
 $(info start)
-$(info $(SOURCE_CPP_PATH)) 
+$(info $(SOURCE_CPP_PATH))
 
 
 CXX = g++ -c
-LD = g++ 
+LD = g++
 
-SHARED = 0
 
 CXXFLAGS = -MD -MP
 CXXFLAGS += -g -std=c++20
-CXXFLAGS += -Wall -Wextra 
+CXXFLAGS += -Wall -Wextra
 CXXFLAGS += $(INCLUDE_CPP_LIST)
 CXXFLAGS += -fPIC
 
-FLAGS_LD += -shared -fPIC -pie
+SHARED_LD_FLASGS += -shared -fPIC
 
 
 .phony: all
-all :  $(OUTPUT_DIR)/$(PROGRAM).$(EXTENSION) $(OUTPUT_DIR)
+all :  $(OUTPUT_DIR)/$(SHARED_LIB_NAME).$(EXTENSION)  $(OUTPUT_DIR)/$(EXEC) $(OUTPUT_DIR)
 
 
-$(OUTPUT_DIR)/$(PROGRAM).$(EXTENSION) : $(OBJECTS_LIST) makefile |  $(OUTPUT_DIR)
-	$(LD) $(FLAGS_LD) -o $(@) $(OBJECTS_LIST) $(LIB_CPP_LIST)
+$(OUTPUT_DIR)/$(SHARED_LIB_NAME).$(EXTENSION) : $(OBJECTS_LIST_FOR_SHARED) makefile |  $(OUTPUT_DIR)
+	$(LD) $(SHARED_LD_FLASGS) -o $(@) $(OBJECTS_LIST_FOR_SHARED) $(LIB_CPP_LIST)
+
+
+$(OUTPUT_DIR)/$(EXEC): $(OBJECTS_LIST_FOR_SHARED) $(MAIN_OBJECT) makefile |  $(OUTPUT_DIR)
+	$(LD) -o $(@) $(OBJECTS_LIST_FOR_SHARED) $(MAIN_OBJECT)  $(LIB_CPP_LIST)
 
 
 $(BUILD_DIR)/%.o : %.cpp makefile | $(BUILD_DIR)

@@ -15,7 +15,7 @@ void StyleSheetParser::addCSSRule(std::string_view name, std::string_view value)
   }
 }
 
-void StyleSheetParser::parseCSSRules(std::u32string_view newInput) {
+void StyleSheetParser::buildObjectFromString(std::u32string_view newInput) {
   this->input = newInput;
   this->currentPosition = this->input.begin();
   setState(StyleState::StyleStateType::START);

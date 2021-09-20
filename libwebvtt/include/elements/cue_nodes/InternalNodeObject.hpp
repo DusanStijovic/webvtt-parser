@@ -28,7 +28,7 @@ class InternalNodeObject : public NodeObject {
 
   void visit(const ClassSelector &selector) override;
 
-  void visitAllDirectAncestors(const StyleSelector &selector);
+
 
 
  protected:

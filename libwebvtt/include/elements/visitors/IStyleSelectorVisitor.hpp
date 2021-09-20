@@ -40,7 +40,7 @@ class IStyleSelectorVisitor {
 
   virtual void visit(const LanguageSelector &selector) = 0;
   virtual void visit(const VoiceSelector &selector) = 0;
-
+  virtual ~IStyleSelectorVisitor() = default;
 };
 
 } // namespace webvtt

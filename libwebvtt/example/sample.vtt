@@ -20,14 +20,14 @@ id:ss regionanchor:0%,100% viewportanchor:10%,90%
 
 
 STYLE
-::cue(v),
+::cue-region(v),
 ::cue(c) {
   color: yellow;
   background: red;
 }
 
 STYLE
-::cue(#\a 3333),
+::cue-region(#\a 3333),
 ::cue(c) {
   color: yellow;
   background: red;

@@ -9,9 +9,10 @@
 #include "elements/webvtt_objects/Region.hpp"
 #include "elements/webvtt_objects/CueStyleSheet.hpp"
 #include "elements/webvtt_objects/RegionStyleSheet.hpp"
-#include "parser/object_parser/CueParser.hpp"
-#include "parser/object_parser/StyleSheetParser.hpp"
-#include "parser/object_parser/RegionParser.hpp"
+#include "parser/object_parser/base_classes/CueParserBase.hpp"
+#include "parser/object_parser/base_classes/StyleSheetParserBase.hpp"
+#include "parser/object_parser/base_classes/RegionParserBase.hpp"
+
 #include <string>
 #include <array>
 #include <list>
@@ -63,9 +64,9 @@ class Parser {
   std::unique_ptr<std::thread> preProcessingThread;
   std::unique_ptr<std::thread> parsingThread;
 
-  std::unique_ptr<CueParser> cueParser;
-  std::unique_ptr<StyleSheetParser> styleSheetParser;
-  std::unique_ptr<RegionParser> regionParser;
+  std::unique_ptr<CueParserBase> cueParser;
+  std::unique_ptr<StyleSheetParserBase> styleSheetParser;
+  std::unique_ptr<RegionParserBase> regionParser;
 
   std::shared_ptr<UniquePtrSyncBuffer<Cue>> cues;
   std::shared_ptr<UniquePtrSyncBuffer<Region>> regions;

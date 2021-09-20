@@ -4,9 +4,9 @@
 
 namespace webvtt {
 
-class CueStyleStartSelectorState : public StyleState {
+class StyleStartSelectorState : public StyleState {
  public:
-  CueStyleStartSelectorState() = default;
+  StyleStartSelectorState() = default;
   void processState(StyleSheetParser &parser) override;
 };
 

@@ -22,24 +22,13 @@ class ObjectParser {
   ObjectParser &operator=(const ObjectParser &) = delete;
   ObjectParser &operator=(ObjectParser &&) = delete;
   virtual ~ObjectParser() = 0;
-  /**
- * Set new object as parsing object
- *
- * @param newObject  new object to be set as parsing object
- * @return true if object set, otherwise false
- */
+
   virtual bool setNewObjectForParsing(std::unique_ptr<Object> newObject);
 
-  // /**
-  //  * Set new object as parsing object. Parser  make object by itself.
-  //  * @return true if object set, otherwise false
-  //  */
-  // virtual bool setNewObjectForParsing();
-
-  /**
- * @return return parser internal object and set internal object to nullptr
- */
   virtual std::unique_ptr<Object> collectCurrentObject();
+  const Object* getCurrentParsedObject();
+
+  virtual void buildObjectFromString(std::u32string_view) = 0;
 };
 
 } // namespace webvtt

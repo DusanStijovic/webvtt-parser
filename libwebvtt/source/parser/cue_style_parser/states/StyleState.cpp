@@ -12,8 +12,7 @@
 #include "parser/cue_style_parser/selectorStates/StylePseudoElementWithArgumentEndState.hpp"
 #include "parser/cue_style_parser/selectorStates/StyleStartPseudoState.hpp"
 #include "parser/cue_style_parser/ruleStates/StyleRulesState.hpp"
-#include "parser/cue_style_parser/cue_states/CueStyleStartSelectorState.hpp"
-#include "parser/cue_style_parser/cue_region_states/StartCueRegionStyleSelectorState.hpp"
+#include "parser/cue_style_parser/cue_states/StyleStartSelectorState.hpp"
 #include "parser/cue_style_parser/selectorStates/StyleTypeSelectorState.hpp"
 #include "parser/cue_style_parser/ruleStates/BeforeRuleStartState.hpp"
 #include "parser/cue_style_parser/states/EndStyleState.hpp"
@@ -47,11 +46,8 @@ namespace webvtt
         case StyleStateType::CLASS_SELECTOR:
             return std::make_unique<StyleClassSelectorState>();
             break;
-        case StyleStateType::CUE_REGION_START_SELECTOR:
-            return std::make_unique<StartCueRegionStyleSelectorState>();
-            break;
-        case StyleStateType::CUE_START_SELECTOR:
-            return std::make_unique<CueStyleStartSelectorState>();
+            case StyleStateType::START_SELECTOR:
+            return std::make_unique<StyleStartSelectorState>();
             break;
         case StyleStateType::END_SELECTOR:
             return std::make_unique<StyleEndSelectorState>();

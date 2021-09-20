@@ -144,7 +144,7 @@ class Cue : public Block {
    * Set text tree root
    *  @param treeRoot root of cue text
    */
-  void setTextTreeRoot(std::shared_ptr<NodeObject> &treeRoot);
+  void setTextTreeRoot(std::shared_ptr<NodeObject> treeRoot);
 
   /**
    * Get text tree root

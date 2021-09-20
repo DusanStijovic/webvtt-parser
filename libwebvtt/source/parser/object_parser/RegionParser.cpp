@@ -9,7 +9,7 @@
 
 namespace webvtt {
 
-void RegionParser::parseSettings(std::u32string_view input) {
+void RegionParser::buildObjectFromString(std::u32string_view input) {
   std::u32string_view setting;
   auto position = input.begin();
   std::u32string characters = {ParserUtil::SPACE_C, ParserUtil::TAB_C, ParserUtil::LF_C, ParserUtil::CR_C};

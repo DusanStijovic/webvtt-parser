@@ -76,7 +76,7 @@ namespace CPlusPlusLogging
       void error(std::string text) throw();
       void error(std::ostringstream &stream) throw();
 
-      static std::shared_ptr<Logger> getLogger();
+      static Logger *getLogger();
 
       // Interface for Alarm Log
       void
@@ -123,14 +123,14 @@ namespace CPlusPlusLogging
       void enableFileLogging();
 
       explicit Logger(std::string logFileName);
-      Logger() : Logger(logFileName) {}
+      Logger() : Logger("MyLogFile.log") {}
 
       Logger(const Logger &obj) = delete;
       ~Logger();
 
    protected:
       // Log file voiceName. File voiceName should be change from here only
-      const std::string logFileName = "MyLogFile.log";
+      std::string logFileName;
 
       std::string getCurrentTime();
 
@@ -141,7 +141,7 @@ namespace CPlusPlusLogging
       void operator=(const Logger &obj) = delete;
 
    private:
-      static std::shared_ptr<Logger> m_Instance;
+       static std::unique_ptr<Logger> m_Instance;
       std::ofstream m_File;
       std::mutex mutex;
 

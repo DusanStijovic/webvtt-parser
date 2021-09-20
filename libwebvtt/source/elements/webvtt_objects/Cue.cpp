@@ -78,7 +78,7 @@ namespace webvtt
         return text;
     }
 
-    void Cue::setTextTreeRoot(std::shared_ptr<NodeObject> &treeRoot)
+    void Cue::setTextTreeRoot(std::shared_ptr<NodeObject> treeRoot)
     {
         this->textTreeRoot = treeRoot;
     }

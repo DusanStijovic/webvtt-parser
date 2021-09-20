@@ -33,6 +33,8 @@ class ICueTreeVisitor {
   virtual void visit(const LanguageObject &object) = 0;
   virtual void visit(const RootObject &object) = 0;
 
+  virtual ~ICueTreeVisitor() = default;
+
 };
 } // namespace webvtt
 

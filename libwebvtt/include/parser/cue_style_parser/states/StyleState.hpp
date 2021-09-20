@@ -16,8 +16,7 @@ namespace webvtt
     {
       NONE,
       START,
-      CUE_START_SELECTOR,
-      CUE_REGION_START_SELECTOR,
+      START_SELECTOR,
       ID_SELECTOR,
       CLASS_SELECTOR,
       TYPE_SELECTOR,

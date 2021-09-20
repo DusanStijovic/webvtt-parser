@@ -2,7 +2,7 @@
 #define LIBWEBVTT_INCLUDE_PARSER_OBJECT_PARSER_CUE_PARSER_HPP_
 
 #include "elements/webvtt_objects/Cue.hpp"
-#include "parser/object_parser/ObjectParser.hpp"
+#include "parser/object_parser/base_classes/CueParserBase.hpp"
 #include "parser/cue_text_tokenizer/CueTextTokenizer.hpp"
 #include "elements/webvtt_objects/Region.hpp"
 #include "buffer/UniquePtrSyncBuffer.hpp"
@@ -18,42 +18,22 @@ namespace webvtt {
 * Algorithm and specification used could be found on:
 * https://www.w3.org/TR/webvtt1/#cue-timings-and-settings-parsing
 */
-class CueParser : public ObjectParser<Cue> {
+class CueParser : public CueParserBase {
 
  public:
-  /**
- * Used to parse timing(start and end time) and setting from input, parsing starts from specified position.
- * Also set fields in current cue object
- *
- * @param input string being parsed
- * @param position  place in string from which parsing will be started
- * @return true if paring successful and current cue has been set false otherwise
- */
-  bool parseTimingAndSettings(std::u32string_view input,
-                              std::u32string_view::iterator &position);
+
+  void buildObjectFromString(std::u32string_view input);
 
   /**
  * Set cue text to current parsing cue object
  * @param text
  */
-  void setTextToObject(std::u32string text);
+  void setTextToObject(std::u32string text) override;
 
-  /**
- * Parse used style in cue text and make style tree.
- * Style Tree consist od internal(style) and leaf(actual text) nodes
- *
- * @param default Language optional, default cue text language
- */
-  void parseTextStyleAndMakeStyleTree(std::u32string_view defaultLanguage = U"");
+  void parseTextStyleAndMakeStyleTree(std::u32string_view defaultLanguage = U"") override;
 
-  /**
- * @param regions Reference to the List of regions that has been parsed until now
- */
-  explicit CueParser(std::shared_ptr<UniquePtrSyncBuffer<Region>>  regions) : currentRegions(std::move(regions)) {}
+  explicit CueParser(std::shared_ptr<UniquePtrSyncBuffer<Region>> regions) : currentRegions(std::move(regions)) {}
 
-  /**
- *  Needed because super class destructor is pure virtual function
- */
   CueParser() = default;
   CueParser(const CueParser &) = delete;
   CueParser(CueParser &&) = delete;

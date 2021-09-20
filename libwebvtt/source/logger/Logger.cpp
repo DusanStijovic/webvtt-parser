@@ -30,20 +30,19 @@
 #include <cstdlib>
 #include <ctime>
 
-
 // Code Specific Header Files(s)
 #include "logger/Logger.h"
 
 using namespace std;
 using namespace CPlusPlusLogging;
 
-  std::shared_ptr<Logger> Logger::m_Instance = std::make_shared<Logger>(); 
+ std::unique_ptr<Logger> Logger::m_Instance = nullptr;
 
 Logger::Logger(std::string logFileName) : logFileName(logFileName)
 {
    m_File.open(logFileName.c_str(), ios::out | ios::app);
    m_LogLevel = LOG_LEVEL_TRACE;
-   m_LogType =  CONSOLE;
+   m_LogType = CONSOLE;
 }
 
 Logger::~Logger()
@@ -309,7 +308,10 @@ void Logger::enableFileLogging()
    m_LogType = FILE_LOG;
 }
 
-std::shared_ptr<Logger> Logger::getLogger()
+Logger *Logger::getLogger()
 {
-   return m_Instance;
+    if (m_Instance == nullptr)
+       m_Instance = std::make_unique<Logger>();
+    return m_Instance.get();
+   return nullptr;
 }

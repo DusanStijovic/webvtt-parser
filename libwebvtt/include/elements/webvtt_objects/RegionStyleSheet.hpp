@@ -7,6 +7,7 @@ namespace webvtt {
 class RegionStyleSheet : public StyleSheet {
  public:
   StyleSheetType getStyleSheetType() override;
+  bool isSelectorAllowed(StyleSelector::SelectorType selectorType) const override;
 };
 
 } // namespace webvtt

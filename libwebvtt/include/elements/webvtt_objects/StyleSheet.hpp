@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 #include <list>
+#include "elements/style_selectors/StyleSelector.hpp"
 
 namespace webvtt {
 class Cue;
@@ -32,6 +33,7 @@ class StyleSheet : public Block {
   virtual StyleSheetType getStyleSheetType() = 0;
   static std::unique_ptr<StyleSheet> makeNewStyleSheet(StyleSheetType styleSheetType);
 
+  virtual bool isSelectorAllowed(StyleSelector::SelectorType selectorType) const = 0;
 
 
 

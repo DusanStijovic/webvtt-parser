@@ -4,6 +4,9 @@
 #include "parser/ParserUtil.hpp"
 #include "logger/LoggingUtility.hpp"
 #include "exceptions/FileFormatError.hpp"
+#include "parser/object_parser/CueParser.hpp"
+#include "parser/object_parser/StyleSheetParser.hpp"
+#include "parser/object_parser/RegionParser.hpp"
 #include <iostream>
 #include <chrono>
 #include <optional>
@@ -13,23 +16,23 @@
 
 namespace webvtt {
 
-std::shared_ptr <UniquePtrSyncBuffer<Cue>> Parser::getCueBuffer() {
+std::shared_ptr<UniquePtrSyncBuffer<Cue>> Parser::getCueBuffer() {
   return cues;
 }
-std::shared_ptr <UniquePtrSyncBuffer<Region>> Parser::getRegionBuffer() {
+std::shared_ptr<UniquePtrSyncBuffer<Region>> Parser::getRegionBuffer() {
   return regions;
 }
-std::shared_ptr <UniquePtrSyncBuffer<StyleSheet>> Parser::getStyleSheetBuffer() {
+std::shared_ptr<UniquePtrSyncBuffer<StyleSheet>> Parser::getStyleSheetBuffer() {
   return styleSheets;
 }
 
-Parser::Parser(std::shared_ptr <StringBuffer<char32_t>> inputStream) : inputStream(std::move(
+Parser::Parser(std::shared_ptr<StringBuffer<char32_t>> inputStream) : inputStream(std::move(
     inputStream)) {
-  preprocessedStream = std::make_unique < StringSyncBuffer < char32_t >> ();
+  preprocessedStream = std::make_unique<StringSyncBuffer<char32_t >>();
 
-  cues = std::make_shared < UniquePtrSyncBuffer < Cue >> ();
-  regions = std::make_shared < UniquePtrSyncBuffer < Region >> ();
-  styleSheets = std::make_shared < UniquePtrSyncBuffer < StyleSheet >> ();
+  cues = std::make_shared<UniquePtrSyncBuffer<Cue >>();
+  regions = std::make_shared<UniquePtrSyncBuffer<Region >>();
+  styleSheets = std::make_shared<UniquePtrSyncBuffer<StyleSheet >>();
 
   cueParser = std::make_unique<CueParser>(regions);
   styleSheetParser = std::make_unique<StyleSheetParser>();
@@ -136,13 +139,11 @@ bool Parser::collectBlock(bool inHeader) {
         DILOGI("FOUND CUE");
         isNewCue = true;
 
-        auto position = std::u32string_view(line).begin();
         bool success = cueParser->setNewObjectForParsing(std::make_unique<Cue>(buffer));
-        success = cueParser->parseTimingAndSettings(line, position);
-
-        if (!success) {
-          DILOGE("Cue timing an settings not parsed successfully");
+        if (success) {
+          cueParser->buildObjectFromString(line);
         }
+
         buffer.clear();
         if (!seenCue) seenFirstCue = true;
         seenCue = true;
@@ -195,14 +196,14 @@ bool Parser::collectBlock(bool inHeader) {
     return true;
   }
   if (isNewStyleSheet) {
-    styleSheetParser->parseCSSRules(buffer);
+    styleSheetParser->buildObjectFromString(buffer);
     styleSheets->writeMultiple(styleSheetParser->getStyleSheets());
 
     return true;
   }
 
   if (isNewRegion) {
-    regionParser->parseSettings(buffer);
+    regionParser->buildObjectFromString(buffer);
     regions->writeOne(regionParser->collectCurrentObject());
     return true;
   }
@@ -223,7 +224,7 @@ void Parser::parsingLoop() {
   try {
 
     std::u32string readData;
-    std::optional <uint32_t> readOneDataOptional;
+    std::optional<uint32_t> readOneDataOptional;
 
     //Read webvtt at the beginning of file
     readData = preprocessedStream->readMultiple(EXTENSION_NAME_LENGTH);

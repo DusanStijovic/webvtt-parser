@@ -54,7 +54,7 @@ void FetchSelectorState::foundCommaCharacter(StyleSheetParser &parser,
 
   parser.addSelectorToCurrentCompoundSelectorList(std::move(styleSelector));
   parser.addSelectorToCurrentCombinatorSelectorList();
-  parser.goToSavedState();
+  parser.setState(StyleState::StyleStateType::START_SELECTOR);
 }
 
 void FetchSelectorState::foundCombinatorCharacter(StyleSheetParser &parser,
@@ -66,7 +66,7 @@ void FetchSelectorState::foundCombinatorCharacter(StyleSheetParser &parser,
 void FetchSelectorState::foundCompoundCharacter(StyleSheetParser &parser,
                                                 std::unique_ptr<StyleSelector> &&styleSelector) {
   parser.addSelectorToCurrentCompoundSelectorList(std::move(styleSelector));
-  parser.goToSavedState();
+  parser.setState(StyleState::StyleStateType::START_SELECTOR);
   parser.getCurrentPosition()--;
 }
 

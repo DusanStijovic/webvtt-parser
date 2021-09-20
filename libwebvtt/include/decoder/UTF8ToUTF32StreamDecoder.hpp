@@ -8,7 +8,6 @@
 #include <thread>
 #include <utility>
 
-using namespace CPlusPlusLogging;
 
 namespace webvtt {
 

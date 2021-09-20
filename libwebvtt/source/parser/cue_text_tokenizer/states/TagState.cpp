@@ -13,7 +13,7 @@ namespace webvtt
         {
             tokenizer.getResult().clear();
             tokenizer.getResult().push_back(character);
-          tokenizer.setState(CueTextTokenizerState::TokenizerState::START_TAG);
+          tokenizer.setState(CueTextTokenizerState::TokenizerState::TIME_STAMP_TAG);
             return nullptr;
         }
 

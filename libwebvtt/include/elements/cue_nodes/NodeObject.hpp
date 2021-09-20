@@ -67,9 +67,14 @@ class NodeObject : public IStyleSelectorVisitor {
   void visit(const LanguageSelector &selector) override;
   void visit(const VoiceSelector &selector) override;
   [[nodiscard]] bool IsShouldApplyLastVisitedStyleSheet() const;
+
+  void visitAllDirectAncestors(const StyleSelector &selector);
+  uint32_t getLevelFromCurrentNode() const;
+
  protected:
   std::weak_ptr<NodeObject> parent;
   bool shouldApplyLastVisitedStyleSheet = false;
+  uint32_t levelFromCurrentNode = 0;
 
 };
 

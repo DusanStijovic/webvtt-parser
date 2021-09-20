@@ -1,12 +1,11 @@
 #ifndef LIBWEBVTT_INCLUDE_PARSER_OBJECT_PARSER_STYLE_SHEET_PARSER_HPP_
 #define LIBWEBVTT_INCLUDE_PARSER_OBJECT_PARSER_STYLE_SHEET_PARSER_HPP_
 
-#include "parser/object_parser/ObjectParser.hpp"
+#include "parser/object_parser/base_classes/StyleSheetParserBase.hpp"
 #include "parser/cue_style_parser/states/StyleState.hpp"
 #include "state_machine/StateMachineForParsingText.hpp"
 #include "buffer/UniquePtrSyncBuffer.hpp"
-#include "elements/webvtt_objects/RegionStyleSheet.hpp"
-#include "elements/webvtt_objects/CueStyleSheet.hpp"
+#include "elements/webvtt_objects/StyleSheet.hpp"
 
 #include <map>
 #include <memory>
@@ -14,7 +13,9 @@
 #include <list>
 
 namespace webvtt {
-class StyleSheetParser : public ObjectParser<StyleSheet>,
+
+
+class StyleSheetParser : public StyleSheetParserBase,
                          public StateMachineForParsingText<StyleState, StyleState::StyleStateType> {
  public:
   constexpr static std::u32string_view CUE_STYLE_START = U"::cue";
@@ -25,9 +26,8 @@ class StyleSheetParser : public ObjectParser<StyleSheet>,
     currentState = StyleState::getInstance(StyleState::StyleStateType::START);
   }
 
-  inline std::list<std::unique_ptr<StyleSheet>> &getStyleSheets() { return styleSheets; }
 
-  void parseCSSRules(std::u32string_view input);
+  void buildObjectFromString(std::u32string_view input) override;
   void addCSSRule(std::string_view name, std::string_view value);
 
   void addSelectorToCurrentCombinatorSelectorList();
@@ -43,9 +43,6 @@ class StyleSheetParser : public ObjectParser<StyleSheet>,
 
   inline void setEndParsing(bool isEnd) { this->endParsing = isEnd; }
   [[nodiscard]] inline bool isEndParsing() const { return endParsing; }
-
-  void goToSavedState() { setState(savedState); }
-  void saveState(StyleState::StyleStateType styleStateType) { savedState = styleStateType; }
 
   void setCurrentStyleSheetType(StyleSheet::StyleSheetType type);
 
@@ -69,7 +66,6 @@ class StyleSheetParser : public ObjectParser<StyleSheet>,
   StyleState::StyleStateType savedState = StyleState::StyleStateType::NONE;
   StyleState::StyleStateType savedPseudoState = StyleState::StyleStateType::NONE;
 
-  std::list<std::unique_ptr<StyleSheet>> styleSheets;
   std::list<std::unique_ptr<StyleSelector>> combinatorSelectorList;
   std::list<std::unique_ptr<StyleSelector>> compoundSelectorList;
 

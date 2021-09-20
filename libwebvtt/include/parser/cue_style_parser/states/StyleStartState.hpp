@@ -18,8 +18,6 @@ namespace webvtt
     private:
         StyleSheet::StyleSheetType decideStyleSheetType(std::u32string_view);
 
-        void decideNextStateWithSelector(StyleSheetParser &parser, StyleSheet::StyleSheetType);
-
         StyleSheet::StyleSheetType makeAndSetNewStyleSheetForParsing(StyleSheetParser &parser);
     };
 }

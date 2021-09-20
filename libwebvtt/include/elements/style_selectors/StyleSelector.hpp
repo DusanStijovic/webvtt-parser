@@ -16,6 +16,7 @@ class StyleSelector {
     this->retValue = false;
   };
   enum class SelectorType {
+    UNSET,
     ID,
     ATTRIBUTE,
     CLASS,

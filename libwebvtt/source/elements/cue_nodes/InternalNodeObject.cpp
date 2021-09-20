@@ -18,14 +18,7 @@ void InternalNodeObject::appendChild(std::shared_ptr<NodeObject> nodeObject) {
   children.push_back(nodeObject);
 }
 
-void InternalNodeObject::visitAllDirectAncestors(const StyleSelector &selector) {
-  std::weak_ptr helpParent = this->parent;
-  while (helpParent.lock() != nullptr) {
-    selector.accept(*helpParent.lock());
-    if (shouldApplyLastVisitedStyleSheet) return;
-    helpParent = helpParent.lock()->getParent();
-  }
-}
+
 
 NodeObject::NodeType
 InternalNodeObject::convertToInternalNodeType(std::u32string_view nodeTypeName) {
