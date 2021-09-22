@@ -57,7 +57,7 @@ void Parser::cleanDecodedData(std::u32string &input) {
     input.erase(input.begin());
     lastReadCR = false;
   }
-  if (input.back() == ParserUtil::LF_C) {
+  if (input.back() == ParserUtil::CR_C) {
     lastReadCR = true;
   }
 
@@ -69,14 +69,17 @@ void Parser::cleanDecodedData(std::u32string &input) {
     if (current_c == ParserUtil::NULL_C || current_c == ParserUtil::FFFF_C) {
       *current = ParserUtil::REPLACEMENT_C;
     }
+
+    if (current_c == ParserUtil::CR_C && haveNext && next_c == ParserUtil::LF_C) {
+      current = input.erase(current);
+    } else {
+      std::advance(current, 1);
+    }
+
     if (current_c == ParserUtil::CR_C) {
       *current = ParserUtil::LF_C;
     }
 
-    if (current_c == ParserUtil::CR_C && haveNext && next_c == ParserUtil::LF_C) {
-      current = input.erase(current);
-    } else
-      std::advance(current, 1);
   }
 }
 

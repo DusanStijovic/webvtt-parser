@@ -16,9 +16,9 @@ namespace webvtt
         void processState(StyleSheetParser &parser) override;
 
     private:
-        StyleSheet::StyleSheetType decideStyleSheetType(std::u32string_view);
+        static StyleSheet::StyleSheetType decideStyleSheetType(std::u32string_view);
 
-        StyleSheet::StyleSheetType makeAndSetNewStyleSheetForParsing(StyleSheetParser &parser);
+        static void makeNewStyleSheetForParsing(StyleSheetParser &parser);
     };
 }
 

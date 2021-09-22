@@ -15,6 +15,10 @@ void FetchSelectorState::processState(StyleSheetParser &parser) {
     return;
 
   switch (character) {
+    case ParserUtil::SOLIDUS_C:parser.saveStateBeforeComment();
+      parser.setState(StyleState::StyleStateType::START_COMMENT_STATE);
+
+      break;
     case ParserUtil::LF_C:
     case ParserUtil::TAB_C:
     case ParserUtil::SPACE_C:combinator = StyleSelector::StyleSelectorCombinator::DESCENDANT;

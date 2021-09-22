@@ -11,12 +11,14 @@ void BeforeRuleStartState::processState(StyleSheetParser &parser) {
     return;
 
   switch (character) {
+    case ParserUtil::SOLIDUS_C:parser.saveStateBeforeComment();
+      parser.setState(StyleState::StyleStateType::START_COMMENT_STATE);
+      break;
     case ParserUtil::COMMA_C: {
       parser.setState(StyleState::StyleStateType::START);
       break;
     }
-    case ParserUtil::LEFT_CURLY_BRACKET_C:
-      parser.setState(StyleState::StyleStateType::RULES);
+    case ParserUtil::LEFT_CURLY_BRACKET_C:parser.setState(StyleState::StyleStateType::RULES);
       break;
 
     default:parser.setState(StyleState::StyleStateType::ERROR);

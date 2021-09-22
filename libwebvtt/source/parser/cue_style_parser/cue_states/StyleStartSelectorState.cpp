@@ -4,7 +4,7 @@
 
 namespace webvtt {
 
-void StyleStartSelectorState::processState(StyleSheetParser &parser) {
+    void StyleStartSelectorState::processState(StyleSheetParser &parser) {
 
   uint32_t character = getNextCharacter(parser);
 
@@ -15,6 +15,9 @@ void StyleStartSelectorState::processState(StyleSheetParser &parser) {
   StyleSelector::SelectorType selectorType = StyleSelector::SelectorType::UNSET;
 
   switch (character) {
+    case ParserUtil::SOLIDUS_C:parser.saveStateBeforeComment();
+      parser.setState(StyleState::StyleStateType::START_COMMENT_STATE);
+      break;
 
     case ParserUtil::HASHTAG_C: newState = StyleState::StyleStateType::ID_SELECTOR;
       selectorType = StyleSelector::SelectorType::ID;

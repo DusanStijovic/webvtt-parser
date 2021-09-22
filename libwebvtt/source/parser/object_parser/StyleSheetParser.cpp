@@ -16,14 +16,12 @@ void StyleSheetParser::addCSSRule(std::string_view name, std::string_view value)
 }
 
 void StyleSheetParser::buildObjectFromString(std::u32string_view newInput) {
+
+  reset();
   this->input = newInput;
   this->currentPosition = this->input.begin();
   setState(StyleState::StyleStateType::START);
-  this->endParsing = false;
-  this->buffer.clear();
-  this->additionalBuffer.clear();
-  this->compoundSelectorList.clear();
-  this->combinatorSelectorList.clear();
+
   try {
     while (true) {
       currentState->processState(*this);
@@ -38,6 +36,7 @@ void StyleSheetParser::buildObjectFromString(std::u32string_view newInput) {
   catch (const NotImplementedError &error) {
     DILOGE(error.what());
   }
+  reset();
 }
 
 void
@@ -65,9 +64,7 @@ StyleSheetParser::setCombinatorToMostRecentSelector(StyleSelector::StyleSelector
     return;
   combinatorSelectorList.back()->setStyleSelectorCombinator(styleSelectorCombinator);
 }
-void StyleSheetParser::setCurrentStyleSheetType(StyleSheet::StyleSheetType type) {
-  this->currentSheetType = type;
-}
+
 void StyleSheetParser::addCurrentObjectToStyleSheetList() {
   styleSheets.push_back(std::move(currentObject));
 }
@@ -82,6 +79,25 @@ void StyleSheetParser::addSelectorToCurrentObject() {
     currentObject->setSelector(std::move(help));
   }
   combinatorSelectorList.clear();
+}
+void StyleSheetParser::saveStateBeforeComment() {
+  savedStateBeforeComment = currentState;
+}
+void StyleSheetParser::goToStateBeforeComment() {
+  currentState = savedStateBeforeComment;
+  savedStateBeforeComment = nullptr;
+}
+void StyleSheetParser::reset() {
+  combinatorSelectorList.clear();
+  compoundSelectorList.clear();
+
+  savedStateBeforeComment = nullptr;
+  savedPseudoState = StyleState::StyleStateType::NONE;
+
+  buffer.clear();
+  additionalBuffer.clear();
+
+  endParsing = false;
 }
 
 }

@@ -4,6 +4,7 @@
 #include "elements/webvtt_objects/RegionStyleSheet.hpp"
 #include "elements/webvtt_objects/CueStyleSheet.hpp"
 #include "elements/style_selectors/MatchAllSelector.hpp"
+#include "exceptions/styleParserExceptions/StyleSheetFormatError.hpp"
 
 namespace webvtt {
 
@@ -19,32 +20,46 @@ StyleSheet::StyleSheetType StyleStartState::decideStyleSheetType(std::u32string_
   return StyleSheet::StyleSheetType::UNDEFINED;
 }
 
-
-
-StyleSheet::StyleSheetType StyleStartState::makeAndSetNewStyleSheetForParsing(StyleSheetParser &parser) {
+void StyleStartState::makeNewStyleSheetForParsing(StyleSheetParser &parser) {
   ParserUtil::strip(parser.getBuffer(), ParserUtil::isASCIIWhiteSpaceCharacter);
   auto type = decideStyleSheetType(parser.getBuffer());
-  parser.setNewObjectForParsing(StyleSheet::makeNewStyleSheet(type));
+  auto styleSheet = StyleSheet::makeNewStyleSheet(type);
+  if (styleSheet == nullptr) {
+    throw StyleSheetFormatError();
+  }
+  parser.setNewObjectForParsing(std::move(styleSheet));
   parser.getBuffer().clear();
-  return type;
 }
 
 void StyleStartState::processState(StyleSheetParser &parser) {
   uint32_t character = getNextCharacter(parser);
 
   switch (character) {
+    case ParserUtil::SOLIDUS_C:parser.saveStateBeforeComment();
+      parser.setState(StyleState::StyleStateType::START_COMMENT_STATE);
+      break;
     case ParserUtil::LEFT_PARENTHESIS_C: {
-      auto madeType = makeAndSetNewStyleSheetForParsing(parser);
-      parser.setState(StyleState::StyleStateType::START_SELECTOR);
+      try {
+        parser.setState(StyleState::StyleStateType::START_SELECTOR);
+        makeNewStyleSheetForParsing(parser);
+      } catch (const StyleSheetFormatError &error) {
+        parser.setState(StyleState::StyleStateType::ERROR);
+        return;
+      }
       break;
     }
     case ParserUtil::LEFT_CURLY_BRACKET_C:
     case ParserUtil::COMMA_C: {
-      makeAndSetNewStyleSheetForParsing(parser);
-      parser.addSelectorToCurrentCompoundSelectorList(std::make_unique<MatchAllSelector>());
-      parser.addSelectorToCurrentCombinatorSelectorList();
-      parser.getCurrentPosition()--;
-      parser.setState(StyleState::StyleStateType::BEFORE_RULE_STATE);
+      try {
+        makeNewStyleSheetForParsing(parser);
+        parser.addSelectorToCurrentCompoundSelectorList(std::make_unique<MatchAllSelector>());
+        parser.addSelectorToCurrentCombinatorSelectorList();
+        parser.getCurrentPosition()--;
+        parser.setState(StyleState::StyleStateType::BEFORE_RULE_STATE);
+      } catch (const StyleSheetFormatError &error) {
+        parser.setState(StyleState::StyleStateType::ERROR);
+        return;
+      }
       break;
     }
     case StyleSheetParser::STOP_PARSER:ParserUtil::strip(parser.getBuffer(), ParserUtil::isASCIIWhiteSpaceCharacter);

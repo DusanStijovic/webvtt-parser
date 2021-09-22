@@ -20,8 +20,8 @@ id:ss regionanchor:0%,100% viewportanchor:10%,90%
 
 
 STYLE
-::cue-region(v),
-::cue(c) {
+::cue-region(#2),
+::cue(c) { /*commentar dao*/
   color: yellow;
   background: red;
 }

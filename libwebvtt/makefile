@@ -35,6 +35,13 @@ source/parser/cue_style_parser/states/StyleStartState.cpp\
 source/parser/cue_style_parser/states/EndStyleState.cpp\
 source/parser/cue_style_parser/states/ErrorStyleState.cpp\
 
+# [Style Parsing] COMMENT STATES
+SOURCE_CPP_LIST += \
+source/parser/cue_style_parser/comment_states/StyleStartCommentState.cpp\
+source/parser/cue_style_parser/comment_states/StyleCommentState.cpp\
+source/parser/cue_style_parser/comment_states/StyleEndCommentState.cpp\
+
+
 
 # [STYLE PARSING] SELECTOR STATES
 SOURCE_CPP_LIST += \
@@ -59,7 +66,7 @@ source/parser/cue_style_parser/ruleStates/BeforeRuleStartState.cpp\
 source/parser/cue_style_parser/ruleStates/StyleRulesState.cpp\
 
 
-# [STYLE PARSING] START STATE BY TYPE OF STYLE
+# [STYLE PARSING] START STYLE SELECTOR STATE
 SOURCE_CPP_LIST += \
 source/parser/cue_style_parser/cue_states/StyleStartSelectorState.cpp\
 

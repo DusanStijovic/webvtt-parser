@@ -14,7 +14,6 @@
 
 namespace webvtt {
 
-
 class StyleSheetParser : public StyleSheetParserBase,
                          public StateMachineForParsingText<StyleState, StyleState::StyleStateType> {
  public:
@@ -25,7 +24,6 @@ class StyleSheetParser : public StyleSheetParserBase,
   StyleSheetParser() {
     currentState = StyleState::getInstance(StyleState::StyleStateType::START);
   }
-
 
   void buildObjectFromString(std::u32string_view input) override;
   void addCSSRule(std::string_view name, std::string_view value);
@@ -44,8 +42,12 @@ class StyleSheetParser : public StyleSheetParserBase,
   inline void setEndParsing(bool isEnd) { this->endParsing = isEnd; }
   [[nodiscard]] inline bool isEndParsing() const { return endParsing; }
 
-  void setCurrentStyleSheetType(StyleSheet::StyleSheetType type);
 
+  void reset();
+
+
+  void saveStateBeforeComment();
+  void goToStateBeforeComment();
   void goToSavedPseudoState() { setState(savedPseudoState); }
   void savePseudoState(StyleState::StyleStateType styleStateType) { savedPseudoState = styleStateType; }
 
@@ -58,12 +60,10 @@ class StyleSheetParser : public StyleSheetParserBase,
  private:
   bool endParsing = false;
 
-  StyleSheet::StyleSheetType currentSheetType = StyleSheet::StyleSheetType::UNDEFINED;
-
   std::u32string buffer;
   std::u32string additionalBuffer;
 
-  StyleState::StyleStateType savedState = StyleState::StyleStateType::NONE;
+  StyleState *savedStateBeforeComment = nullptr;
   StyleState::StyleStateType savedPseudoState = StyleState::StyleStateType::NONE;
 
   std::list<std::unique_ptr<StyleSelector>> combinatorSelectorList;

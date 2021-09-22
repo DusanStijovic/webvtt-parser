@@ -10,7 +10,7 @@ void
 StylePseudoClassSelectorState::foundDefaultBehaviour(StyleSheetParser &parser, uint32_t character) {
   if (character == ParserUtil::LEFT_PARENTHESIS_C) {
     parser.setState(StyleState::StyleStateType::COLLECT_PSEUDO_ARGUMENT);
-    parser.savePseudoState(StyleState::StyleStateType::PSEDO_CLASS_ARGUMENT_END);
+    parser.savePseudoState(StyleState::StyleStateType::PSEUDO_CLASS_ARGUMENT_END);
   } else {
     FetchSelectorState::foundDefaultBehaviour(parser, character);
   }
